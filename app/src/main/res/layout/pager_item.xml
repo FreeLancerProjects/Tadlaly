@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@drawable/pager_item_bg"
+    android:layoutDirection="ltr">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <com.github.siyamed.shapeimageview.RoundedImageView
+            android:id="@+id/ads_img"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            app:siRadius="10dp"
+            app:siBorderColor="@android:color/transparent"
+            app:siBorderAlpha="0"
+
+            />
+        <com.github.siyamed.shapeimageview.RoundedImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            app:siRadius="10dp"
+            app:siBorderColor="@android:color/transparent"
+            app:siBorderAlpha="0"
+            android:background="@drawable/ads_img"
+
+            />
+    </FrameLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:orientation="horizontal"
+        android:weightSum="1"
+        android:padding="5dp"
+        >
+        <TextView
+
+            android:id="@+id/ads_content"
+            android:layout_width="0dp"
+            android:layout_weight=".7"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:textSize="11sp"
+            android:textColor="@color/white"
+
+            />
+        <TextView
+            android:id="@+id/ads_title"
+            android:layout_width="0dp"
+            android:layout_weight=".3"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+
+            />
+    </LinearLayout>
+</FrameLayout>

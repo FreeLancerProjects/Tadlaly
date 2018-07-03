@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@drawable/pager_item_bg"
+    android:layoutDirection="ltr">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <com.github.siyamed.shapeimageview.RoundedImageView
+            android:id="@+id/ads_img"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            app:siRadius="10dp"
+            app:siBorderColor="@android:color/transparent"
+            app:siBorderAlpha="0"
+
+            />
+        <com.github.siyamed.shapeimageview.RoundedImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            app:siRadius="10dp"
+            app:siBorderColor="@android:color/transparent"
+            app:siBorderAlpha="0"
+            android:background="@drawable/ads_img"
+
+            />
+    </FrameLayout>
+
+</FrameLayout>

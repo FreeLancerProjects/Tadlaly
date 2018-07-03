@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Activities.HomeActivity"
+
+    >
+
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/appBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/AppTheme.AppBarOverlay"
+        android:layout_alignParentTop="true"
+        >
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            app:contentInsetStart="0dp"
+            app:contentInsetRight="0dp"
+            app:contentInsetLeft="0dp"
+            app:contentInsetEnd="0dp"
+            >
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layoutDirection="rtl"
+                >
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="10dp"
+                    android:text="@string/home"
+                    android:textColor="@color/white"
+                    android:textSize="17dp"
+                    android:textStyle="bold"
+                    android:layout_toLeftOf="@+id/logo"
+                    android:layout_marginRight="15dp"
+                    />
+                <ImageView
+                    android:id="@+id/logo"
+                    android:layout_width="70dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginBottom="5dp"
+                    android:src="@drawable/logo"
+                    android:scaleType="fitXY"
+                    android:layout_alignParentRight="true"
+                    />
+            </RelativeLayout>
+        </android.support.v7.widget.Toolbar>
+
+    </android.support.design.widget.AppBarLayout>
+
+    <include
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        layout="@layout/content_home"
+        android:layout_below="@+id/appBar"
+        android:layout_above="@+id/ah_nav"
+        />
+
+<RelativeLayout
+    android:id="@+id/ah_nav"
+    android:layout_width="match_parent"
+    android:layout_height="40dp"
+    android:layout_alignParentBottom="true"
+    android:background="@color/colorPrimary"
+
+    >
+    <ImageView
+        android:id="@+id/share"
+        android:layout_width="80dp"
+        android:layout_height="match_parent"
+        android:src="@drawable/share_icon"
+        android:padding="5dp"
+        android:layout_alignParentLeft="true"
+        />
+
+    <ImageView
+        android:id="@+id/ads"
+        android:layout_width="80dp"
+        android:layout_height="match_parent"
+        android:src="@drawable/four_squares"
+        android:padding="10dp"
+        android:layout_centerInParent="true"
+        />
+
+    <ImageView
+        android:id="@+id/search"
+        android:layout_width="80dp"
+        android:layout_height="match_parent"
+        android:src="@drawable/search_icon"
+        android:padding="5dp"
+        android:layout_alignParentRight="true"
+        />
+
+</RelativeLayout>
+</RelativeLayout>

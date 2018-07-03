@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="Api_key">AIzaSyDZDfDu-npZxpvUkfx4hbPwCHC5dctS7Q0</string>
+    <string name="app_name">تدللي</string>
+    <string name="navigation_drawer_open">فتح</string>
+    <string name="navigation_drawer_close">إغلاق</string>
+    <string name="address">العنوان</string>
+    <string name="phone">رقم الجوال</string>
+    <string name="ads_content">نص الاعلان</string>
+    <string name="add_image">إضافة صور</string>
+    <string name="add_ads">إضافة اعلان</string>
+    <string name="send">إرسال</string>
+    <string name="contact_us">اتصل بنا</string>
+    <string name="name">الاسم</string>
+    <string name="email">البريد الالكتروني</string>
+    <string name="subject">الموضوع</string>
+    <string name="message">الرسالة</string>
+    <string name="Login">تسجيل الدخول</string>
+    <string name="username">اسم المستخدم</string>
+    <string name="password">كلمة المرور</string>
+    <string name="forget_pass">نسيت كلمة المرور ؟</string>
+    <string name="create_account">إنشاء حساب جديد</string>
+    <string name="my_ads">اعلاناتي</string>
+    <string name="delete">حذف</string>
+    <string name="profile">الصفحة الشخصية</string>
+    <string name="city">المدينة</string>
+    <string name="f_name">الاسم الاول</string>
+    <string name="l_name">الاسم الثاني</string>
+    <string name="re_password">إعادة كلمة المرور</string>
+    <string name="location">الموقع</string>
+    <string name="accept_rule">الموافقة على الشروط والأحكام</string>
+    <string name="search">بحث</string>
+    <string name="result">نتائج البحث</string>
+    <string name="trans_money">سداد العمولة</string>
+    <string name="money">مبلغ العمولة</string>
+    <string name="trans_bank">البنك الذي تم التحويل الية</string>
+    <string name="trans_date">موعد التحويل</string>
+    <string name="day">اليوم</string>
+    <string name="ads_num">رقم الاعلان</string>
+    <string name="new_ads">جديد</string>
+    <string name="update">تعديل</string>
+    <string name="home">الصفحة الرئيسية</string>
+    <string name="sold">تم بيع السلعة</string>
+    <string name="undo_ads">التراجع عن الاعلان</string>
+    <string name="ok">تم</string>
+    <string name="cancel">إلغاء</string>
+    <string name="update_pass">تعديل كلمة المرور</string>
+    <string name="curr_pass">كلمة المرور الحالية</string>
+    <string name="new_pass">كلمة المرور الجديدة</string>
+    <string name="re_pass">إعادة كلمة المرور الجديدة</string>
+    <string name="adding_ads">جار إضافة اعلان جديد...</string>
+    <string name="enter_address">أدخل العنوان</string>
+    <string name="enter_ad_content">أدخل نص الاعلان</string>
+    <string name="sel_image">إختر صوره</string>
+    <string name="choose_6_image">اختر 6 صور فقط</string>
+    <string name="enter_sub">أدخل الموضوع</string>
+    <string name="enter_msg">أدخل الرسالة</string>
+    <string name="logging">تسجيل الدخول...</string>
+    <string name="enter_un">أدخل اسم المستخدم</string>
+    <string name="enter_pass">أدخل كلمة المرور</string>
+    <string name="curr">الحالية</string>
+    <string name="prev">السابقة</string>
+    <string name="updating_prof">جار تعديل الصوره الشخصية...</string>
+    <string name="cnt_find_loc">لا يمكن تحديد موقعك</string>
+    <string name="creating_account">جار إنشاء حساب جديد...</string>
+    <string name="locating">جار تحديد الموقع...</string>
+    <string name="enter_fn">ادخل الاسم الاول</string>
+    <string name="enter_ln">ادخل الاسم الثاني</string>
+    <string name="enter_phone">ادخل رقم الجوال</string>
+    <string name="inv_phone">تحقق من رقم الجوال</string>
+    <string name="enter_email">أدخل البريد الالكتروني</string>
+    <string name="inv_email">تحقق من البريد الالكتروني</string>
+    <string name="enter_re_pass">أدخل تأكيد كلمة المرور</string>
+    <string name="pass_notmath">كلمة المرور غير متطابقة</string>
+    <string name="enter_loc">ادخل الموقع</string>
+    <string name="ch_new_date">اختر تاريخ جديد</string>
+    <string name="enter_money">ادخل مبلغ العمولة</string>
+    <string name="ch_date">إختر التاريخ</string>
+    <string name="enter_adsnum">أدخل رقم الاعلان</string>
+    <string name="transfering_comm">جار تحويل العمولة...</string>
+    <string name="upd_name">تعديل الاسم</string>
+    <string name="upd_email">تعديل البريد الالكتروني</string>
+    <string name="upd_phone">تعديل رقم الجوال</string>
+    <string name="upd_city">تعديل المدينة</string>
+    <string name="deleting">جار حذف الاعلانات...</string>
+    <string name="wdel">سيتم حذف</string>
+    <string name="item">عنصر</string>
+    <string name="numitem_delete">عدد العناصر التي سيتم حذفها</string>
+    <string name="updating_pass">جار تعديل كلمة المرور...</string>
+    <string name="enter_curr_pass">أدخل كلمة المرور الحالية</string>
+    <string name="enter_new_pass">أدخل كلمة المرور الجديدة</string>
+    <string name="re_new_pass">اعد كتابة كلمة المرور الجديدة</string>
+    <string name="something">خطأ تحقق من الاتصال بالانتر نت</string>
+    <string name="userexist">اسم المستخدم موجود مسبقا</string>
+    <string name="reg_error">خطأ حاول مره اخرى لاحقا</string>
+    <string name="logging_out">تسجيل خروج...</string>
+    <string name="user_pass_error">إسم المستخدم او كلمة المرور غير صحيح</string>
+    <string name="wtsnotins">واتس اب غير مثبت</string>
+    <string name="recover_pass">استرداد حسابك. سنرسل لك رابطًا لتغيير كلمة المرور الخاصة بك.</string>
+    <string name="reset_password">تغيير كلمة المرور</string>
+    <string name="resetmsg_success">تم . سيتم إرسال رساله من خلال البريد الالكتروني من فضلك تحقق من البريد الالكتروني لاضافة كلمة المرور الجديدة</string>
+    <string name="u_e_incorrect">اسم المستخدم او البريد الالكتروني غير صحيح</string>
+    <string name="error">خطأ حاول مره اخرى لاحقا</string>
+    <string name="enter_name">أدخل الاسم</string>
+    <string name="enter_city">أدخل المدينة</string>
+    <string name="about_app">عن التطبيق</string>
+    <string name="inv_old_pass">كلمة المرور القديمة غير صحيحة</string>
+    <string name="price">السعر</string>
+    <string name="congrat">تهانينا</string>
+    <string name="cong_msg">مبروك حصلت على خصم 10% لاي سلعة في التطبيق قم بتصوير الشاشة وعند شراؤك إرسل الصورة للادارة لنتمكن من مراسلة المعلن</string>
+    <string name="mobile_not">تواصل عن طريق التطبيق فقط(لا يظهر رقم الجوال للعملاء)</string>
+    <string name="max_img_note">حد أقصى 6 صور. قم بالتمرير لإضافة المزيد من الصور.</string>
+    <string name="attach_image">إرفاق صورة حوالة المبلغ</string>
+    <string name="ad_details">تفاصيل الاعلان</string>
+    <string name="next">التالي</string>
+    <string name="agree">موافق</string>
+    <string name="dis_agree">غير موافق</string>
+    <string name="enter_location">حدد موقعك</string>
+    <string name="enter_price">أدخل السعر</string>
+    <string name="ch_ad_imgs">إختر صور الاعلان</string>
+    <string name="no_dept">لايوجد اقسام لعرضها</string>
+    <string name="no_branch">لا يوجد فرع</string>
+    <string name="dept">القسم</string>
+    <string name="branch">الفرع</string>
+    <string name="ad_name">اسم الاعلان</string>
+    <string name="enter_ad_name">أدخل اسم الاعلان</string>
+    <string name="ads_added">تم إضافة الاعلان بنجاح</string>
+    <string name="ch_ad_type">إختر نوع الاعلان</string>
+    <string name="used">مستعمل</string>
+    <string name="no_ads">لا توجد إعلانات لعرضها</string>
+    <string name="no_img">لاتوجد صور لعرضها</string>
+    <string name="noreg_without_rules">لايمكنك تسجيل الدخول دون الموافقة على الشروط والاحكام</string>
+    <string name="upd_username">تعديل اسم المستخدم</string>
+    <string name="pass_upd_success">تم تعديل كلمة المرور بنجاح</string>
+    <string name="name_upd_succ">تم تعديل الاسم بنجاح</string>
+    <string name="email_upd_succ">تم تعديل البريد الالكتروني بنجاح</string>
+    <string name="phone_succ_update">تم تعديل رقم الجوال بنجاح</string>
+    <string name="city_updated">تم تعديل المدينة بنجاح</string>
+    <string name="un_updated">تم تعديل اسم المستخدم بنجاح</string>
+    <string name="upd_ad">تعديل اعلان</string>
+    <string name="press_long">قم بالضغط مطولا لحذف صورة</string>
+    <string name="loc_deter">تم تحديد موقعك</string>
+    <string name="Ad_type">نوع الاعلان</string>
+    <string name="nobranch_to_dept">لا يوجد فرع لهذا القسم</string>
+    <string name="isSell">تم بيع</string>
+    <string name="updating_ad">جار تعديل الاعلان...</string>
+    <string name="ad_upd_succ">تم تعديل الاعلان بنجاح</string>
+    <string name="to">الى :</string>
+    <string name="from">من :</string>
+    <string name="tm">إكتب رسالة...</string>
+    <string name="messaging">الرسائل</string>
+    <string name="del_all">حذف الكل</string>
+    <string name="ch_dept">إختر القسم</string>
+    <string name="ch_branch">إختر الفرع</string>
+    <string name="rules">الشروط والاحكام</string>
+    <string name="logout">تسجيل خروج</string>
+    <string name="msg">الرسائل الواردة</string>
+    <string name="sending_msg">جار إرسال الرسالة...</string>
+    <string name="km">كم</string>
+    <string name="terms_and_conditions">الشروط والاحكام</string>
+    <string name="bank">البنك</string>
+    <string name="sel_reason">إختر سبب الحذف</string>
+    <string name="trans_success">تم التحويل بنجاح</string>
+    <string name="there_are_no_messages_to_display">لا توجد رسائل لعرضها</string>
+    <string name="no_chat">لاتوجد محادثات لعضها</string>
+    <string name="msg_sent">تم إرسال الرسالة بنجاح</string>
+    <string name="deleting_msg">جار حذف الرسائل...</string>
+    <string name="del_success">تم حذف الرسائل بنجاح</string>
+    <string name="del_this_msg">هل تريد حذف الرسالة ؟</string>
+    <string name="n_account">حساب جديد</string>
+    <string name="sugg">إقترح علينا</string>
+    <string name="skip">تخطي</string>
+    <string name="ser_not_ava">هذه الخدمة غير متاحة للزائرين برجاء إنشاء حساب</string>
+    <string name="succ_reg">تم إنشاء حساب جديد بنجاح</string>
+    <string name="visitor">زائر</string>
+
+    <string-array name="depart_array">
+        <item>القسم</item>
+        <item>الماركات</item>
+        <item> الاسر المنتجة</item>
+        <item>مجانا</item>
+        <item>مهن منزلية</item>
+        <item>إهتماماتي</item>
+
+    </string-array>
+
+    <string-array name="ad_state">
+        <item>نوع الاعلان</item>
+        <item>جديد</item>
+        <item>مستعمل</item>
+
+    </string-array>
+</resources>
