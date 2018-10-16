@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_marginBottom="8dp"
+    >
+    <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        app:cardCornerRadius="10dp"
+        android:layoutDirection="rtl"
+        >
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="3"
+            >
+            <FrameLayout
+                android:layout_width="0dp"
+                android:layout_weight="1.1"
+                android:layout_height="150dp"
+                >
+                <com.github.siyamed.shapeimageview.RoundedImageView
+                    android:id="@+id/img"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:siRadius="10dp"
+                    />
+            </FrameLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_weight="1.9"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingRight="5dp"
+                android:paddingLeft="5dp"
+
+                >
+                <FrameLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left"
+                    android:layout_marginTop="8dp"
+                    >
+                    <TextView
+                        android:id="@+id/state_new"
+                        android:layout_width="100dp"
+                        android:layout_height="25dp"
+                        android:background="@drawable/ads_item_etbg"
+                        android:text="@string/new_ads"
+                        android:textColor="@color/white"
+                        android:gravity="center"
+                        android:textStyle="bold"
+                        android:singleLine="true"
+                        android:visibility="visible"
+
+
+                        />
+                    <TextView
+                        android:id="@+id/state_old"
+
+                        android:layout_width="100dp"
+                        android:layout_height="25dp"
+                        android:background="@drawable/ads_mosta3mal_bg"
+                        android:text="@string/used"
+                        android:textColor="@color/white"
+                        android:gravity="center"
+                        android:textStyle="bold"
+                        android:singleLine="true"
+                        android:visibility="gone"
+
+
+                        />
+                </FrameLayout>
+                <TextView
+                    android:id="@+id/name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/colorPrimary"
+                    android:textStyle="bold"
+                    android:textSize="16sp"
+                    android:singleLine="true"
+                    android:gravity="right|center_vertical"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="8dp"
+                    android:paddingRight="10dp"
+                    android:paddingLeft="10dp"
+                    />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="7dp"
+                    android:orientation="horizontal"
+                    >
+                    <TextView
+                        android:id="@+id/date"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        android:gravity="right|center_vertical"
+                        android:paddingRight="5dp"
+                        android:textColor="@color/gray0"
+                        android:textSize="11sp"
+                        android:singleLine="true"
+                        android:layout_marginRight="10dp"
+                        android:text="منذ 2 يوم"
+                        android:layout_gravity="center_vertical"
+                        />
+                    <LinearLayout
+                        android:id="@+id/distContainer"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_alignParentLeft="true"
+                        android:visibility="visible"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginBottom="5dp"
+                        android:gravity="center_vertical|left"
+
+                        >
+
+                        <ImageView
+                            android:layout_width="25dp"
+                            android:layout_height="25dp"
+                            android:src="@drawable/map"
+                            android:layout_gravity="center_vertical"
+
+                            />
+                        <TextView
+                            android:id="@+id/distance"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:textSize="11sp"
+                            android:textColor="@color/black"
+                            android:gravity="center|left"
+                            android:layout_marginLeft="10dp"
+                            android:text="sdasd"
+                            android:singleLine="true"
+                            />
+                    </LinearLayout>
+                </LinearLayout>
+
+
+
+
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    >
+
+                    <TextView
+                        android:id="@+id/city"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginRight="10dp"
+                        android:singleLine="true"
+                        android:text="dsfsdfsd"
+                        android:textColor="@color/gray0"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        android:gravity="center_vertical|right"
+
+                        />
+                    <TextView
+                        android:id="@+id/cost"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:textStyle="bold"
+                        android:textSize="14sp"
+                        android:textColor="@color/black"
+                        android:singleLine="true"
+                        android:gravity="center_vertical|left"
+                        android:layout_alignParentLeft="true"
+                        android:text="dsfsdfs"
+                        android:layout_marginLeft="10dp"
+                        android:layout_toLeftOf="@id/city"
+
+                        />
+                </LinearLayout>
+
+
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+    </android.support.v7.widget.CardView>
+
+</LinearLayout>

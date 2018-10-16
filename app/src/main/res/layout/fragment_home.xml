@@ -3,7 +3,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layoutDirection="ltr"
     >
     <android.support.v4.view.ViewPager
         android:id="@+id/pager"
@@ -30,17 +29,55 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/tab"
-        android:layout_marginTop="19dp"
+        android:layout_marginTop="13dp"
 
         >
-        <com.yarolegovich.discretescrollview.DiscreteScrollView
-            android:id="@+id/slider"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-
+            android:orientation="vertical"
             >
+            <com.yarolegovich.discretescrollview.DiscreteScrollView
+                android:id="@+id/slider"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
 
-        </com.yarolegovich.discretescrollview.DiscreteScrollView>
+                >
+
+            </com.yarolegovich.discretescrollview.DiscreteScrollView>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                >
+                <ImageView
+                    android:id="@+id/imgPrev"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:background="@drawable/arrow_bg"
+                    android:src="@drawable/previcon"
+                    android:padding="2dp"
+                    android:layout_alignParentLeft="true"
+                    android:layout_marginLeft="10dp"
+                    android:visibility="invisible"
+                    />
+
+                <ImageView
+                    android:id="@+id/imgNext"
+
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:background="@drawable/arrow_bg"
+                    android:src="@drawable/nexticon"
+                    android:padding="2dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="10dp"
+                    android:visibility="invisible"
+
+                    />
+            </RelativeLayout>
+        </LinearLayout>
         <TextView
             android:id="@+id/no_dept"
             android:layout_width="wrap_content"
@@ -69,8 +106,10 @@
         >
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/recView"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
+
                 >
 
             </android.support.v7.widget.RecyclerView>

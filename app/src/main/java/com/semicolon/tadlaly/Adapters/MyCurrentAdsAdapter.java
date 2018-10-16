@@ -1,7 +1,6 @@
 package com.semicolon.tadlaly.Adapters;
 
 import android.content.Context;
-import android.graphics.Typeface;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
@@ -64,7 +63,6 @@ public class MyCurrentAdsAdapter extends RecyclerView.Adapter <RecyclerView.View
 
         }
 
-        Log.e("dfsdfs",myAdsModelList.size()+"");
     }
 
     @NonNull
@@ -110,7 +108,12 @@ public class MyCurrentAdsAdapter extends RecyclerView.Adapter <RecyclerView.View
             itemHolder.update.setOnClickListener(view -> ads_fragment.setPos(itemHolder.update,itemHolder.getAdapterPosition(), Tags.upd));
             MyAdsModel myAdsModel = myAdsModelList.get(position);
             itemHolder.BindData(myAdsModel);
-            itemHolder.itemView.setOnLongClickListener(ads_fragment);
+            itemHolder.tv_upd_del.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    ads_fragment.DisPlayUdate_Delete();
+                }
+            });
         }else if (holder instanceof myProgressHolder)
         {
             myProgressHolder progressHolder = (myProgressHolder) holder;
@@ -133,7 +136,7 @@ public class MyCurrentAdsAdapter extends RecyclerView.Adapter <RecyclerView.View
 
     public class myItemHolder extends RecyclerView.ViewHolder {
         private LinearLayout updContainer;
-        private TextView date,state_new,state_old,name,cost,viewers,update,distance;
+        private TextView date,state_new,state_old,name,cost,viewers,update,distance,tv_upd_del;
         private ImageView delete;
         private RoundedImageView img;
         private LinearLayout distContainer;
@@ -143,6 +146,7 @@ public class MyCurrentAdsAdapter extends RecyclerView.Adapter <RecyclerView.View
             distContainer= itemView.findViewById(R.id.distContainer);
             updContainer = itemView.findViewById(R.id.updContainer);
             distance = itemView.findViewById(R.id.distance);
+            tv_upd_del = itemView.findViewById(R.id.tv_upd_del);
             update = itemView.findViewById(R.id.update);
             delete = itemView.findViewById(R.id.delete);
             viewers =itemView.findViewById(R.id.viewers);
@@ -162,14 +166,12 @@ public class MyCurrentAdsAdapter extends RecyclerView.Adapter <RecyclerView.View
 
             distContainer.setVisibility(View.GONE);
 
-            Typeface typeface =Typeface.createFromAsset(context.getAssets(),"OYA-Regular.ttf");
             if (myAdsModel.getAdvertisement_image().size()>0)
             {
                 Picasso.with(context).load(Uri.parse(Tags.Image_Url+myAdsModel.getAdvertisement_image().get(0).getPhoto_name())).into(img);
                 Log.e("size1",myAdsModel.getAdvertisement_image().size()+"");
             }
-            date.setTypeface(typeface);
-            date.setText(myAdsModel.getAdvertisement_date());
+            date.setText("منذ "+myAdsModel.getAdvertisement_date());
 
             if (myAdsModel.getAdvertisement_type().equals(Tags.ad_new))
             {
@@ -180,10 +182,10 @@ public class MyCurrentAdsAdapter extends RecyclerView.Adapter <RecyclerView.View
                     state_new.setVisibility(View.GONE);
                     state_old.setVisibility(View.VISIBLE);
                 }
-            name.setTypeface(typeface);
+            //name.setTypeface(typeface);
             name.setText(myAdsModel.getAdvertisement_title());
-            cost.setTypeface(typeface);
-            cost.setText(myAdsModel.getAdvertisement_price()+" ريال");
+            //cost.setTypeface(typeface);
+            //cost.setText(myAdsModel.getAdvertisement_price()+" ريال");
             viewers.setText(myAdsModel.getView_count());
         }
     }
@@ -209,7 +211,7 @@ public class MyCurrentAdsAdapter extends RecyclerView.Adapter <RecyclerView.View
     {
         this.onLoadMoreListener =loadMoreListener;
     }
-    public void setLoded()
+    public void setLoaded()
     {
         isLoding = false;
     }

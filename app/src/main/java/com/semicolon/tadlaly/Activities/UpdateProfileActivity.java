@@ -12,8 +12,6 @@ import com.semicolon.tadlaly.Fragments.UpdateProfileItems_Fragment;
 import com.semicolon.tadlaly.R;
 import com.semicolon.tadlaly.Services.Tags;
 
-import me.anwarshahriar.calligrapher.Calligrapher;
-
 public class UpdateProfileActivity extends AppCompatActivity {
     private String type;
     private ImageView back;
@@ -22,8 +20,8 @@ public class UpdateProfileActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_update_profile);
-        Calligrapher calligrapher=new Calligrapher(this);
-        calligrapher.setFont(this,"OYA-Regular.ttf",true);
+        /*Calligrapher calligrapher=new Calligrapher(this);
+        calligrapher.setFont(this,"OYA-Regular.ttf",true);*/
         initView();
         getDataFromIntent();
 

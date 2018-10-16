@@ -177,5 +177,8 @@ public interface Services {
     @POST("Api/OurAdvertisements/{display}/{page_index}")
     Call<List<MyAdsModel>> visitor_Search(@Path("display") String display,@Path("page_index") int page_index ,@Field("main_department") String main_department_id,@Field("sub_department") String sub_department_id,@Field("user_google_lat") String user_google_lat,@Field("user_google_long") String user_google_long);
 
+    @FormUrlEncoded
+    @POST("Api/FindAdvertisement/{page_index}")
+    Call<List<MyAdsModel>> searchby_name(@Path("page_index") int page_index,@Field("user_id") String user_id,@Field("search_title") String search_title,@Field("user_google_lat") double user_google_lat,@Field("user_google_long") double user_google_long);
 }
 

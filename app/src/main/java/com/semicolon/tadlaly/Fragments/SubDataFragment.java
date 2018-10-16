@@ -15,7 +15,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.semicolon.tadlaly.Adapters.SubDeptAdsAdapter;
+import com.semicolon.tadlaly.Adapters.SubDeptAdsAdapter_Visitor;
 import com.semicolon.tadlaly.Models.MyAdsModel;
 import com.semicolon.tadlaly.Models.UserModel;
 import com.semicolon.tadlaly.R;
@@ -38,7 +38,7 @@ import retrofit2.Retrofit;
 public class SubDataFragment extends Fragment implements UserSingleTone.OnCompleteListener,LatLngSingleTone.onLatLngSuccess{
     private ProgressBar progressBar;
     private RecyclerView recyclerView;
-    private SubDeptAdsAdapter adapter;
+    private SubDeptAdsAdapter_Visitor adapter;
     private RecyclerView.LayoutManager manager;
     private TextView no_ads;
     private Button order_onNewBtn,order_onNearbyBtn;
@@ -52,53 +52,38 @@ public class SubDataFragment extends Fragment implements UserSingleTone.OnComple
     private List<Double> distList;
     private Map<String,Double> map;
     private List<String> idsList;
-    private int page_index=0;
+    private int page_index=2;
     private String button_type="nearby";
     private String user_id="";
     private Call<List<MyAdsModel>> call;
     private LatLngSingleTone latLngSingleTone;
+    private String user_type;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.sub_dept_row,container,false);
         initView(view);
-        Bundle bundle = getArguments();
-        if (bundle!=null)
-        {
-            depId = bundle.getString(dept_id_);
-            user_id = bundle.getString("user_id");
-            if (!user_id.equals("0"))
-            {
-                userSingleTone = UserSingleTone.getInstance();
-                userSingleTone.getUser(this);
-            }else if (user_id.equals(Tags.app_visitor))
-            {
-                latLngSingleTone = LatLngSingleTone.getInstance();
-                latLngSingleTone.getLatLng(this);
-            }
-        }
 
-        initLoadMore();
         return view;
     }
 
     private void initLoadMore() {
-        adapter.setLoadListener(new SubDeptAdsAdapter.OnLoadListener() {
+        adapter.setLoadListener(new SubDeptAdsAdapter_Visitor.OnLoadListener() {
             @Override
             public void onLoadMore() {
                 if (button_type.equals("nearby"))
                 {
                     myAdsModelList.add(null);
                     adapter.notifyItemInserted(myAdsModelList.size()-1);
-                    page_index++;
-                    getData(depId,page_index);
+                    int index = page_index;
+                    onLoadgetData(depId,index);
                 }else
                 {
                     myAdsModelList.add(null);
                     adapter.notifyItemInserted(myAdsModelList.size()-1);
-                    page_index++;
-                    getOrderedData(depId,page_index);
+                    int index = page_index;
+                    onLoadgetOrderedData(depId,index);
                 }
             }
         });
@@ -109,21 +94,27 @@ public class SubDataFragment extends Fragment implements UserSingleTone.OnComple
 
 
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        myAdsModelList1.clear();
-        myAdsModelList.clear();
-        finalmyAdsModelList.clear();
-        idsList.clear();
-        distList.clear();
-        map.clear();
-        page_index=0;
-        getData(depId, page_index++);
 
-    }
 
     private void initView(View view) {
+
+        Bundle bundle = getArguments();
+        if (bundle!=null)
+        {
+            depId = bundle.getString(dept_id_);
+            user_id = bundle.getString("user_id");
+            Log.e("IDDDDDDD_SDF",user_id);
+            if (!user_id.equals("0"))
+            {
+                userSingleTone = UserSingleTone.getInstance();
+                userSingleTone.getUser(this);
+            }else if (user_id.equals("0"))
+            {
+                latLngSingleTone = LatLngSingleTone.getInstance();
+                latLngSingleTone.getLatLng(this);
+            }
+        }
+
         myAdsModelList = new ArrayList<>();
         finalmyAdsModelList = new ArrayList<>();
         myAdsModelList1 = new ArrayList<>();
@@ -137,12 +128,11 @@ public class SubDataFragment extends Fragment implements UserSingleTone.OnComple
         recyclerView = view.findViewById(R.id.recView);
         manager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(manager);
-        adapter = new SubDeptAdsAdapter(recyclerView,getActivity(),myAdsModelList,"3");
+        adapter = new SubDeptAdsAdapter_Visitor(recyclerView,getActivity(),myAdsModelList);
         recyclerView.setAdapter(adapter);
 
         order_onNewBtn.setOnClickListener(view1 -> {
             button_type="ordered";
-            page_index=0;
             myAdsModelList1.clear();
             myAdsModelList.clear();
             finalmyAdsModelList.clear();
@@ -151,13 +141,11 @@ public class SubDataFragment extends Fragment implements UserSingleTone.OnComple
             map.clear();
             order_onNewBtn.setBackgroundResource(R.drawable.btn_selected);
             order_onNearbyBtn.setBackgroundResource(R.drawable.login_btn);
-            page_index++;
-            getOrderedData(depId,page_index);
+            getOrderedData(depId,1);
         });
 
         order_onNearbyBtn.setOnClickListener(view1 -> {
             button_type="nearby";
-            page_index=0;
             myAdsModelList1.clear();
             myAdsModelList.clear();
             finalmyAdsModelList.clear();
@@ -166,12 +154,14 @@ public class SubDataFragment extends Fragment implements UserSingleTone.OnComple
             map.clear();
             order_onNewBtn.setBackgroundResource(R.drawable.login_btn);
             order_onNearbyBtn.setBackgroundResource(R.drawable.btn_selected);
-            page_index++;
 
-            getData(depId,page_index);
+            getData(depId,1);
             Log.e("id",depId);
         });
 
+
+        getData(depId, 1);
+        initLoadMore();
     }
 
     public static SubDataFragment newInstance(String dept_id,String user_id)
@@ -188,11 +178,11 @@ public class SubDataFragment extends Fragment implements UserSingleTone.OnComple
     {
 
         Retrofit retrofit = Api.getRetrofit(Tags.Base_Url);
-        if (user_id.equals(Tags.app_visitor))
+        if (user_id.equals("0"))
         {
             call = retrofit.create(Services.class).visitor_getSubDeptAds(Tags.display_nearby, supDept_id,page_index,String.valueOf(mylat),String.valueOf(myLng));
 
-        }else
+        }else if (!user_id.equals("0"))
             {
                 call = retrofit.create(Services.class).getSubDept_Ads(Tags.display_nearby, user_id, supDept_id, page_index);
 
@@ -200,8 +190,81 @@ public class SubDataFragment extends Fragment implements UserSingleTone.OnComple
                 call.enqueue(new Callback<List<MyAdsModel>>() {
                     @Override
                     public void onResponse(Call<List<MyAdsModel>> call, Response<List<MyAdsModel>> response) {
+
                         if (response.isSuccessful())
                         {
+                            progressBar.setVisibility(View.GONE);
+
+                            myAdsModelList.clear();
+
+                            if (response.body().size()>0)
+                            {
+                                no_ads.setVisibility(View.GONE);
+                                myAdsModelList.addAll(response.body());
+                                adapter.notifyDataSetChanged();
+                            }else
+                            {
+                                no_ads.setVisibility(View.VISIBLE);
+
+                            }
+
+                        }
+
+
+
+                    }
+
+                    @Override
+                    public void onFailure(Call<List<MyAdsModel>> call, Throwable t) {
+                        progressBar.setVisibility(View.GONE);
+                        Toast.makeText(getActivity(),R.string.something, Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+
+
+    }
+
+    private void onLoadgetData(String supDept_id, int page_index)
+    {
+
+        Retrofit retrofit = Api.getRetrofit(Tags.Base_Url);
+        if (user_id.equals("0"))
+        {
+            call = retrofit.create(Services.class).visitor_getSubDeptAds(Tags.display_nearby, supDept_id,page_index,String.valueOf(mylat),String.valueOf(myLng));
+
+        }else if (!user_id.equals("0"))
+        {
+            call = retrofit.create(Services.class).getSubDept_Ads(Tags.display_nearby, user_id, supDept_id, page_index);
+
+        }
+        call.enqueue(new Callback<List<MyAdsModel>>() {
+            @Override
+            public void onResponse(Call<List<MyAdsModel>> call, Response<List<MyAdsModel>> response) {
+
+                if (response.isSuccessful())
+                {
+                    if (response.body().size()>0)
+                    {
+                        SubDataFragment.this.page_index = SubDataFragment.this.page_index+1;
+                        int lastpos = myAdsModelList.size()-1;
+                        myAdsModelList.remove(myAdsModelList.size()-1);
+                        adapter.notifyItemRemoved(myAdsModelList.size());
+                        adapter.setLoaded();
+                        myAdsModelList.addAll(response.body());
+                        adapter.notifyItemRangeChanged(lastpos,myAdsModelList.size()-1);
+                    }else
+                    {
+                        myAdsModelList.remove(myAdsModelList.size()-1);
+                        adapter.notifyItemRemoved(myAdsModelList.size());
+                        adapter.setLoaded();
+                    }
+                }
+
+                      /*  if (response.isSuccessful())
+                        {
+
+
 
                             if (myAdsModelList.size()>0)
                             {
@@ -233,17 +296,16 @@ public class SubDataFragment extends Fragment implements UserSingleTone.OnComple
 
                                 }
                             }
-                        }
+                        }*/
 
-                    }
+            }
 
-                    @Override
-                    public void onFailure(Call<List<MyAdsModel>> call, Throwable t) {
-                        progressBar.setVisibility(View.GONE);
-                        Toast.makeText(getActivity(),R.string.something, Toast.LENGTH_SHORT).show();
-                        Log.e("Error",t.getMessage());
-                    }
-                });
+            @Override
+            public void onFailure(Call<List<MyAdsModel>> call, Throwable t) {
+                progressBar.setVisibility(View.GONE);
+                Toast.makeText(getActivity(),R.string.something, Toast.LENGTH_SHORT).show();
+            }
+        });
         /*myAdsModelList1.clear();
         Retrofit retrofit = Api.getRetrofit2(Tags.Base_Url);
         Observable<List<MyAdsModel>> observable = retrofit.create(Services.class).getSubDept_Ads(Tags.display_nearby,user_id, supDept_id, page_index);
@@ -307,7 +369,7 @@ public class SubDataFragment extends Fragment implements UserSingleTone.OnComple
     private void getOrderedData(String depId, int page_index)
     {
         Retrofit retrofit = Api.getRetrofit(Tags.Base_Url);
-        if (user_id.equals(Tags.app_visitor))
+        if (user_id.equals("0"))
         {
             call = retrofit.create(Services.class).visitor_getSubDeptAds(Tags.display_new,depId,page_index,String.valueOf(myLng),String.valueOf(myLng));
 
@@ -319,7 +381,28 @@ public class SubDataFragment extends Fragment implements UserSingleTone.OnComple
                 call.enqueue(new Callback<List<MyAdsModel>>() {
                     @Override
                     public void onResponse(Call<List<MyAdsModel>> call, Response<List<MyAdsModel>> response) {
+
                         if (response.isSuccessful())
+                        {
+                            progressBar.setVisibility(View.GONE);
+
+                            myAdsModelList.clear();
+
+                            if (response.body().size()>0)
+                            {
+                                no_ads.setVisibility(View.GONE);
+                                myAdsModelList.addAll(response.body());
+                                adapter.notifyDataSetChanged();
+                            }else
+                            {
+                                no_ads.setVisibility(View.VISIBLE);
+
+                            }
+
+                        }
+
+
+                        /*if (response.isSuccessful())
                         {
                             if (myAdsModelList.size()>0)
                             {
@@ -353,7 +436,7 @@ public class SubDataFragment extends Fragment implements UserSingleTone.OnComple
                             }
 
                         }
-
+*/
                     }
 
                     @Override
@@ -422,163 +505,42 @@ public class SubDataFragment extends Fragment implements UserSingleTone.OnComple
 
     }
 
-/*
-    private void getDistance(double mylat, double myLng, double adLat, double adLng, String id_advertisement) {
-        String url = "https://maps.googleapis.com/maps/api/distancematrix/json?origins="+mylat+","+myLng+"&destinations="+adLat+","+adLng+"&key="+getString(R.string.Api_key);
-        Retrofit retrofit = Api.getRetrofit(Tags.GeoPlaceUrl);
-        Call<PlacesDistanceModel> call = retrofit.create(Services.class).getDistance(url);
-        call.enqueue(new Callback<PlacesDistanceModel>() {
-            @Override
-            public void onResponse(Call<PlacesDistanceModel> call, Response<PlacesDistanceModel> response) {
-                if (response.isSuccessful())
-                {
-                    try {
-                        int dist = response.body().getRows().get(0).getElements().get(0).getDistanceObject().getValue();
-                        int dis =dist/1000;
-
-                        map.put(myAdsModelList1.get(cont).getId_advertisement(),(double)dis);
-                        distList.add((double)dis);
-
-                        cont++;
-                        if (cont<size)
-                        {
-                            getDistance(mylat,myLng,Double.parseDouble(myAdsModelList1.get(cont).getGoogle_lat()), Double.parseDouble(myAdsModelList1.get(cont).getGoogle_long()), myAdsModelList1.get(cont).getId_advertisement());
-                        }else
-                        {
-
-
-
-                            if (map.size()>0)
-                            {
-                                Collections.sort(distList);
-
-                                for (Double d:distList)
-                                {
-                                    Log.e("distance",d+"_");
-                                    for (String key:map.keySet())
-                                    {
-                                        Log.e("key",key);
-                                        Log.e("dis_key",d+"_"+map.get(key));
-                                        if (d.equals(map.get(key)))
-                                        {
-
-                                            if (!idsList.contains(key))
-                                            {
-                                                idsList.add(key);
-                                                Log.e("sizzzz",idsList.size()+"");
-                                            }
-
-
-                                        }
-                                    }
-                                }
-
-                                for (String key:idsList)
-                                {
-                                    for (MyAdsModel myAdsModel:myAdsModelList1)
-                                    {
-                                        if (myAdsModel.getId_advertisement().equals(key))
-                                        {
-                                            Log.e("ff",key+"_"+myAdsModel.getId_advertisement());
-                                            myAdsModel.setM_distance(String.valueOf(map.get(key)));
-                                            finalmyAdsModelList.add(myAdsModel);
-                                        }
-                                    }
-                                }
-                               */
-/* myAdsModelList.remove(myAdsModelList.size());
-                                adapter.notifyItemRemoved(myAdsModelList.size());
-                                adapter.setLoaded();*//*
-
-                                myAdsModelList.addAll(finalmyAdsModelList);
-                                adapter.notifyDataSetChanged();
-                                progressBar.setVisibility(View.GONE);
-
-                                Log.e("ss22",myAdsModelList.size()+"");
-                            }
-
-
-
-                        }
-                    }catch (NullPointerException e)
-                    {
-                        progressBar.setVisibility(View.GONE);
-
-                    }catch (NumberFormatException e){
-                        progressBar.setVisibility(View.GONE);
-                    }
-                    catch (Exception e){
-                        progressBar.setVisibility(View.GONE);
-
-
-                    }
-
-
-
-                }
-            }
-
-            @Override
-            public void onFailure(Call<PlacesDistanceModel> call, Throwable t) {
-                progressBar.setVisibility(View.GONE);
-
-                Log.e("Error",t.getMessage());
-                Toast.makeText(getActivity(),R.string.something, Toast.LENGTH_SHORT).show();
-            }
-        });
-
-
-    }
-*/
-
-   /* private void getOrderedData(String supDept_id, int page_index)
+    private void onLoadgetOrderedData(String depId, int page_index)
     {
         Retrofit retrofit = Api.getRetrofit(Tags.Base_Url);
-        Call<List<MyAdsModel>> call = retrofit.create(Services.class).getSubDept_Ads(userModel.getUser_id(),supDept_id,page_index);
+        if (user_id.equals("0"))
+        {
+            call = retrofit.create(Services.class).visitor_getSubDeptAds(Tags.display_new,depId,page_index,String.valueOf(myLng),String.valueOf(myLng));
+
+        }else
+        {
+            call = retrofit.create(Services.class).getSubDept_Ads(Tags.display_new, user_id, depId, page_index);
+
+        }
         call.enqueue(new Callback<List<MyAdsModel>>() {
             @Override
             public void onResponse(Call<List<MyAdsModel>> call, Response<List<MyAdsModel>> response) {
+
                 if (response.isSuccessful())
                 {
-
-                    if (page_index==1)
+                    if (response.body().size()>0)
                     {
-                        if (response.body().size()>0)
-                        {
-                            no_ads.setVisibility(View.GONE);
-                            Distance(response.body());
-
-
-                        }else if (response.body().size()==0)
-                        {
-                            *//*myAdsModelList.remove(myAdsModelList.size());
-                            adapter.notifyItemRemoved(myAdsModelList.size());
-                            adapter.setLoaded();
-                            myAdsModelList.addAll(finalmyAdsModelList);
-                            adapter.notifyDataSetChanged();*//*
-                            progressBar.setVisibility(View.GONE);
-                            no_ads.setVisibility(View.VISIBLE);
-
-                        }
+                        SubDataFragment.this.page_index = SubDataFragment.this.page_index+1;
+                        int lastpos = myAdsModelList.size()-1;
+                        myAdsModelList.remove(myAdsModelList.size()-1);
+                        adapter.notifyItemRemoved(myAdsModelList.size());
+                        adapter.setLoaded();
+                        myAdsModelList.addAll(response.body());
+                        adapter.notifyItemRangeChanged(lastpos,myAdsModelList.size()-1);
                     }else
                     {
-                        if (response.body().size()==0)
-                        {
-                           *//* myAdsModelList.remove(myAdsModelList.size());
-                            adapter.notifyItemRemoved(myAdsModelList.size());
-                            adapter.setLoaded();
-                            adapter.notifyDataSetChanged();*//*
-
-                        }else if (response.body().size()>0)
-                        {
-                            no_ads.setVisibility(View.GONE);
-                            Distance(response.body());
-
-
-                        }
+                        myAdsModelList.remove(myAdsModelList.size()-1);
+                        adapter.notifyItemRemoved(myAdsModelList.size());
+                        adapter.setLoaded();
                     }
-
                 }
+
+
             }
 
             @Override
@@ -588,89 +550,18 @@ public class SubDataFragment extends Fragment implements UserSingleTone.OnComple
                 Log.e("Error",t.getMessage());
             }
         });
-    }*/
-    /*private void Distance(List<MyAdsModel> myAdsModelList1)
-    {
-        this.myAdsModelList1 = myAdsModelList1;
-        size=myAdsModelList1.size();
-        if (size>0)
-        {
-            Dist(mylat,myLng,Double.parseDouble(myAdsModelList1.get(cont).getGoogle_lat()), Double.parseDouble(myAdsModelList1.get(cont).getGoogle_long()));
-        }
-    }*/
-    /*private void Dist(double mylat, double myLng, double adLat, double adLng)
-    {
-        String url = "https://maps.googleapis.com/maps/api/distancematrix/json?origins="+mylat+","+myLng+"&destinations="+adLat+","+adLng+"&key="+getString(R.string.Api_key);
-        Retrofit retrofit = Api.getRetrofit(Tags.GeoPlaceUrl);
-        Call<PlacesDistanceModel> call = retrofit.create(Services.class).getDistance(url);
-        call.enqueue(new Callback<PlacesDistanceModel>() {
-            @Override
-            public void onResponse(Call<PlacesDistanceModel> call, Response<PlacesDistanceModel> response) {
-                if (response.isSuccessful())
-                {
-                    try {
-                        int dist = response.body().getRows().get(0).getElements().get(0).getDistanceObject().getValue();
-                        int dis =dist/1000;
-
-                        distList.add((double)dis);
-
-                        cont++;
-                        if (cont<size)
-                        {
-                            Dist(mylat,myLng,Double.parseDouble(myAdsModelList1.get(cont).getGoogle_lat()), Double.parseDouble(myAdsModelList1.get(cont).getGoogle_long()));
-                        }else
-                        {
-
-                            for (int i=0;i<myAdsModelList1.size();i++)
-                            {
-                                MyAdsModel myAdsModel = myAdsModelList1.get(i);
-                                myAdsModel.setM_distance(String.valueOf(distList.get(i)));
-                                finalmyAdsModelList.add(myAdsModel);
-                                Log.e("id",myAdsModelList1.get(i).getId_advertisement());
-                            }
-
-                           *//* myAdsModelList.remove(myAdsModelList.size());
-                            adapter.notifyItemRemoved(myAdsModelList.size());
-                            adapter.setLoaded();*//*
-                            myAdsModelList.addAll(finalmyAdsModelList);
-                            adapter.notifyDataSetChanged();
-                            progressBar.setVisibility(View.GONE);
-
-                            Log.e("ss22",myAdsModelList.size()+"");
-
-                        }
-                    }catch (NullPointerException e)
-                    {
-                        progressBar.setVisibility(View.GONE);
-
-                    }catch (NumberFormatException e){
-                        progressBar.setVisibility(View.GONE);
-                    }
-                    catch (Exception e){
-                        progressBar.setVisibility(View.GONE);
 
 
-                    }
-
-
-
-                }
-            }
-
-            @Override
-            public void onFailure(Call<PlacesDistanceModel> call, Throwable t) {
-                progressBar.setVisibility(View.GONE);
-
-                Log.e("Error",t.getMessage());
-                Toast.makeText(getActivity(),R.string.something, Toast.LENGTH_SHORT).show();
-            }
-        });
-    }*/
+    }
     @Override
     public void onSuccess(UserModel userModel) {
         this.userModel =userModel;
-        mylat = Double.parseDouble(userModel.getUser_google_lat());
-        myLng = Double.parseDouble(userModel.getUser_google_long());
+        if (this.userModel!=null)
+        {
+            mylat = Double.parseDouble(userModel.getUser_google_lat());
+            myLng = Double.parseDouble(userModel.getUser_google_long());
+        }
+
 
     }
 

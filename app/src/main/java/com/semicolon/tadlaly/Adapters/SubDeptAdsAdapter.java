@@ -1,7 +1,6 @@
 package com.semicolon.tadlaly.Adapters;
 
 import android.content.Context;
-import android.graphics.Typeface;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
@@ -10,6 +9,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -38,10 +39,9 @@ public class SubDeptAdsAdapter extends RecyclerView.Adapter <RecyclerView.ViewHo
     private int totalItemCount,lastVisibleItem;
     private int Threshold=5;
     private OnLoadListener onLoadListener;
-    //private boolean isLoading;
-    private int page_index=0;
     private boolean loading;
     private LinearLayoutManager mLinearLayoutManager;
+    int pos;
 
 
     public SubDeptAdsAdapter(RecyclerView recView,Context context, List<MyAdsModel> myAdsModelList,String type) {
@@ -71,6 +71,7 @@ public class SubDeptAdsAdapter extends RecyclerView.Adapter <RecyclerView.ViewHo
                     {
                         totalItemCount = mLinearLayoutManager.getItemCount();
                         lastVisibleItem = mLinearLayoutManager.findLastVisibleItemPosition();
+
                         if (!loading&&totalItemCount<=(lastVisibleItem+Threshold))
                         {
                             if (onLoadListener !=null)
@@ -115,6 +116,7 @@ public class SubDeptAdsAdapter extends RecyclerView.Adapter <RecyclerView.ViewHo
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
 
+        pos = position;
         if (holder instanceof myItemHolder)
         {
             myItemHolder itemHolder = (myItemHolder) holder;
@@ -131,9 +133,19 @@ public class SubDeptAdsAdapter extends RecyclerView.Adapter <RecyclerView.ViewHo
 
             }else if (type.equals("3"))
             {
-                itemHolder.itemView.setOnClickListener(view -> homeActivity.SetMyadsData(myAdsModelList.get(holder.getAdapterPosition())));
+                itemHolder.itemView.setOnClickListener(view -> homeActivity.SetMyadsData(myAdsModel));
 
             }
+            /*if (position>lastpos)
+            {
+                Animation animation = AnimationUtils.loadAnimation(context,R.anim.right_to_left);
+                holder.itemView.startAnimation(animation);
+            }
+
+            lastpos = position;*/
+            Animation animation = AnimationUtils.loadAnimation(context,R.anim.right_to_left);
+            holder.itemView.startAnimation(animation);
+
 
         }else if (holder instanceof myProgressHolder)
         {
@@ -160,7 +172,7 @@ public class SubDeptAdsAdapter extends RecyclerView.Adapter <RecyclerView.ViewHo
     }
 
     public class myItemHolder extends RecyclerView.ViewHolder {
-        private TextView date,state_new,state_old,name,cost,viewers,distance;
+        private TextView date,state_new,state_old,name,cost,viewers,distance,tv_upd_del;
         private RoundedImageView img;
         private LinearLayout distContainer,updContainer;
 
@@ -169,6 +181,7 @@ public class SubDeptAdsAdapter extends RecyclerView.Adapter <RecyclerView.ViewHo
             distContainer= itemView.findViewById(R.id.distContainer);
             distance = itemView.findViewById(R.id.distance);
             viewers =itemView.findViewById(R.id.viewers);
+            tv_upd_del = itemView.findViewById(R.id.tv_upd_del);
             img = itemView.findViewById(R.id.img);
             date = itemView.findViewById(R.id.date);
             state_new= itemView.findViewById(R.id.state_new);
@@ -176,6 +189,7 @@ public class SubDeptAdsAdapter extends RecyclerView.Adapter <RecyclerView.ViewHo
             name = itemView.findViewById(R.id.name);
             cost = itemView.findViewById(R.id.cost);
             updContainer = itemView.findViewById(R.id.updContainer);
+            tv_upd_del.setVisibility(View.GONE);
 
 
 
@@ -186,14 +200,16 @@ public class SubDeptAdsAdapter extends RecyclerView.Adapter <RecyclerView.ViewHo
 
             updContainer.setVisibility(View.GONE);
             distContainer.setVisibility(View.VISIBLE);
-            distance.setText(myAdsModel.getDistance()+" "+context.getString(R.string.km));
-            Typeface typeface =Typeface.createFromAsset(context.getAssets(),"OYA-Regular.ttf");
+            double dist = myAdsModel.getDistance();
+
+            distance.setText(Math.round(dist)+" "+context.getString(R.string.km));
+            //Typeface typeface =Typeface.createFromAsset(context.getAssets(),"OYA-Regular.ttf");
             if (myAdsModel.getAdvertisement_image().size()>0)
             {
                 Picasso.with(context).load(Uri.parse(Tags.Image_Url+myAdsModel.getAdvertisement_image().get(0).getPhoto_name())).into(img);
                 Log.e("size1",myAdsModel.getAdvertisement_image().size()+"");
             }
-            date.setTypeface(typeface);
+            //date.setTypeface(typeface);
             date.setText(myAdsModel.getAdvertisement_date());
 
             if (myAdsModel.getAdvertisement_type().equals(Tags.ad_new))
@@ -205,10 +221,18 @@ public class SubDeptAdsAdapter extends RecyclerView.Adapter <RecyclerView.ViewHo
                     state_new.setVisibility(View.GONE);
                     state_old.setVisibility(View.VISIBLE);
                 }
-            name.setTypeface(typeface);
+            //name.setTypeface(typeface);
             name.setText(myAdsModel.getAdvertisement_title());
-            cost.setTypeface(typeface);
-            cost.setText(myAdsModel.getAdvertisement_price()+" ريال");
+            //cost.setTypeface(typeface);
+            if (cost.equals(Tags.undefined_price))
+            {
+                cost.setText(myAdsModel.getAdvertisement_price());
+
+            }else
+            {
+                cost.setText(myAdsModel.getAdvertisement_price()+" ريال");
+
+            }
             viewers.setText(myAdsModel.getView_count());
         }
     }
@@ -233,5 +257,12 @@ public class SubDeptAdsAdapter extends RecyclerView.Adapter <RecyclerView.ViewHo
     public void setLoaded()
     {
         loading=false;
+
+    }
+
+    @Override
+    public void onViewDetachedFromWindow(@NonNull RecyclerView.ViewHolder holder) {
+        super.onViewDetachedFromWindow(holder);
+        holder.itemView.clearAnimation();
     }
 }

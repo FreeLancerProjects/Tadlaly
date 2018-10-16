@@ -12,9 +12,7 @@
         android:title="@string/home"
         android:checked="true"
         />
-    <item
-        android:id="@+id/logout"
-        android:title="@string/logout" />
+
 
     <item
         android:id="@+id/register"
@@ -30,9 +28,9 @@
     <item
         android:id="@+id/transMoney"
         android:title="@string/trans_money" />
-    <item
+    <!--<item
         android:id="@+id/suggestion"
-        android:title="@string/sugg" />
+        android:title="@string/sugg" />-->
     <item
         android:id="@+id/contactUs"
         android:title="@string/contact_us" />
@@ -43,4 +41,7 @@
         android:id="@+id/rules"
         android:title="@string/rules" />
 
+    <item
+        android:id="@+id/logout"
+        android:title="@string/logout" />
 </menu>

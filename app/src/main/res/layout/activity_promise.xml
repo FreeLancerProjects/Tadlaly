@@ -1,15 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<android.support.design.widget.CoordinatorLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Activities.PromiseActivity"
-    android:orientation="vertical"
-    android:layout_margin="5dp"
-    android:background="@drawable/promise_container"
-    android:layoutDirection="rtl"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".Activities.PromiseActivity"
+        android:orientation="vertical"
+        android:layout_margin="5dp"
+        android:background="@drawable/promise_container"
+        android:layoutDirection="rtl"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+
     >
     <LinearLayout
         android:layout_width="match_parent"
@@ -125,7 +131,7 @@
                 android:textColor="@color/black"
                 android:textSize="15sp"
                 android:gravity="center"
-                android:text="اتعهد وأقسم بالله أنا المعلن أن أدفع عمولة التطبيق وهي 10% من قيمة السلعة في حالة بيعها عن طريق التطبيق أو بسبب التطبيق حتى وإن تكرر عدد مرات بيع السلعة وأن هذه العمولة أمانة في زمتي ملاحظة : عمولة عمولة التطبيق على المعلن"
+                android:text="اتعهد وأقسم بالله أنا المعلن أن أدفع عمولة التطبيق حسب قيمة السلعة في الجدول الملحق  في حالة بيعها عن طريق التطبيق وحتى وإن تكرر عدد مرات بيع السلعة."
                 android:layout_marginTop="10dp"
                 android:paddingRight="15dp"
                 android:paddingLeft="15dp"
@@ -310,9 +316,9 @@
                     android:id="@+id/agreeBtn1"
                     android:layout_width="110dp"
                     android:layout_height="35dp"
-                    android:background="@drawable/btn_promise_agree"
                     android:text="@string/agree"
-                    android:textColor="@color/white"
+                    android:background="@drawable/btn_promise_disagree"
+                    android:textColor="@color/colorPrimary"
                     android:textSize="12sp"
                     android:paddingRight="10dp"
                     android:paddingLeft="10dp"
@@ -321,9 +327,10 @@
                     android:id="@+id/disagreeBtn1"
                     android:layout_width="110dp"
                     android:layout_height="35dp"
-                    android:background="@drawable/btn_promise_disagree"
+                    android:background="@drawable/btn_promise_agree"
+
                     android:text="@string/dis_agree"
-                    android:textColor="@color/colorPrimary"
+                    android:textColor="@color/white"
                     android:textSize="12sp"
                     android:paddingRight="10dp"
                     android:paddingLeft="10dp"
@@ -343,7 +350,7 @@
                 android:textColor="@color/black"
                 android:textSize="15sp"
                 android:gravity="center"
-                android:text="أتعهد أنا المعلن أن جميع المعلومات التي سوف أذكرها بالإعلان صحيحة وأتعهد أن الصور التي سوف يتم عرضها هي صور حديثة لنفس السلعة وليست لسلعة أخرى مشابهة"
+                android:text="أتعهد أنا المعلن أن جميع المعلومات التي سوف أذكرها بالإعلان صحيحة وأتعهد أن الصور التي سوف يتم عرضها هي صور حديثة لنفس السلعة وليست لسلعة أخرى مشابهة."
                 android:layout_marginTop="10dp"
                 android:paddingRight="15dp"
                 android:paddingLeft="15dp"
@@ -364,9 +371,10 @@
 
                     android:layout_width="110dp"
                     android:layout_height="35dp"
-                    android:background="@drawable/btn_promise_agree"
+                    android:background="@drawable/btn_promise_disagree"
+
                     android:text="@string/agree"
-                    android:textColor="@color/white"
+                    android:textColor="@color/colorPrimary"
                     android:textSize="12sp"
                     android:paddingRight="10dp"
                     android:paddingLeft="10dp"
@@ -376,9 +384,9 @@
 
                     android:layout_width="110dp"
                     android:layout_height="35dp"
-                    android:background="@drawable/btn_promise_disagree"
                     android:text="@string/dis_agree"
-                    android:textColor="@color/colorPrimary"
+                    android:background="@drawable/btn_promise_agree"
+                    android:textColor="@color/white"
                     android:textSize="12sp"
                     android:paddingRight="10dp"
                     android:paddingLeft="10dp"
@@ -399,12 +407,38 @@
                 android:textColor="@color/black"
                 android:textSize="15sp"
                 android:gravity="center"
-                android:text="أتعهد أنا الملعن أن أقوم بدفع العمولة خلال أقل من 5 أيام من تاريخ استلام المبلغ كامل"
+                android:text="أتعهد أنا الملعن أن أقوم بدفع العمولة خلال أقل من 5 أيام من تاريخ استلام المبلغ كامل."
                 android:layout_marginTop="10dp"
                 android:paddingRight="15dp"
                 android:paddingLeft="15dp"
                 android:layout_marginBottom="10dp"
                 />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layoutDirection="rtl"
+                android:paddingRight="15dp"
+                android:paddingLeft="15dp"
+                >
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="16sp"
+                    android:textColor="@color/colorPrimary"
+                    android:text="ملاحظة :"
+                    android:textStyle="bold"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="15sp"
+                    android:textColor="@color/black"
+                    android:text="عمولة التطبيق على المعلن."
+                    android:layout_marginRight="10dp"
+
+                    />
+            </LinearLayout>
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -419,9 +453,10 @@
                     android:id="@+id/agreeBtn3"
                     android:layout_width="110dp"
                     android:layout_height="35dp"
-                    android:background="@drawable/btn_promise_agree"
                     android:text="@string/agree"
-                    android:textColor="@color/white"
+                    android:background="@drawable/btn_promise_disagree"
+
+                    android:textColor="@color/colorPrimary"
                     android:textSize="12sp"
                     android:paddingRight="10dp"
                     android:paddingLeft="10dp"
@@ -430,9 +465,9 @@
                     android:id="@+id/disagreeBtn3"
                     android:layout_width="110dp"
                     android:layout_height="35dp"
-                    android:background="@drawable/btn_promise_disagree"
                     android:text="@string/dis_agree"
-                    android:textColor="@color/colorPrimary"
+                    android:background="@drawable/btn_promise_agree"
+                    android:textColor="@color/white"
                     android:textSize="12sp"
                     android:paddingRight="10dp"
                     android:paddingLeft="10dp"
@@ -446,37 +481,37 @@
                 android:orientation="horizontal"
                 android:layoutDirection="rtl"
                 android:layout_marginTop="10dp"
-                android:paddingRight="10dp"
-                android:paddingLeft="10dp"
+                android:paddingRight="5dp"
+                android:paddingLeft="5dp"
                 android:weightSum="2"
                 >
                 <TextView
                     android:layout_width="0dp"
-                    android:layout_weight=".85"
+                    android:layout_weight=".8"
                     android:layout_height="wrap_content"
                     android:textSize="12sp"
                     android:textColor="@color/black"
                     android:textStyle="bold"
                     android:text="10 % من الايرادات"
                     android:layout_gravity="center_vertical"
+                    android:paddingRight="8dp"
 
                     />
 
                 <LinearLayout
                     android:layout_width="0dp"
-                    android:layout_weight="1.15"
+                    android:layout_weight="1.2"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:layout_gravity="center_vertical"
                     >
                     <TextView
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textSize="12sp"
                         android:textColor="#1aa21a"
                         android:textStyle="bold"
                         android:text="للجمعية الخيريةلرعاية الايتام إخاء"
-                        android:layout_marginRight="5dp"
                         />
                     <View
                         android:layout_width="160dp"
@@ -493,9 +528,10 @@
                     android:layout_marginRight="10dp"
                     >
                     <ImageView
+                        android:id="@+id/img_ekhaa"
                         android:layout_width="50dp"
                         android:layout_height="50dp"
-                        android:src="@drawable/logo"
+                        android:src="@drawable/ekhaa"
                         android:scaleType="centerCrop"
                         android:layout_gravity="center"
                         />
@@ -503,10 +539,11 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textSize="14sp"
-                        android:textColor="@color/gray2"
-                        android:text="لرعاية الايتام"
+                        android:textColor="#1aa21a"
+                        android:text="(الاتفاقية)"
                         android:gravity="center"
                         android:layout_gravity="center"
+                        android:layout_marginTop="10dp"
                         />
                 </LinearLayout>
 
@@ -527,8 +564,6 @@
                 />
         </LinearLayout>
     </ScrollView>
-
-
-
-
 </LinearLayout>
+    <include layout="@layout/bottom_sheet"/>
+</android.support.design.widget.CoordinatorLayout>

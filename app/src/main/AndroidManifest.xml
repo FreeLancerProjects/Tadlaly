@@ -7,28 +7,26 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES"/>
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/launcher_icon"
+        android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/launcher_icon"
+        android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <service android:name=".Services.UpdateLatLng">
-
-        </service>
-        <service
-            android:name=".Services.MyFirebaseMessaging">
+        <service android:name=".Services.UpdateLatLng" />
+        <service android:name=".Services.MyFirebaseMessaging">
             <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
-        <service
-            android:name=".Services.MyfirebaseInstanceId">
+        <service android:name=".Services.MyfirebaseInstanceId">
             <intent-filter>
-                <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>
         </service>
 
@@ -79,7 +77,11 @@
         <activity android:name=".Activities.SendMsgActivity" />
         <activity android:name=".Activities.AllMessagesActivity" />
         <activity android:name=".Activities.GeneralSearchActivity" />
-        <activity android:name=".Activities.SubDepartAdsActivity"></activity>
+        <activity android:name=".Activities.SubDepartAdsActivity" />
+        <activity android:name=".Activities.ViewImagesActivity" />
+        <activity android:name=".Activities.WebActivity">
+
+        </activity>
     </application>
 
 </manifest>

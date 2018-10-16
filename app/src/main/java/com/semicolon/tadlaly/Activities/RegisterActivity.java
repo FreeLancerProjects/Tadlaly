@@ -1,19 +1,21 @@
 package com.semicolon.tadlaly.Activities;
 
 import android.Manifest;
+import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
-import android.location.Location;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -32,14 +34,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationListener;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationServices;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.lamudi.phonefield.PhoneInputLayout;
+import com.semicolon.tadlaly.Models.LocationModel;
 import com.semicolon.tadlaly.Models.UserModel;
 import com.semicolon.tadlaly.R;
 import com.semicolon.tadlaly.Services.Api;
@@ -47,7 +44,12 @@ import com.semicolon.tadlaly.Services.GetLocationDetails;
 import com.semicolon.tadlaly.Services.Preferences;
 import com.semicolon.tadlaly.Services.Services;
 import com.semicolon.tadlaly.Services.Tags;
+import com.semicolon.tadlaly.Services.UpdateLatLng;
 import com.semicolon.tadlaly.SingleTone.UserSingleTone;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
@@ -56,13 +58,12 @@ import java.util.Locale;
 import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
-import me.anwarshahriar.calligrapher.Calligrapher;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 
-public class RegisterActivity extends AppCompatActivity implements View.OnClickListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
+public class RegisterActivity extends AppCompatActivity implements View.OnClickListener{
     private CircleImageView userImage;
     private EditText user_firstName, user_lastName, userEmail, user_username, user_password, user_rePassword,user_city;
     private TextView user_location;
@@ -75,10 +76,14 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     private final int IMG_REQ = 1;
     private boolean accept = false;
     private ProgressDialog dialog;
-    private FusedLocationProviderClient fusedLocationProviderClient;
+    private android.support.v7.app.AlertDialog gps_dialog;
+
+    private LocationManager manager;
     private String FineLoc = Manifest.permission.ACCESS_FINE_LOCATION;
     private String CoarseLoc = Manifest.permission.ACCESS_COARSE_LOCATION;
+
     private final int permission_Req = 1245;
+    private final int gps_req = 125;
     private double myLat = 0.0;
     private double myLng = 0.0;
     private ProgressDialog locDialog;
@@ -86,31 +91,91 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     private UserSingleTone userSingleTone;
     private Preferences preferences;
     private AlertDialog alertDialog;
-    private LocationRequest locationRequest;
-    private GoogleApiClient googleApiClient;
     private GetLocationDetails getLocationDetails;
     private String reg_type="";
+    private Intent intentService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
-        Calligrapher calligrapher = new Calligrapher(this);
-        calligrapher.setFont(this, "OYA-Regular.ttf", true);
         getDataFromIntent();
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         if (reg_type.equals(Tags.reg_from_login))
         {
             userSingleTone = UserSingleTone.getInstance();
             preferences = new Preferences(this);
         }
 
+        manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         initView();
-        //checkPermission();
+        CreateAlertDialog();
         CreateProgressDialog();
         CreateProgressLocationDialog();
+        CheckPermission();
 
 
+
+
+    }
+
+    private void CheckPermission()
+    {
+        if (ActivityCompat.checkSelfPermission(getApplicationContext(), FineLoc) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getApplicationContext(), CoarseLoc) != PackageManager.PERMISSION_GRANTED) {
+            String perm [] ={FineLoc,CoarseLoc};
+            ActivityCompat.requestPermissions(this, perm, permission_Req);
+        } else {
+
+            if (manager.isProviderEnabled(LocationManager.GPS_PROVIDER))
+            {
+                getDeviceLocation();
+            }else
+            {
+                gps_dialog.show();
+            }
+        }
+    }
+
+    private void CreateAlertDialog()
+    {
+        View view = LayoutInflater.from(this).inflate(R.layout.custom_gps_dialog,null);
+        Button button = view.findViewById(R.id.openBtn);
+        button.setOnClickListener(view1 -> {
+            Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+            startActivityForResult(intent,gps_req);
+            gps_dialog.dismiss();
+        });
+        gps_dialog = new android.support.v7.app.AlertDialog.Builder(this)
+                .setCancelable(true)
+                .setView(view)
+                .create();
+        gps_dialog.setCanceledOnTouchOutside(false);
+
+    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode==permission_Req)
+        {
+            if (grantResults.length>0)
+            {
+                for (int i =0;i<grantResults.length;i++)
+                {
+                    if (grantResults[i]!=PackageManager.PERMISSION_GRANTED)
+                    {
+                        return;
+                    }
+                }
+
+
+                if (manager.isProviderEnabled(LocationManager.GPS_PROVIDER))
+                {
+                    getDeviceLocation();
+                }else
+                {
+                    gps_dialog.show();
+                }
+            }
+        }
     }
 
     private void getDataFromIntent() {
@@ -123,25 +188,6 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
             }
         }
     }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        if (googleApiClient != null && !googleApiClient.isConnected()) {
-            googleApiClient.connect();
-        }
-    }
-
-    private void initGoogleApi() {
-        googleApiClient = new GoogleApiClient.Builder(this)
-                .addApi(LocationServices.API)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .build();
-
-
-    }
-
 
     private void initView() {
         userImage = findViewById(R.id.image);
@@ -159,7 +205,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         back = findViewById(R.id.back);
         userPhone.setDefaultCountry("sa");
         userPhone.getTextInputLayout().getEditText().setTextColor(ContextCompat.getColor(this, R.color.white));
-        userPhone.getTextInputLayout().getEditText().setHint("رقم الجوال");
+        userPhone.getTextInputLayout().getEditText().setHint(R.string.phone);
         userPhone.getTextInputLayout().getEditText().setHintTextColor(ContextCompat.getColor(this, R.color.white));
         userPhone.getTextInputLayout().getEditText().setTextSize(14f);
 
@@ -206,118 +252,84 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                 }
                 break;
             case R.id.location:
-                if (googleApiClient == null) {
-                    initGoogleApi();
-                    if (!googleApiClient.isConnected()) {
-                        googleApiClient.connect();
-                    }
-                } else {
-                    if (!googleApiClient.isConnected()) {
-                        googleApiClient.connect();
-                    } else {
-                        String[] Permissions = {FineLoc, CoarseLoc};
-
-                        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-
-                            ActivityCompat.requestPermissions(RegisterActivity.this, Permissions, permission_Req);
-
-                            return;
-                        } else {
-                            getDeviceLocation();
-                        }
-                    }
-                }
+                getDeviceLocation();
                 break;
         }
 
     }
 
-    private void checkPermission() {
-        String[] Permissions = {FineLoc, CoarseLoc};
-        if (ActivityCompat.checkSelfPermission(getApplicationContext(), FineLoc) == PackageManager.PERMISSION_DENIED) {
-            Log.e("6", "a");
 
-            if (ActivityCompat.checkSelfPermission(getApplicationContext(), CoarseLoc) == PackageManager.PERMISSION_DENIED) {
-                Log.e("7", "a");
-                getDeviceLocation();
-            } else {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void ListenToLocationUpdate(LocationModel locationModel)
+    {
+        myLat = locationModel.getLat();
+        myLng = locationModel.getLng();
 
-                if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                        Manifest.permission.ACCESS_FINE_LOCATION)) {
-                    // Display UI and wait for user interaction
-                    Log.e("15", "a");
-                }
-                Log.e("8", "a");
+        Log.e("Lat",myLat+"_");
+        Log.e("Lng",myLng+"_");
 
-                ActivityCompat.requestPermissions(this, Permissions, permission_Req);
-            }
-        } else {
-            Log.e("9", "a");
+        if (myLat!=0.0&& myLng!=0.0)
+        {
+            user_location.setText(R.string.loc_deter);
+            getAddress(myLat,myLng);
 
-            ActivityCompat.requestPermissions(this, Permissions, permission_Req);
-
+            locDialog.dismiss();
+        }else
+        {
+            user_location.setError(getString(R.string.cnt_find_loc));
         }
-    }
 
+    }
     private void getDeviceLocation() {
 
-        try {
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                // TODO: Consider calling
-                //    ActivityCompat#requestPermissions
-                // here to request the missing permissions, and then overriding
-                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                //                                          int[] grantResults)
-                // to handle the case where the user grants the permission. See the documentation
-                // for ActivityCompat#requestPermissions for more details.
-                return;
-            }
+        if (EventBus.getDefault().isRegistered(this))
+        {
             locDialog.show();
 
-            Location lastLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
+            StartLocationUpdate();
+        }else
+            {
 
-            if(lastLocation!=null) {
-                myLat = lastLocation.getLatitude();
-                myLng = lastLocation.getLongitude();
-                if (myLng!=0.0&& myLng!=0.0)
-                {
-                    user_location.setText(R.string.loc_deter);
-                    getAddress(myLat,myLng);
-                    InitLocationRequest();
+                EventBus.getDefault().register(this);
+                locDialog.show();
 
-                    locDialog.dismiss();
-                }else
-                    {
-                        InitLocationRequest();
-                        user_location.setError(getString(R.string.cnt_find_loc));
-                    }
+                StartLocationUpdate();
 
-                Log.e("upd_lat2", lastLocation.getLatitude() + "");
-                Log.e("upd_lat2", lastLocation.getLatitude() + "");
-               // locDialog.dismiss();
-            }}catch (NullPointerException e){}
-        Log.e("dsd","dfsdfsdf");
-
-
-
-
+            }
 
     }
 
-    private void InitLocationRequest() {
-        try {
-            locationRequest = new LocationRequest();
-            locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-            locationRequest.setInterval(1000*60*5);
-            locationRequest.setFastestInterval(1000*60*5);
+    private void StartLocationUpdate()
+    {
 
-            LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, this);
-
-        }catch (SecurityException e)
+        if (intentService==null)
         {
-            Log.e("fdfffff",e.getMessage());
+            intentService = new Intent(this, UpdateLatLng.class);
+
         }
+
+        ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+
+        for (ActivityManager.RunningServiceInfo serviceInfo :activityManager.getRunningServices(Integer.MAX_VALUE))
+        {
+            if (serviceInfo.service.getClassName().equals(UpdateLatLng.class.getName()))
+            {
+                StopLocationUpdate();
+            }
         }
+
+
+        startService(intentService);
+        Log.e("ff","ffffffff");
+    }
+    private void StopLocationUpdate()
+    {
+        if (intentService!=null)
+        {
+            stopService(intentService);
+        }
+    }
+
     private void CreateProgressDialog() {
         ProgressBar bar = new ProgressBar(this);
         Drawable drawable = bar.getIndeterminateDrawable().mutate();
@@ -579,28 +591,21 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                 e.printStackTrace();
             }
         }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == permission_Req) {
-            if (grantResults.length > 0) {
-                Log.e("10", "a");
-
-                for (int i = 0; i < grantResults.length; i++) {
-                    if (grantResults[i] != PackageManager.PERMISSION_DENIED) {
-                        Log.e("11", "a");
-                        return;
-                    }
+        else if (requestCode==gps_req)
+        {
+            if (resultCode==RESULT_CANCELED)
+            {
+                if (manager.isProviderEnabled(LocationManager.GPS_PROVIDER))
+                {
+                    getDeviceLocation();
+                }else
+                {
+                    gps_dialog.show();
                 }
-                Log.e("12", "a");
-
-                getDeviceLocation();
             }
         }
-
     }
+
 
     private String EncodeImage(Bitmap bitmap) {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -630,50 +635,8 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     }
 
 
-    @Override
-    public void onConnected(@Nullable Bundle bundle) {
-        String[] Permissions = {FineLoc, CoarseLoc};
 
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ) {
 
-            if ( ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
-            {
-                ActivityCompat.requestPermissions(RegisterActivity.this,Permissions,permission_Req);
-
-            }else
-                {
-                    ActivityCompat.requestPermissions(RegisterActivity.this,Permissions,permission_Req);
-
-                }
-
-        }else
-            {
-                getDeviceLocation();
-            }
-
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-
-    }
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
-    }
-
-    @Override
-    public void onLocationChanged(Location location) {
-        myLat = location.getLatitude();
-        myLng = location.getLongitude();
-        Log.e("updatelat",myLat+"");
-        Log.e("updatelng",myLng+"");
-        getAddress(myLat,myLng);
-
-        //LocationServices.FusedLocationApi.removeLocationUpdates(googleApiClient,this);
-
-    }
 
     private void getAddress(double myLat, double myLng) {
       if (getLocationDetails==null)
@@ -686,6 +649,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
 
     public void setFullLocation(String location)
     {
+
         city = location;
         user_city.setText(city);
 
@@ -693,12 +657,14 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (googleApiClient!=null&&googleApiClient.isConnected())
+
+        if (intentService!=null)
         {
-            LocationServices.FusedLocationApi.removeLocationUpdates(googleApiClient,this);
-
-            googleApiClient.disconnect();
-
+            StopLocationUpdate();
+        }
+        if (EventBus.getDefault().isRegistered(this))
+        {
+            EventBus.getDefault().unregister(this);
         }
     }
 }

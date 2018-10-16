@@ -59,7 +59,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import me.anwarshahriar.calligrapher.Calligrapher;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -96,18 +95,19 @@ public class Add_AdsActivity extends AppCompatActivity implements UserSingleTone
     private List<Spinner_branchModel> branchList;
     private String user_type="";
     private AlertDialog.Builder serviceBuilder;
+    private CheckBox checkbox_undefined;
+    private String price="";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add__ads);
-        Calligrapher calligrapher=new Calligrapher(this);
-        calligrapher.setFont(this,"OYA-Regular.ttf",true);
+        /*Calligrapher calligrapher=new Calligrapher(this);
+        calligrapher.setFont(this,"OYA-Regular.ttf",true);*/
         CreateProgressDialog2();
         CreateProgressDialog();
         getDataFromIntent();
         initView();
-        if (user_type.equals(Tags.app_user))
-        {
+        if (user_type.equals(Tags.app_user)) {
             userSingleTone = UserSingleTone.getInstance();
             userSingleTone.getUser(this);
 
@@ -117,6 +117,8 @@ public class Add_AdsActivity extends AppCompatActivity implements UserSingleTone
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         CreateServiceDialog();
     }
+
+
 
     private void CreateServiceDialog()
     {
@@ -169,11 +171,32 @@ public class Add_AdsActivity extends AppCompatActivity implements UserSingleTone
         location = findViewById(R.id.location);
         address = findViewById(R.id.address);
         cost = findViewById(R.id.cost);
+        checkbox_undefined = findViewById(R.id.checkbox_undefined);
         ads_content = findViewById(R.id.ads_content);
         depart_spinner = findViewById(R.id.depart_spinner);
         branche_spinner = findViewById(R.id.branche_spinner);
         ad_type = findViewById(R.id.ad_type);
         checkbox_phone_state = findViewById(R.id.checkbox_phone_state);
+
+        ///////////////////////////
+        checkbox_undefined.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (checkbox_undefined.isChecked())
+                {
+                    price=String.valueOf(Tags.undefined_price);
+                    cost.setText(R.string.undefined);
+                    cost.setError(null);
+                    cost.setEnabled(false);
+                }else
+                    {
+                        price="";
+                        cost.setText(null);
+                        cost.setEnabled(true);
+                    }
+            }
+        });
+        ///////////////////////////
         String [] ad_types = getResources().getStringArray(R.array.ad_state);
         ad_type.setAdapter(new ArrayAdapter<>(this,R.layout.spinner_item,ad_types));
         deptAdapter = new SpinnerDeptAdapter(this,R.layout.spinner_item,deptList);
@@ -278,7 +301,11 @@ public class Add_AdsActivity extends AppCompatActivity implements UserSingleTone
                         String m_address = address.getText().toString();
                         String m_adsContent = ads_content.getText().toString();
                         String m_loc = location.getText().toString();
-                        String m_cost = cost.getText().toString();
+                        //price = cost.getText().toString();
+                        if (cost.isEnabled())
+                        {
+                            price = cost.getText().toString();
+                        }
                         if (TextUtils.isEmpty(m_title))
                         {
                             ad_title.setError(getString(R.string.enter_ad_name));
@@ -317,7 +344,7 @@ public class Add_AdsActivity extends AppCompatActivity implements UserSingleTone
                             Toast.makeText(this, R.string.nobranch_to_dept, Toast.LENGTH_SHORT).show();
 
                         }
-                        else if (TextUtils.isEmpty(m_cost))
+                        else if (TextUtils.isEmpty(price))
                         {
                             cost.setError(getString(R.string.enter_price));
                             address.setError(null);
@@ -710,12 +737,12 @@ public class Add_AdsActivity extends AppCompatActivity implements UserSingleTone
             String m_address = address.getText().toString();
             String m_adsContent = ads_content.getText().toString();
             String m_loc = location.getText().toString();
-            String m_cost = cost.getText().toString();
+            //String m_cost = cost.getText().toString();
             String m_phone = phone.getText().toString();
 
             Log.e("1",m_title);
             Log.e("2",m_address);
-            Log.e("3",m_cost);
+            Log.e("3",price);
             Log.e("4",m_adsContent);
             Log.e("5",isAvailable_phone);
             Log.e("6",m_dept);
@@ -730,7 +757,7 @@ public class Add_AdsActivity extends AppCompatActivity implements UserSingleTone
             map.put("sub_department",m_branch);
             map.put("advertisement_title",m_title);
             map.put("advertisement_content",m_adsContent);
-            map.put("advertisement_price",m_cost);
+            map.put("advertisement_price",price);
             map.put("advertisement_type",ad_state);
             map.put("google_lat",String.valueOf(lat));
             map.put("google_long",String.valueOf(lng));

@@ -25,8 +25,7 @@ public class GpsActivity extends AppCompatActivity {
     private final int gps_req=1558;
     private final int per_req=12235;
     private final String FineLoc = Manifest.permission.ACCESS_FINE_LOCATION;
-    private final String CoarseLoc = Manifest.permission.ACCESS_COARSE_LOCATION;
-    private String[] permissions = {FineLoc,CoarseLoc};
+    private String[] permissions = {FineLoc};
      @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,16 +33,7 @@ public class GpsActivity extends AppCompatActivity {
         manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         CreateAlertDialog();
         checkPermission();
-         if (manager.isProviderEnabled(LocationManager.GPS_PROVIDER))
-         {
-             Intent intent = new Intent(this,LoginActivity.class);
-             startActivity(intent);
-             finish();
 
-         }else
-         {
-             dialog.show();
-         }
 
 
 
@@ -72,53 +62,68 @@ public class GpsActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode==gps_req)
         {
-            Intent intent = new Intent(this,LoginActivity.class);
-            startActivity(intent);
-            finish();
+            if (resultCode==RESULT_CANCELED)
+            {
+                if (manager.isProviderEnabled(LocationManager.GPS_PROVIDER))
+                {
+                    navigateToLogin();
+
+                }else
+                {
+                    dialog.show();
+                }
+            }
         }
     }
 
+    private void navigateToLogin()
+    {
+        Intent intent = new Intent(this,SplashActivity.class);
+        startActivity(intent);
+        finish();
+    }
     private void checkPermission() {
-        if (ActivityCompat.checkSelfPermission(getApplicationContext(), FineLoc) == PackageManager.PERMISSION_DENIED) {
-            Log.e("6", "a");
-
-            if (ActivityCompat.checkSelfPermission(getApplicationContext(), CoarseLoc) == PackageManager.PERMISSION_DENIED) {
-                Log.e("7", "a");
-            } else {
-
-                if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                        Manifest.permission.ACCESS_FINE_LOCATION)) {
-                    // Display UI and wait for user interaction
-                    Log.e("15", "a");
-                }
-                Log.e("8", "a");
-
+        if (ActivityCompat.checkSelfPermission(getApplicationContext(), FineLoc) != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(this, permissions, per_req);
-            }
         } else {
             Log.e("9", "a");
 
-            ActivityCompat.requestPermissions(this, permissions, per_req);
+            if (manager.isProviderEnabled(LocationManager.GPS_PROVIDER))
+            {
+                navigateToLogin();
 
+            }else
+            {
+                dialog.show();
+            }
         }
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (grantResults.length>0)
+        if(requestCode==per_req)
         {
-            for (int i=0;i<grantResults.length;i++)
+            if (grantResults.length>0)
             {
-                if (grantResults[i]!=PackageManager.PERMISSION_DENIED)
+                if (grantResults[0]==PackageManager.PERMISSION_GRANTED)
                 {
-                    return;
+
+                    if (manager.isProviderEnabled(LocationManager.GPS_PROVIDER))
+                    {
+                        navigateToLogin();
+
+                    }else
+                    {
+                        dialog.show();
+                    }
                 }
+
+
+
+
             }
-
-
-            return;
-
         }
+
     }
 }

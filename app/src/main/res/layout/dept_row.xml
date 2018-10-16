@@ -5,6 +5,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     app:cardCornerRadius="5dp"
     app:contentPadding="1dp"
+    android:layout_gravity="center"
     app:cardBackgroundColor="@color/colorPrimary"
     >
     <LinearLayout
@@ -12,24 +13,28 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         >
-        <ImageView
+       <!-- <ImageView
             android:id="@+id/subDept_icon"
             android:layout_width="37dp"
             android:layout_height="37dp"
             android:src="@drawable/b"
             android:scaleType="centerCrop"
-            />
+            />-->
         <TextView
             android:id="@+id/subDept_name"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="37dp"
             android:layout_gravity="center"
             android:layout_marginRight="10dp"
             android:layout_marginLeft="10dp"
             android:textColor="@color/white"
-            android:textSize="12sp"
+            android:textSize="14sp"
             android:text="الفرع"
             android:singleLine="true"
+            android:gravity="center"
+            android:paddingRight="15dp"
+            android:paddingLeft="15dp"
+
             />
     </LinearLayout>
 </android.support.v7.widget.CardView>

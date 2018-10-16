@@ -63,7 +63,7 @@ public class CurrentAds_Fragment extends Fragment implements View.OnLongClickLis
     private String isSell="-1";
     private RadioButton sellBtn,undoBtn;
     private List<String> ads_ids;
-    private int page_index=0;
+    private int page_index=2;
 
     @Nullable
     @Override
@@ -92,6 +92,7 @@ public class CurrentAds_Fragment extends Fragment implements View.OnLongClickLis
         adapter = new MyCurrentAdsAdapter(recView,getActivity(), myAdsModelList,this);
         recView.setAdapter(adapter);
         adsActivity = (MyAdsActivity) getActivity();
+        getData(1);
 
         initOnLoadMore();
     }
@@ -102,25 +103,15 @@ public class CurrentAds_Fragment extends Fragment implements View.OnLongClickLis
             public void onLoadMore() {
                 myAdsModelList.add(null);
                 adapter.notifyItemInserted(myAdsModelList.size()-1);
-                page_index++;
-                getData(page_index);
-                Log.e("pages1",page_index+"");
+                int index=page_index;
+                Log.e("loadMore","loadmore");
+                onLoadgetData(index);
             }
         });
 
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        myAdsModelList.clear();
-        page_index=0;
-        page_index++;
-        Log.e("pages2",page_index+"");
 
-        getData(page_index);
-
-    }
 
     private void CreateProgressDialog()
     {
@@ -195,36 +186,20 @@ public class CurrentAds_Fragment extends Fragment implements View.OnLongClickLis
                 public void onResponse(Call<List<MyAdsModel>> call, Response<List<MyAdsModel>> response) {
                     if (response.isSuccessful())
                     {
-                        Log.e("respose",response.body().size()+"");
+                        progBar.setVisibility(View.GONE);
 
-                        if (myAdsModelList.size()>0)
+                        myAdsModelList.clear();
+
+                        if (response.body().size()>0)
                         {
-                            myAdsModelList.remove(myAdsModelList.size()-1);
-                            adapter.notifyItemRemoved(myAdsModelList.size());
-                            adapter.setLoded();
+                            no_ads.setVisibility(View.GONE);
                             myAdsModelList.addAll(response.body());
                             adapter.notifyDataSetChanged();
-                            adapter.setLoded();
-
-
                         }else
-                        {
-                            if (response.body().size()>0)
                             {
-                                progBar.setVisibility(View.GONE);
-                                no_ads.setVisibility(View.GONE);
-                                myAdsModelList.addAll(response.body());
-                                adapter.notifyDataSetChanged();
-                                adapter.setLoded();
-
-                            }else
-                            {
-                                progBar.setVisibility(View.GONE);
                                 no_ads.setVisibility(View.VISIBLE);
-                                adapter.setLoded();
 
                             }
-                        }
 
                     }
                 }
@@ -268,18 +243,91 @@ public class CurrentAds_Fragment extends Fragment implements View.OnLongClickLis
 
 
     }
+    private void onLoadgetData(int page_index)
+    {
+        try {
+            Log.e("id",userModel.getUser_id());
+            Log.e("page_indexx",page_index+"");
 
+            Retrofit retrofit = Api.getRetrofit(Tags.Base_Url);
+            Call<List<MyAdsModel>> call = retrofit.create(Services.class).getCurrentAds(userModel.getUser_id(),page_index);
+            call.enqueue(new Callback<List<MyAdsModel>>() {
+                @Override
+                public void onResponse(Call<List<MyAdsModel>> call, Response<List<MyAdsModel>> response) {
+                    if (response.isSuccessful())
+                    {
+                        if (response.body().size()>0)
+                        {
+                            CurrentAds_Fragment.this.page_index = CurrentAds_Fragment.this.page_index+1;
+                            int lastpos = myAdsModelList.size()-1;
+                            myAdsModelList.remove(myAdsModelList.size()-1);
+                            adapter.notifyItemRemoved(myAdsModelList.size());
+                            adapter.setLoaded();
+                            myAdsModelList.addAll(response.body());
+                            adapter.notifyItemRangeChanged(lastpos,myAdsModelList.size()-1);
+                        }else
+                        {
+                            myAdsModelList.remove(myAdsModelList.size()-1);
+                            adapter.notifyItemRemoved(myAdsModelList.size());
+                            adapter.setLoaded();
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<List<MyAdsModel>> call, Throwable t) {
+                    try {
+                        progBar.setVisibility(View.GONE);
+                        Log.e("error",t.getMessage());
+                        Toast.makeText(adsActivity,getString(R.string.something), Toast.LENGTH_LONG).show();
+
+                    }catch (NullPointerException e)
+                    {
+                        progBar.setVisibility(View.GONE);
+                        Log.e("error",t.getMessage());
+                        Toast.makeText(adsActivity,getString(R.string.something), Toast.LENGTH_LONG).show();
+
+                    }catch (Exception e)
+                    {
+                        progBar.setVisibility(View.GONE);
+                        Log.e("error",t.getMessage());
+                        Toast.makeText(adsActivity,getString(R.string.something), Toast.LENGTH_LONG).show();
+
+                    }
+
+                }
+            });
+
+        }catch (NullPointerException e)
+        {
+            progBar.setVisibility(View.GONE);
+            Toast.makeText(adsActivity,getString(R.string.something), Toast.LENGTH_LONG).show();
+
+        }
+        catch (Exception e)
+        {
+            progBar.setVisibility(View.GONE);
+            Toast.makeText(adsActivity,getString(R.string.something), Toast.LENGTH_LONG).show();
+
+        }
+
+    }
     @Override
     public boolean onLongClick(View view) {
-        inNormalMode = false;
-        MyCurrentAdsAdapter myCurrentAdsAdapter = (MyCurrentAdsAdapter) recView.getAdapter();
-        myCurrentAdsAdapter.notifyDataSetChanged();
-        item_count.setVisibility(View.VISIBLE);
+
         //item_count.setText("");
 
 
 
         return false;
+    }
+
+    public void DisPlayUdate_Delete()
+    {
+        inNormalMode = false;
+        MyCurrentAdsAdapter myCurrentAdsAdapter = (MyCurrentAdsAdapter) recView.getAdapter();
+        myCurrentAdsAdapter.notifyDataSetChanged();
+        item_count.setVisibility(View.VISIBLE);
     }
 
     private void UpdateUi(int count, String isSell) {
@@ -496,8 +544,12 @@ public class CurrentAds_Fragment extends Fragment implements View.OnLongClickLis
         item_count.setText("");
         Counter=0;
         isSell="-1";
-        sellBtn.setChecked(false);
-        undoBtn.setChecked(false);
+        if (sellBtn!=null&&undoBtn!=null)
+        {
+            sellBtn.setChecked(false);
+            undoBtn.setChecked(false);
+        }
+
         adsActivity.setVisibility(0);
 
     }

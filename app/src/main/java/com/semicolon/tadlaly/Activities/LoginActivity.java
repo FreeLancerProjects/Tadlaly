@@ -27,7 +27,6 @@ import com.semicolon.tadlaly.SingleTone.UserSingleTone;
 
 import java.util.Locale;
 
-import me.anwarshahriar.calligrapher.Calligrapher;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -44,8 +43,8 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        Calligrapher calligrapher=new Calligrapher(this);
-        calligrapher.setFont(this,"OYA-Regular.ttf",true);
+        /*Calligrapher calligrapher=new Calligrapher(this);
+        calligrapher.setFont(this,"OYA-Regular.ttf",true);*/
         userSingleTone = UserSingleTone.getInstance();
         preferences = new Preferences(this);
         initView();

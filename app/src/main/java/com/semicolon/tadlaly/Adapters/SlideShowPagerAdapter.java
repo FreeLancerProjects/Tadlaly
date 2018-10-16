@@ -1,7 +1,6 @@
 package com.semicolon.tadlaly.Adapters;
 
 import android.content.Context;
-import android.graphics.Typeface;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v4.view.ViewPager;
@@ -43,11 +42,11 @@ public class SlideShowPagerAdapter extends android.support.v4.view.PagerAdapter 
         View view = LayoutInflater.from(context).inflate(R.layout.pager_item,container,false);
         SlideShowModel model = slideShow_modelList.get(position);
         RoundedImageView ads_img = view.findViewById(R.id.ads_img);
-        Typeface typeface = Typeface.createFromAsset(context.getAssets(),"OYA-Regular.ttf");
+       // Typeface typeface = Typeface.createFromAsset(context.getAssets(),"OYA-Regular.ttf");
         TextView title = view.findViewById(R.id.ads_title);
         TextView content = view.findViewById(R.id.ads_content);
-        title.setTypeface(typeface);
-        content.setTypeface(typeface);
+        //title.setTypeface(typeface);
+        //content.setTypeface(typeface);
 
         Picasso.with(context).load(Uri.parse(Tags.Image_Url+model.getImage())).into(ads_img);
 

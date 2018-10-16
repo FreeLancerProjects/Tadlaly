@@ -75,7 +75,7 @@
                 android:singleLine="true"
                 android:scrollHorizontally="true"
                 android:inputType="textPersonName"
-                android:textSize="12sp"
+                android:textSize="13sp"
                 android:gravity="center_vertical"
                 android:background="@drawable/et_bg_trans"
                 />
@@ -93,11 +93,44 @@
                 android:singleLine="true"
                 android:scrollHorizontally="true"
                 android:inputType="textEmailAddress"
-                android:textSize="12sp"
+                android:textSize="13sp"
                 android:gravity="center_vertical"
                 android:background="@drawable/et_bg_trans"
 
                 />
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                >
+                <com.lamudi.phonefield.PhoneInputLayout
+                    android:id="@+id/edt_check_phone"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    ></com.lamudi.phonefield.PhoneInputLayout>
+                <EditText
+                    android:id="@+id/edt_phone"
+                    android:layout_width="match_parent"
+                    android:layout_height="45dp"
+                    android:drawableRight="@drawable/black_cal_icon"
+                    android:paddingLeft="5dp"
+                    android:drawablePadding="5dp"
+                    android:textColor="@color/black"
+                    android:hint="@string/phone"
+                    android:textColorHint="@color/black"
+                    android:layout_marginBottom="10dp"
+                    android:singleLine="true"
+                    android:scrollHorizontally="true"
+                    android:textSize="13sp"
+                    android:gravity="center_vertical"
+                    android:background="@drawable/et_bg_trans"
+                    android:inputType="phone"
+
+                    />
+            </FrameLayout>
+
+
             <EditText
                 android:id="@+id/subject"
                 android:layout_width="match_parent"
@@ -111,12 +144,11 @@
                 android:layout_marginBottom="10dp"
                 android:singleLine="true"
                 android:scrollHorizontally="true"
-                android:textSize="12sp"
+                android:textSize="13sp"
                 android:gravity="center_vertical"
                 android:background="@drawable/et_bg_trans"
 
                 />
-
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -127,6 +159,7 @@
                 android:paddingLeft="5dp"
                 android:gravity="center_vertical"
                 android:textColor="@color/black"
+                android:textSize="13sp"
                 />
             <EditText
                 android:id="@+id/message"
@@ -135,11 +168,12 @@
                 android:paddingLeft="5dp"
                 android:drawablePadding="5dp"
                 android:textColor="@color/black"
-                android:textColorHint="@color/black"
+                android:textColorHint="@color/gray3"
                 android:textSize="12sp"
                 android:background="@drawable/et_bg_trans"
                 android:gravity="top"
                 android:padding="10dp"
+                android:hint="@string/msg_txt"
 
                 />
             <Button
@@ -285,6 +319,7 @@
                             />
                     </LinearLayout>
                     <LinearLayout
+                        android:id="@+id/ll_call"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
@@ -292,11 +327,14 @@
                         android:paddingRight="5dp"
                         android:paddingLeft="5dp"
                         android:layout_marginTop="5dp"
+                        android:descendantFocusability="blocksDescendants"
                         >
                         <ImageView
                             android:layout_width="28dp"
                             android:layout_height="28dp"
                             android:src="@drawable/sq_call"
+                            android:clickable="false"
+                            android:longClickable="false"
                             />
                         <TextView
                             android:inputType="phone"
@@ -304,10 +342,12 @@
                             android:layout_height="wrap_content"
                             android:textSize="13sp"
                             android:textColor="@color/colorPrimary"
-                            android:text="055 04 11 66 4"
+                            android:text="055 04 11 66 3"
                             android:layout_gravity="center_vertical"
                             android:layout_marginRight="5dp"
                             android:textStyle="bold"
+                            android:clickable="false"
+                            android:longClickable="false"
                             />
                     </LinearLayout>
 

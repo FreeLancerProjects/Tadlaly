@@ -1,7 +1,6 @@
 package com.semicolon.tadlaly.Adapters;
 
 import android.content.Context;
-import android.graphics.Typeface;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -58,9 +57,9 @@ public class Department_Adapter extends RecyclerView.Adapter<Department_Adapter.
             super(itemView);
             img = itemView.findViewById(R.id.img);
             title = itemView.findViewById(R.id.title);
-            Typeface typeface = Typeface.createFromAsset(context.getAssets(),"OYA-Regular.ttf");
+            //Typeface typeface = Typeface.createFromAsset(context.getAssets(),"OYA-Regular.ttf");
 
-            title.setTypeface(typeface);
+            //title.setTypeface(typeface);
 
 
         }

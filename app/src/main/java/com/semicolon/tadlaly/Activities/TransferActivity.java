@@ -45,7 +45,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import me.anwarshahriar.calligrapher.Calligrapher;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -78,9 +77,9 @@ public class TransferActivity extends AppCompatActivity implements UserSingleTon
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_transfer);
-        Calligrapher calligrapher=new Calligrapher(this);
+        /*Calligrapher calligrapher=new Calligrapher(this);
         calligrapher.setFont(this,"OYA-Regular.ttf",true);
-        initView();
+  */      initView();
         getDataFromIntent();
         if (user_type.equals(Tags.app_user))
         {

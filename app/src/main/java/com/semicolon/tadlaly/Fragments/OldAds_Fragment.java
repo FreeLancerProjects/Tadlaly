@@ -55,7 +55,7 @@ public class OldAds_Fragment extends Fragment implements UserSingleTone.OnComple
     private UserSingleTone userSingleTone;
     private UserModel userModel;
     private TextView no_ads;
-    private int page_index =0;
+    private int page_index =2;
 
     @Nullable
     @Override
@@ -81,6 +81,7 @@ public class OldAds_Fragment extends Fragment implements UserSingleTone.OnComple
         adapter = new MyPreviousAdsAdapter(recView,getActivity(), myAdsModelList,this);
         recView.setAdapter(adapter);
         adsActivity = (MyAdsActivity) getActivity();
+        getData(1);
         initOnLoadMore();
 
     }
@@ -90,19 +91,13 @@ public class OldAds_Fragment extends Fragment implements UserSingleTone.OnComple
             public void onLoadMore() {
                 myAdsModelList.add(null);
                 adapter.notifyItemInserted(myAdsModelList.size()-1);
-                page_index++;
-                getData(page_index);
+                int index=page_index;
+
+                onLoadgetData(index);
             }
         });
     }
-    @Override
-    public void onStart() {
-        super.onStart();
-        myAdsModelList.clear();
-        page_index=0;
-        page_index++;
-        getData(page_index);
-    }
+
 
     private void CreateProgressDialog()
     {
@@ -146,32 +141,91 @@ public class OldAds_Fragment extends Fragment implements UserSingleTone.OnComple
                 public void onResponse(Call<List<MyAdsModel>> call, Response<List<MyAdsModel>> response) {
                     if (response.isSuccessful())
                     {
-                        if (myAdsModelList.size()>0)
+                        progBar.setVisibility(View.GONE);
+
+                        myAdsModelList.clear();
+
+                        if (response.body().size()>0)
                         {
+                            no_ads.setVisibility(View.GONE);
+                            myAdsModelList.addAll(response.body());
+                            adapter.notifyDataSetChanged();
+                        }else
+                        {
+                            no_ads.setVisibility(View.VISIBLE);
+
+                        }
+
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<List<MyAdsModel>> call, Throwable t) {
+                    try {
+                        progBar.setVisibility(View.GONE);
+                        Log.e("error",t.getMessage());
+                        Toast.makeText(adsActivity,getString(R.string.something), Toast.LENGTH_LONG).show();
+
+                    }catch (NullPointerException e)
+                    {
+                        progBar.setVisibility(View.GONE);
+                        Log.e("error",t.getMessage());
+                        Toast.makeText(adsActivity,getString(R.string.something), Toast.LENGTH_LONG).show();
+
+                    }
+                    catch (Exception e)
+                    {
+                        progBar.setVisibility(View.GONE);
+                        Log.e("error",t.getMessage());
+                        Toast.makeText(adsActivity,getString(R.string.something), Toast.LENGTH_LONG).show();
+
+                    }
+
+                }
+            });
+
+        }catch (NullPointerException e)
+        {
+            progBar.setVisibility(View.GONE);
+            Toast.makeText(adsActivity,getString(R.string.something), Toast.LENGTH_LONG).show();
+
+        }
+        catch (Exception e)
+        {
+            progBar.setVisibility(View.GONE);
+            Toast.makeText(adsActivity,getString(R.string.something), Toast.LENGTH_LONG).show();
+
+        }
+
+
+    }
+    private void onLoadgetData(int page_index) {
+        //myAdsModelList.clear();
+
+
+        try {
+            Log.e("id",userModel.getUser_id());
+            Retrofit retrofit = Api.getRetrofit(Tags.Base_Url);
+            Call<List<MyAdsModel>> call = retrofit.create(Services.class).getPreviousAds(userModel.getUser_id(),page_index);
+            call.enqueue(new Callback<List<MyAdsModel>>() {
+                @Override
+                public void onResponse(Call<List<MyAdsModel>> call, Response<List<MyAdsModel>> response) {
+                    if (response.isSuccessful())
+                    {
+                        if (response.body().size()>0)
+                        {
+                            OldAds_Fragment.this.page_index = OldAds_Fragment.this.page_index+1;
+                            int lastpos = myAdsModelList.size()-1;
                             myAdsModelList.remove(myAdsModelList.size()-1);
                             adapter.notifyItemRemoved(myAdsModelList.size());
                             adapter.setLoaded();
                             myAdsModelList.addAll(response.body());
-                            adapter.notifyDataSetChanged();
-                            adapter.setLoaded();
-
+                            adapter.notifyItemRangeChanged(lastpos,myAdsModelList.size()-1);
                         }else
                         {
-                            if (response.body().size()>0)
-                            {
-                                progBar.setVisibility(View.GONE);
-                                no_ads.setVisibility(View.GONE);
-                                myAdsModelList.addAll(response.body());
-                                adapter.notifyDataSetChanged();
-                                adapter.setLoaded();
-
-                            }else
-                            {
-                                progBar.setVisibility(View.GONE);
-                                no_ads.setVisibility(View.VISIBLE);
-                                adapter.setLoaded();
-
-                            }
+                            myAdsModelList.remove(myAdsModelList.size()-1);
+                            adapter.notifyItemRemoved(myAdsModelList.size());
+                            adapter.setLoaded();
                         }
                     }
                 }

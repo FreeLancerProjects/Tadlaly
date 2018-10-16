@@ -3,14 +3,16 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_marginBottom="8dp"
+    >
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     app:cardCornerRadius="10dp"
-    android:layout_margin="5dp"
     android:layoutDirection="rtl"
+
     >
 <LinearLayout
     android:layout_width="match_parent"
@@ -46,33 +48,35 @@
             android:orientation="horizontal"
             android:layout_marginTop="10dp"
             >
+
             <TextView
                 android:id="@+id/date"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1.3"
+                android:layout_height="match_parent"
+                android:layout_weight="1.35"
                 android:gravity="right|center_vertical"
                 android:paddingRight="5dp"
+                android:singleLine="true"
                 android:textColor="@color/gray0"
                 android:textSize="12sp"
-                android:singleLine="true"
 
                 />
             <FrameLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight=".7"
+                android:layout_weight=".65"
                 >
+
                 <TextView
                     android:id="@+id/state_new"
                     android:layout_width="match_parent"
-                    android:layout_height="25dp"
+                    android:layout_height="match_parent"
                     android:background="@drawable/ads_item_etbg"
+                    android:gravity="center"
+                    android:singleLine="true"
                     android:text="@string/new_ads"
                     android:textColor="@color/white"
-                    android:gravity="center"
                     android:textStyle="bold"
-                    android:singleLine="true"
                     android:visibility="visible"
 
 
@@ -103,16 +107,17 @@
             >
             <TextView
                 android:id="@+id/name"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="@color/black"
+                android:textColor="@color/colorPrimary"
                 android:textStyle="bold"
-                android:textSize="12sp"
+                android:textSize="16sp"
                 android:singleLine="true"
                 android:gravity="right|center_vertical"
-                android:paddingRight="5dp"
-                android:layout_alignParentRight="true"
+                android:paddingRight="10dp"
+                android:paddingLeft="10dp"
                 android:layout_centerVertical="true"
+                android:layout_centerInParent="true"
                 />
 
         </RelativeLayout>
@@ -123,7 +128,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:weightSum="2"
-            android:layout_marginTop="5dp"
+            android:layout_marginTop="10dp"
             >
             <ImageView
                 android:layout_width="35dp"
@@ -149,7 +154,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:textStyle="bold"
-                android:textSize="12sp"
+                android:textSize="14sp"
                 android:textColor="@color/black"
                 android:singleLine="true"
                 android:gravity="center"
@@ -169,20 +174,33 @@
             <ImageView
                 android:layout_width="25dp"
                 android:layout_height="25dp"
-                android:src="@drawable/direction"
+                android:src="@drawable/map"
+                android:layout_gravity="center_vertical"
 
                 />
             <TextView
                 android:id="@+id/distance"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
+                android:layout_gravity="center_vertical"
                 android:textSize="11sp"
                 android:textColor="@color/black"
                 android:gravity="center"
                 android:layout_marginLeft="10dp"
                 />
         </LinearLayout>
+        <TextView
+            android:id="@+id/tv_upd_del"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/update_or_delete"
+            android:textSize="11sp"
+            android:textColor="@color/colorPrimary"
+            android:layout_marginTop="8dp"
+            android:textStyle="bold"
+            android:padding="5dp"
+
+            />
        <!-- <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

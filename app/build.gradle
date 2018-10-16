@@ -29,6 +29,12 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+    lintOptions {
+        checkReleaseBuilds false
+        // Or, if you prefer, you can continue to check for errors in release builds,
+        // but continue the build even when errors are found:
+        abortOnError false
+    }
 }
 
 dependencies {
@@ -51,7 +57,7 @@ dependencies {
     }
     implementation 'de.hdodenhof:circleimageview:2.2.0'
     implementation 'com.yarolegovich:discrete-scrollview:1.4.7'
-    implementation 'com.github.siyamed:android-shape-imageview:0.9.+@aar'
+    implementation 'com.github.siyamed:android-shape-imageview:0.9.3'
     implementation 'com.github.ivbaranov:materialfavoritebutton:0.1.4'
     implementation 'com.aurelhubert:ahbottomnavigation:2.1.0'
     implementation 'com.google.android.gms:play-services-location:15.0.1'
@@ -64,9 +70,10 @@ dependencies {
     implementation 'com.github.ViksaaSkool:AwesomeSplash:v1.0.0'
     implementation 'com.github.tajchert:WaitingDots:0.4.0'
     implementation 'org.greenrobot:eventbus:3.1.1'
-    implementation 'com.google.firebase:firebase-core:16.0.0'
-    implementation 'com.google.firebase:firebase-messaging:17.0.0'
+    implementation 'com.google.firebase:firebase-core:16.0.1'
+    implementation 'com.google.firebase:firebase-messaging:17.1.0'
     implementation 'com.github.aakira:expandable-layout:1.6.0@aar'
     implementation "me.leolin:ShortcutBadger:1.1.21@aar"
+    implementation 'com.github.chrisbanes:PhotoView:2.1.4'
 }
 apply plugin: 'com.google.gms.google-services'

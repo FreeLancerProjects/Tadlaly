@@ -17,6 +17,9 @@ public class MyAdsModel implements Serializable {
     private String advertisement_price;
     private String advertisement_type;
     private String advertisement_date;
+    private String advertisement_owner;
+    private String advertisement_owner_image;
+
     private String google_lat;
     private String google_long;
     private String city;
@@ -123,5 +126,13 @@ public class MyAdsModel implements Serializable {
 
     public double getDistance() {
         return distance;
+    }
+
+    public String getAdvertisement_owner() {
+        return advertisement_owner;
+    }
+
+    public String getAdvertisement_owner_image() {
+        return advertisement_owner_image;
     }
 }

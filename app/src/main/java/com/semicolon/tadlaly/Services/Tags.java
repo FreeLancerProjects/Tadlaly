@@ -1,9 +1,9 @@
 package com.semicolon.tadlaly.Services;
 
 public class Tags {
-    public static final String Base_Url="http://tadlaly.tansiq.net/";
+    public static final String Base_Url="http://tdlly.com/";
     public static final String GeoPlaceUrl="https://maps.googleapis.com/";
-    public static final String Image_Url="http://tadlaly.tansiq.net/uploads/images/";
+    public static final String Image_Url=Base_Url+"uploads/images/";
     public static final String update_pass="1";
     public static final String update_name="2";
     public static final String update_email="3";
@@ -34,6 +34,9 @@ public class Tags {
     public static final String display_new="1";
     public static final String display_nearby="2";
     public static final String msg_not_type="message";
+    public static final String undefined_price= "غير محدد";
+    public static final String register_user="1";
+    public static final String unregister_user="0";
 
 
 

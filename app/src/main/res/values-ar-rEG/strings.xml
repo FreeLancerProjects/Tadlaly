@@ -5,7 +5,7 @@
     <string name="navigation_drawer_open">فتح</string>
     <string name="navigation_drawer_close">إغلاق</string>
     <string name="address">العنوان</string>
-    <string name="phone">رقم الجوال</string>
+    <string name="phone">رقم الجوال(+مفتاح الدولة)</string>
     <string name="ads_content">نص الاعلان</string>
     <string name="add_image">إضافة صور</string>
     <string name="add_ads">إضافة اعلان</string>
@@ -173,6 +173,17 @@
     <string name="ser_not_ava">هذه الخدمة غير متاحة للزائرين برجاء إنشاء حساب</string>
     <string name="succ_reg">تم إنشاء حساب جديد بنجاح</string>
     <string name="visitor">زائر</string>
+    <string name="yes">نعم</string>
+    <string name="share">مشاركة</string>
+    <string name="all">الكل</string>
+    <string name="all_ads">كل الاعلانات</string>
+    <string name="msg_txt">نص الرسالة</string>
+    <string name="enter_proname">أدخل اسم المنتج الذي تريد ان تبحث عنه</string>
+    <string name="no_r">لا توجد نتائج</string>
+    <string name="update_or_delete">تعديل او حذف</string>
+    <string name="undefined">غير محدد</string>
+    <string name="sorry">عفوا</string>
+    <string name="sign_in_or_create_a_new_account_so_you_can_send_a_message_to_the_owner_of_the_ad">قم بتسجيل الدخول او انشاء حساب جديد حتى تتكن من ارسال رسالة الي صاحب الاعلان.</string>
 
     <string-array name="depart_array">
         <item>القسم</item>

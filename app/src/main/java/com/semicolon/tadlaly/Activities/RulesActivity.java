@@ -17,7 +17,6 @@ import com.semicolon.tadlaly.Services.Api;
 import com.semicolon.tadlaly.Services.Services;
 import com.semicolon.tadlaly.Services.Tags;
 
-import me.anwarshahriar.calligrapher.Calligrapher;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -31,9 +30,9 @@ public class RulesActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rules);
-        Calligrapher calligrapher=new Calligrapher(this);
+       /* Calligrapher calligrapher=new Calligrapher(this);
         calligrapher.setFont(this,"OYA-Regular.ttf",true);
-
+*/
         initView();
         getRules();
     }

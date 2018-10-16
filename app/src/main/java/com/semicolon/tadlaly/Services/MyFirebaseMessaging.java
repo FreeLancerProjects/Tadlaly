@@ -59,7 +59,7 @@ public class MyFirebaseMessaging extends FirebaseMessagingService {
                 builder.setLights(Color.WHITE,3000,3000);
                 Uri uri = Uri.parse("android.resource://"+getPackageName()+"/"+ R.raw.not);
                 builder.setSound(uri);
-                builder.setSmallIcon(R.mipmap.launcher_icon);
+                builder.setSmallIcon(R.mipmap.ic_launcher);
                 if (map.get("notification_type").equals(Tags.msg_not_type))
                     if (!TextUtils.isEmpty(session)||session!=null)
                     {

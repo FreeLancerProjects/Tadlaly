@@ -4,7 +4,7 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="Api_key">AIzaSyDZDfDu-npZxpvUkfx4hbPwCHC5dctS7Q0</string>
     <string name="address">Address</string>
-    <string name="phone">Phone</string>
+    <string name="phone">(+country key)Phone</string>
     <string name="ads_content">Ads content</string>
     <string name="add_image">Add photo</string>
     <string name="add_ads">Add ads</string>
@@ -173,6 +173,17 @@
     <string name="ser_not_ava">This service is not available to visitors plz create an account</string>
     <string name="succ_reg">Successfully registered</string>
     <string name="visitor">Visitor</string>
+    <string name="yes">yes</string>
+    <string name="share">Share</string>
+    <string name="all">All</string>
+    <string name="all_ads">All Ads</string>
+    <string name="msg_txt">Message</string>
+    <string name="enter_proname">Enter product name</string>
+    <string name="no_r">No Results</string>
+    <string name="update_or_delete">update or delete</string>
+    <string name="undefined">undefined</string>
+    <string name="sorry">Sorry</string>
+    <string name="sign_in_or_create_a_new_account_so_you_can_send_a_message_to_the_owner_of_the_ad">Sign in or create a new account so you can send a message to the owner of the ad</string>
     <string-array name="ad_state">
         <item>Ad type</item>
         <item>New</item>

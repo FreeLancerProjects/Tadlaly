@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/black"
+    android:orientation="vertical"
+    >
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="?actionBarSize">
+        <ImageView
+            android:id="@+id/back"
+            android:layout_width="56dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true"
+            android:src="@drawable/previcon"
+            android:padding="12dp"
+            />
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:textStyle="bold"
+            android:textSize="15sp"
+            android:textColor="@color/white"
+            />
+    </RelativeLayout>
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <com.yarolegovich.discretescrollview.DiscreteScrollView
+            android:id="@+id/discrete_recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            >
+
+        </com.yarolegovich.discretescrollview.DiscreteScrollView>
+        <ImageView
+            android:id="@+id/imgPrev"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_gravity="center_vertical|left"
+            android:src="@drawable/previcon"
+            android:padding="5dp"
+            android:layout_marginLeft="5dp"
+            android:visibility="invisible"
+            android:background="@color/gray1"
+            />
+
+        <ImageView
+            android:id="@+id/imgNext"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_gravity="center_vertical|right"
+            android:src="@drawable/nexticon"
+            android:padding="5dp"
+            android:layout_marginRight="5dp"
+            android:visibility="invisible"
+            android:background="@color/gray1"
+
+            />
+    </FrameLayout>
+
+</LinearLayout>

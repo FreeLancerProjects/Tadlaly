@@ -32,7 +32,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 
 import de.hdodenhof.circleimageview.CircleImageView;
-import me.anwarshahriar.calligrapher.Calligrapher;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -55,8 +54,8 @@ public class ProfileActivity extends AppCompatActivity implements UserSingleTone
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
-        Calligrapher calligrapher=new Calligrapher(this);
-        calligrapher.setFont(this,"OYA-Regular.ttf",true);
+       /* Calligrapher calligrapher=new Calligrapher(this);
+        calligrapher.setFont(this,"OYA-Regular.ttf",true);*/
         initView();
         CreateProgressDialog();
         preferences = new Preferences(this);

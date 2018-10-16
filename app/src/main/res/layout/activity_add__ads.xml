@@ -30,7 +30,7 @@
                     android:layout_height="match_parent"
                     android:layout_alignParentLeft="true"
                     android:src="@drawable/white_back_arrow"
-                    android:padding="18dp"
+                    android:padding="20dp"
                     />
 
                 <TextView
@@ -73,7 +73,7 @@
                 android:layout_marginBottom="10dp"
                 android:singleLine="true"
                 android:scrollHorizontally="true"
-                android:textSize="12sp"
+                android:textSize="13sp"
                 android:textStyle="bold"
                 android:background="@drawable/et_bg_trans"
                 />
@@ -90,7 +90,7 @@
                 android:layout_marginBottom="10dp"
                 android:singleLine="true"
                 android:scrollHorizontally="true"
-                android:textSize="12sp"
+                android:textSize="13sp"
                 android:textStyle="bold"
                 android:background="@drawable/et_bg_trans"
                 />
@@ -108,7 +108,7 @@
                 android:layout_marginBottom="10dp"
                 android:singleLine="true"
                 android:scrollHorizontally="true"
-                android:textSize="12sp"
+                android:textSize="13sp"
                 android:textStyle="bold"
                 android:gravity="center_vertical"
                 android:background="@drawable/et_bg_trans"
@@ -122,16 +122,6 @@
                 android:layout_marginBottom="10dp"
                 >
                 <Spinner
-                    android:id="@+id/branche_spinner"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="45dp"
-                    app:backgroundTint="@color/black"
-                    android:layout_marginRight="5dp"
-                    >
-
-                </Spinner>
-                <Spinner
                     android:id="@+id/depart_spinner"
 
                     android:layout_width="0dp"
@@ -142,25 +132,53 @@
                     >
 
                 </Spinner>
+                <Spinner
+                    android:id="@+id/branche_spinner"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="45dp"
+                    app:backgroundTint="@color/black"
+                    android:layout_marginRight="5dp"
+                    >
+
+                </Spinner>
+
             </LinearLayout>
-            <EditText
-                android:id="@+id/cost"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="45dp"
-                android:paddingLeft="5dp"
-                android:drawablePadding="5dp"
-                android:textColor="@color/black"
-                android:hint="@string/price"
-                android:paddingRight="5dp"
-                android:textColorHint="@color/black"
-                android:layout_marginBottom="10dp"
-                android:singleLine="true"
-                android:scrollHorizontally="true"
-                android:textSize="12sp"
-                android:textStyle="bold"
-                android:background="@drawable/et_bg_trans"
-                android:inputType="numberDecimal"
-                />
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                >
+                <CheckBox
+                    android:id="@+id/checkbox_undefined"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:buttonTint="@color/colorPrimary"
+                    android:text="@string/undefined"
+                    android:layout_marginRight="20dp"
+                    android:textColor="@color/black"
+                    android:textStyle="bold"
+                    />
+                <EditText
+                    android:id="@+id/cost"
+                    android:layout_width="match_parent"
+                    android:layout_height="45dp"
+                    android:paddingLeft="5dp"
+                    android:drawablePadding="5dp"
+                    android:textColor="@color/black"
+                    android:hint="@string/price"
+                    android:paddingRight="5dp"
+                    android:textColorHint="@color/black"
+                    android:layout_marginBottom="10dp"
+                    android:singleLine="true"
+                    android:scrollHorizontally="true"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    android:background="@drawable/et_bg_trans"
+                    android:inputType="numberDecimal"
+                    />
+            </LinearLayout>
+
             <Spinner
                 android:id="@+id/ad_type"
                 android:layout_width="160dp"
@@ -184,7 +202,7 @@
                 android:layout_marginBottom="10dp"
                 android:singleLine="true"
                 android:scrollHorizontally="true"
-                android:textSize="12sp"
+                android:textSize="13sp"
                 android:textStyle="bold"
                 android:background="@drawable/et_bg_trans"
                 android:gravity="center_vertical"
@@ -200,29 +218,27 @@
                 app:buttonTint="@color/colorPrimary"
                 android:text="@string/mobile_not"
                 android:paddingRight="5dp"
-                android:textSize="11sp"
+                android:textSize="12sp"
 
 
                 />
             <EditText
                 android:id="@+id/ads_content"
                 android:layout_width="match_parent"
-                android:layout_height="45dp"
+                android:layout_height="150dp"
                 android:paddingLeft="5dp"
                 android:paddingRight="5dp"
                 android:drawablePadding="5dp"
                 android:textColor="@color/black"
                 android:hint="@string/ads_content"
-
-                android:textColorHint="@color/black"
+                android:textColorHint="@color/gray2"
                 android:layout_marginBottom="10dp"
-                android:singleLine="true"
-                android:scrollHorizontally="true"
-                android:textSize="12sp"
+                android:textSize="13sp"
                 android:textStyle="bold"
                 android:background="@drawable/et_bg_trans"
-
-
+                android:gravity="start"
+                android:padding="8dp"
+                android:inputType="textMultiLine"
                 />
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -245,7 +261,7 @@
                     android:layout_centerVertical="true"
                     android:text="@string/add_image"
                     android:layout_marginRight="5dp"
-                    android:textSize="12sp"
+                    android:textSize="13sp"
 
                     />
             </RelativeLayout>
@@ -346,7 +362,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textColor="@color/gray0"
-                    android:textSize="12sp"
+                    android:textSize="13sp"
                     android:text="@string/max_img_note"
                     android:layout_marginLeft="5dp"
                     android:layout_marginRight="5dp"

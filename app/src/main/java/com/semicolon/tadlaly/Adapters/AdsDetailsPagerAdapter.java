@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.github.siyamed.shapeimageview.RoundedImageView;
+import com.semicolon.tadlaly.Activities.AdsDetailsActivity;
 import com.semicolon.tadlaly.Models.MyAdsModel;
 import com.semicolon.tadlaly.R;
 import com.semicolon.tadlaly.Services.Tags;
@@ -19,10 +20,12 @@ import java.util.List;
 public class AdsDetailsPagerAdapter extends android.support.v4.view.PagerAdapter {
     private List<MyAdsModel.Images> imgs;
     private Context context;
+    private AdsDetailsActivity adsDetailsActivity;
 
     public AdsDetailsPagerAdapter(List<MyAdsModel.Images> imgs, Context context) {
         this.imgs = imgs;
         this.context = context;
+        adsDetailsActivity = (AdsDetailsActivity) context;
     }
 
     @Override
@@ -44,6 +47,12 @@ public class AdsDetailsPagerAdapter extends android.support.v4.view.PagerAdapter
         Picasso.with(context).load(Uri.parse(Tags.Image_Url+img)).into(ads_img);
         ViewPager viewPager = (ViewPager) container;
         viewPager.addView(view,0);
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                adsDetailsActivity.setPagerItemClick();
+            }
+        });
 
 
         return view;

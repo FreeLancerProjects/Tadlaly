@@ -54,8 +54,9 @@ public class SubDepartAdsActivity extends AppCompatActivity implements UserSingl
     private int cont=0;
     private int size=0;
     private  List<MyAdsModel> myAdsModelList1,finalmyAdsModelList;
-    private int page_index=0;
+    private int page_index=2;
     private String user_id="";
+    private String user_type="";
     private LatLngSingleTone latLngSingleTone;
 
 
@@ -95,8 +96,8 @@ public class SubDepartAdsActivity extends AppCompatActivity implements UserSingl
             public void onLoadMore() {
                 myAdsModelList.add(null);
                 adapter.notifyItemInserted(myAdsModelList.size()-1);
-                page_index++;
-                getData(supDept_id,page_index);
+                int index = page_index;
+                onLoadgetData(supDept_id,user_id,index);
             }
         });
 
@@ -107,31 +108,34 @@ public class SubDepartAdsActivity extends AppCompatActivity implements UserSingl
         if (intent!=null)
         {
             user_id = intent.getStringExtra("user_id");
+            user_type =intent.getStringExtra("user_type");
             subdepartObject = (DepartmentsModel.SubdepartObject) intent.getSerializableExtra("subDeptData");
             supDept_id = subdepartObject.getSub_department_id();
 
-            if (user_id.equals(Tags.app_visitor))
+            Log.e("User_id_sda_act",user_id);
+            Log.e("User_type_sda_act",user_type);
+
+            if (user_id.equals("0"))
             {
                 latLngSingleTone = LatLngSingleTone.getInstance();
                 latLngSingleTone.getLatLng(this);
-            }else if (user_id.equals(Tags.app_user))
+            }else if (!user_id.equals("0"))
             {
                 userSingleTone =UserSingleTone.getInstance();
                 userSingleTone.getUser(this);
             }
-            subDept_name.setText(subdepartObject.getSub_department_name());
-            page_index=0;
-            page_index++;
+            String sd=subdepartObject.getSub_department_name().replaceAll("\n","").replaceAll("\t","");
+            subDept_name.setText(sd);
             Log.e("p1",page_index+"");
             myAdsModelList.clear();
-            getData(supDept_id,page_index);
+            getData(supDept_id,user_id,1);
         }
     }
 
-    private void getData(String supDept_id, int page_index)
+    private void getData(String supDept_id,String user_id, int page_index)
     {
         Retrofit retrofit = Api.getRetrofit(Tags.Base_Url);
-        if (user_id.equals(Tags.app_user))
+        if (user_type.equals(Tags.app_user))
         {
             Call<List<MyAdsModel>> call = retrofit.create(Services.class).getSubDept_Ads(Tags.display_nearby, user_id, supDept_id, page_index);
             call.enqueue(new Callback<List<MyAdsModel>>() {
@@ -139,60 +143,18 @@ public class SubDepartAdsActivity extends AppCompatActivity implements UserSingl
                 public void onResponse(Call<List<MyAdsModel>> call, Response<List<MyAdsModel>> response) {
                     if (response.isSuccessful())
                     {
-                        if (myAdsModelList.size()>0)
+                        progressBar.setVisibility(View.GONE);
+                        myAdsModelList.clear();
+                        if (response.body().size()>0)
                         {
-                            myAdsModelList.remove(myAdsModelList.size()-1);
-                            adapter.notifyItemRemoved(myAdsModelList.size());
-                            adapter.setLoaded();
+                            no_ads.setVisibility(View.GONE);
                             myAdsModelList.addAll(response.body());
                             adapter.notifyDataSetChanged();
-                            adapter.setLoaded();
-
                         }else
                         {
-                            if (response.body().size()>0)
-                            {
-                                progressBar.setVisibility(View.GONE);
-                                no_ads.setVisibility(View.GONE);
-                                myAdsModelList.addAll(response.body());
-                                adapter.notifyDataSetChanged();
-                                adapter.setLoaded();
+                            no_ads.setVisibility(View.VISIBLE);
 
-                            }else
-                            {
-                                SubDepartAdsActivity.this.page_index=0;
-                                progressBar.setVisibility(View.GONE);
-                                no_ads.setVisibility(View.VISIBLE);
-                                adapter.setLoaded();
-
-                            }
                         }
-                            /*if (page_index==1&&myAdsModelList.size()==0)
-                            {
-                                progressBar.setVisibility(View.GONE);
-                                no_ads.setVisibility(View.VISIBLE);
-                            }else
-                            {
-                                no_ads.setVisibility(View.GONE);
-
-                                if (myAdsModelList.size()>0)
-                                {
-
-                                    myAdsModelList.remove(myAdsModelList.size()-1);
-                                    adapter.notifyItemRemoved(myAdsModelList.size());
-                                    adapter.setLoaded();
-                                    adapter.notifyDataSetChanged();
-                                    myAdsModelList.addAll(response.body());
-                                    adapter.notifyDataSetChanged();
-                                }else
-                                {
-                                    myAdsModelList.remove(myAdsModelList.size()-1);
-                                    adapter.notifyItemRemoved(myAdsModelList.size());
-                                    adapter.setLoaded();
-                                    adapter.notifyDataSetChanged();
-                                }
-
-                            }*/
                     }
                 }
 
@@ -203,7 +165,7 @@ public class SubDepartAdsActivity extends AppCompatActivity implements UserSingl
                     Log.e("Error",t.getMessage());
                 }
             });
-        }else if (user_id.equals(Tags.app_visitor))
+        }else if (user_type.equals(Tags.app_visitor))
         {
             Log.e("lat",mylat+"");
             Log.e("lng",myLng+"");
@@ -237,32 +199,7 @@ public class SubDepartAdsActivity extends AppCompatActivity implements UserSingl
                                 no_ads.setVisibility(View.VISIBLE);
                             }
                         }
-                            /*if (page_index==1&&myAdsModelList.size()==0)
-                            {
-                                progressBar.setVisibility(View.GONE);
-                                no_ads.setVisibility(View.VISIBLE);
-                            }else
-                            {
-                                no_ads.setVisibility(View.GONE);
 
-                                if (myAdsModelList.size()>0)
-                                {
-
-                                    myAdsModelList.remove(myAdsModelList.size()-1);
-                                    adapter.notifyItemRemoved(myAdsModelList.size());
-                                    adapter.setLoaded();
-                                    adapter.notifyDataSetChanged();
-                                    myAdsModelList.addAll(response.body());
-                                    adapter.notifyDataSetChanged();
-                                }else
-                                {
-                                    myAdsModelList.remove(myAdsModelList.size()-1);
-                                    adapter.notifyItemRemoved(myAdsModelList.size());
-                                    adapter.setLoaded();
-                                    adapter.notifyDataSetChanged();
-                                }
-
-                            }*/
                     }
                 }
 
@@ -276,435 +213,96 @@ public class SubDepartAdsActivity extends AppCompatActivity implements UserSingl
         }
 
 
-
-     /*   myAdsModelList1.clear();
-        Retrofit retrofit = Api.getRetrofit2(Tags.Base_Url);
-        Observable<List<MyAdsModel>> observable = retrofit.create(Services.class).getSubDept_Ads(Tags.display_nearby,user_id, supDept_id, page_index);
-        observable.flatMap(ads->Observable.fromIterable(ads))
-                .flatMap(dis -> retrofit.create(Services.class).getDistance("https://maps.googleapis.com/maps/api/distancematrix/json?origins=" + mylat + "," + myLng + "&destinations=" + dis.getGoogle_lat() + "," + dis.getGoogle_long() + "&key=" + getString(R.string.Api_key)), new BiFunction<MyAdsModel, PlacesDistanceModel, MyAdsModel>() {
-                    @Override
-                    public MyAdsModel apply(MyAdsModel myAdsModel, PlacesDistanceModel placesDistanceModel) throws Exception {
-                        myAdsModel.setM_distance(String.valueOf(placesDistanceModel.getRows().get(0).getElements().get(0).getDistanceObject().getValue()/1000));
-                        Log.e("distanccccccccc",myAdsModel.getM_distance());
-                        return myAdsModel;
-                    }
-                })
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io())
-                .subscribe(new Observer<MyAdsModel>() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
-
-                    }
-
-                    @Override
-                    public void onNext(MyAdsModel myAdsModel) {
-                       myAdsModelList1.add(myAdsModel);
-
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        e.printStackTrace();
-                        Log.e("error",e.getLocalizedMessage());
-
-                    }
-
-                    @Override
-                    public void onComplete() {
-                        if (page_index==1&&myAdsModelList1.size()==0)
-                        {
-                            progressBar.setVisibility(View.GONE);
-                            no_ads.setVisibility(View.VISIBLE);
-                        }else
-                            {
-                                no_ads.setVisibility(View.GONE);
-
-                                if (myAdsModelList1.size()>0)
-                                {
-                                    SortData(myAdsModelList1);
-
-                                }else
-                                    {
-                                        myAdsModelList.remove(myAdsModelList.size()-1);
-                                        adapter.notifyItemRemoved(myAdsModelList.size());
-                                    }
-
-                            }
-                    }
-                });*/
-
-        /*Retrofit retrofit = Api.getRetrofit(Tags.Base_Url);
-        Call<List<MyAdsModel>> call = retrofit.create(Services.class).getSubDept_Ads(userModel.getUser_id(),supDept_id,page_index);
-        call.enqueue(new Callback<List<MyAdsModel>>() {
-            @Override
-            public void onResponse(Call<List<MyAdsModel>> call, Response<List<MyAdsModel>> response) {
-                if (response.isSuccessful())
-                {
-                    SortData(response.body());
-                }
-            }
-
-            @Override
-            public void onFailure(Call<List<MyAdsModel>> call, Throwable t) {
-
-            }
-        });*/
-/*
-        call.enqueue(new Callback<List<MyAdsModel>>() {
-            @Override
-            public void onResponse(Call<List<MyAdsModel>> call, Response<List<MyAdsModel>> response) {
-                if (response.isSuccessful())
-                {
-                    //progressBar.setVisibility(View.GONE);
-
-                    if (page_index==1)
-                    {
-                        Log.e("index1",page_index+"");
-                        if (response.body().size()>0)
-                        {
-                            Log.e("index1>0",page_index+"");
-
-                            no_ads.setVisibility(View.GONE);
-
-
-                            SortData(response.body());
-
-
-                        }else
-                        {
-                            Log.e("index<0",page_index+"");
-
-                            progressBar.setVisibility(View.GONE);
-                            no_ads.setVisibility(View.VISIBLE);
-
-                        }
-                    }else
-                        {
-                            Log.e("index2++",page_index+"");
-
-                            if (response.body().size()==0)
-                            {
-                                Log.e("nodata",page_index+"");
-
-                                if (myAdsModelList.size()>0)
-                                {
-                                    myAdsModelList.remove(myAdsModelList.size()-1);
-                                    adapter.notifyItemRemoved(myAdsModelList.size());
-                                    adapter.notifyDataSetChanged();
-                                }
-
-
-                            }else if (response.body().size()>0)
-                            {
-                                Log.e("data",page_index+"");
-
-                                no_ads.setVisibility(View.GONE);
-                                SortData(response.body());
-
-//                                myAdsModelList.addAll(response.body());
-//                                adapter.notifyDataSetChanged();
-//                                progressBar.setVisibility(View.GONE);
-
-                            }
-                        }
-
-
-                }
-            }
-
-            @Override
-            public void onFailure(Call<List<MyAdsModel>> call, Throwable t) {
-                progressBar.setVisibility(View.GONE);
-                Toast.makeText(SubDepartAdsActivity.this,R.string.something, Toast.LENGTH_SHORT).show();
-                Log.e("Error",t.getMessage());
-            }
-        });
-*/
-
     }
-
-    /*private void SortData(List<MyAdsModel> myAdsModelList1) {
-        finalmyAdsModelList.clear();
-        distList.clear();
-        map.clear();
-        idsList.clear();
-        for (MyAdsModel myAdsModel:myAdsModelList1)
+    private void onLoadgetData(String supDept_id,String user_id, int page_index)
+    {
+        Retrofit retrofit = Api.getRetrofit(Tags.Base_Url);
+        if (user_type.equals(Tags.app_user))
         {
-            map.put(myAdsModel.getId_advertisement(),Double.parseDouble(myAdsModel.getM_distance()));
-            distList.add(Double.parseDouble(myAdsModel.getM_distance()));
-        }
-
-        if (map.size()>0)
-        {
-            Collections.sort(distList);
-
-            for (Double d:distList)
-            {
-                Log.e("distance",d+"_");
-                for (String key:map.keySet())
-                {
-                    Log.e("key",key);
-                    Log.e("dis_key",d+"_"+map.get(key));
-                    if (d.equals(map.get(key)))
-                    {
-
-                        if (!idsList.contains(key))
-                        {
-                            idsList.add(key);
-                            Log.e("sizzzz",idsList.size()+"");
-                        }
-
-
-                    }
-                }
-            }
-
-
-
-            for (String key:idsList)
-            {
-                for (MyAdsModel myAdsModel:myAdsModelList1)
-                {
-                    if (myAdsModel.getId_advertisement().equals(key))
-                    {
-                        myAdsModel.setM_distance(String.valueOf(map.get(key)));
-                        finalmyAdsModelList.add(myAdsModel);
-                    }
-                }
-            }
-            if (myAdsModelList.size()>0)
-            {
-                myAdsModelList.remove(myAdsModelList.size()-1);
-                adapter.notifyItemRemoved(myAdsModelList.size());
-                adapter.setLoaded();
-                adapter.notifyDataSetChanged();
-            }
-
-            myAdsModelList.addAll(finalmyAdsModelList);
-            adapter.notifyDataSetChanged();
-            progressBar.setVisibility(View.GONE);
-
-            Log.e("ss2233",idsList.size()+"");
-        }
-
-
-    }*/
-
-    /* private void SortData(List<MyAdsModel> myAdsModelList1) {
-        *//*this.myAdsModelList1 = myAdsModelList1;
-        size=myAdsModelList1.size();
-        if (size>0) {
-            getDistance(mylat, myLng, Double.parseDouble(myAdsModelList1.get(cont).getGoogle_lat()), Double.parseDouble(myAdsModelList1.get(cont).getGoogle_long()), myAdsModelList1.get(cont).getId_advertisement());
-        }*//*
-        for (int i=0;i<myAdsModelList1.size();i++)
-        {
-            MyAdsModel myAdsModel = myAdsModelList1.get(i);
-            String url = "https://maps.googleapis.com/maps/api/distancematrix/json?origins="+mylat+","+myLng+"&destinations="+myAdsModel.getGoogle_lat()+","+myAdsModel.getGoogle_long()+"&key="+getString(R.string.Api_key);
-            Retrofit retrofit = Api.getRetrofit(Tags.GeoPlaceUrl);
-            Call<PlacesDistanceModel> call = retrofit.create(Services.class).getDistance(url);
-            call.enqueue(new Callback<PlacesDistanceModel>() {
+            Call<List<MyAdsModel>> call = retrofit.create(Services.class).getSubDept_Ads(Tags.display_nearby, user_id, supDept_id, page_index);
+            call.enqueue(new Callback<List<MyAdsModel>>() {
                 @Override
-                public void onResponse(Call<PlacesDistanceModel> call, Response<PlacesDistanceModel> response) {
+                public void onResponse(Call<List<MyAdsModel>> call, Response<List<MyAdsModel>> response) {
                     if (response.isSuccessful())
                     {
-                        *//*try {*//*
-                        int dist = response.body().getRows().get(0).getElements().get(0).getDistanceObject().getValue();
-                        int dis =dist/1000;
-                        map.put(myAdsModel.getId_advertisement(),(double)dis);
-                        distList.add((double)dis);
-                        //mapList.add(map);
 
-                        // cont++;
-                       *//* if (cont<size)
+                        Log.e("size4444444",response.body().size()+""+"\n"+page_index);
+                        if (response.body().size()>0)
                         {
-                           // getDistance(mylat,myLng,Double.parseDouble(myAdsModelList1.get(cont).getGoogle_lat()), Double.parseDouble(myAdsModelList1.get(cont).getGoogle_long()), myAdsModelList1.get(cont).getId_advertisement());
-                        }*//*
-                        cont--;
-                        if (map.size()>0)
+                            SubDepartAdsActivity.this.page_index = SubDepartAdsActivity.this.page_index+1;
+                            int lastpos = myAdsModelList.size()-1;
+                            myAdsModelList.remove(myAdsModelList.size()-1);
+                            adapter.notifyItemRemoved(myAdsModelList.size());
+                            adapter.setLoaded();
+                            myAdsModelList.addAll(response.body());
+                            adapter.notifyItemRangeChanged(lastpos,myAdsModelList.size()-1);
+                        }else
                         {
-                            Collections.sort(distList);
-
-                            for (Double d:distList)
-                            {
-                                Log.e("distance",d+"_");
-                                for (String key:map.keySet())
-                                {
-                                    Log.e("key",key);
-                                    Log.e("dis_key",d+"_"+map.get(key));
-                                    if (d.equals(map.get(key)))
-                                    {
-
-                                        if (!idsList.contains(key))
-                                        {
-                                            idsList.add(key);
-                                            Log.e("sizzzz",idsList.size()+"");
-                                        }
-
-
-                                    }
-                                }
-                            }
-
-
-
-                            for (String key:idsList)
-                            {
-                                for (MyAdsModel myAdsModel:myAdsModelList1)
-                                {
-                                    if (myAdsModel.getId_advertisement().equals(key))
-                                    {
-                                        myAdsModel.setM_distance(String.valueOf(map.get(key)));
-                                        finalmyAdsModelList.add(myAdsModel);
-                                    }
-                                }
-                            }
-                            if (myAdsModelList.size()>0)
-                            {
-                                myAdsModelList.remove(myAdsModelList.size()-1);
-                                adapter.notifyItemRemoved(myAdsModelList.size());
-                                adapter.setLoaded();
-                                adapter.notifyDataSetChanged();
-                            }
-                            if (myAdsModelList.size()>0)
-                            {
-                                myAdsModelList.remove(myAdsModelList.size()-1);
-                                adapter.notifyItemRemoved(myAdsModelList.size());
-                            }
-                            myAdsModelList.addAll(finalmyAdsModelList);
-                            adapter.notifyDataSetChanged();
-                            progressBar.setVisibility(View.GONE);
-
-                            Log.e("ss2233",idsList.size()+"");
+                            myAdsModelList.remove(myAdsModelList.size()-1);
+                            adapter.notifyItemRemoved(myAdsModelList.size());
+                            adapter.setLoaded();
                         }
 
-
-
                     }
-                    *//*}catch (NullPointerException e)
-                    {
-
-                    }catch (NumberFormatException e){}
-                    catch (Exception e){}*//*
-
-
-
-                    }
-
+                }
 
                 @Override
-                public void onFailure(Call<PlacesDistanceModel> call, Throwable t) {
-                    Log.e("Error",t.getMessage());
+                public void onFailure(Call<List<MyAdsModel>> call, Throwable t) {
+                    progressBar.setVisibility(View.GONE);
                     Toast.makeText(SubDepartAdsActivity.this,R.string.something, Toast.LENGTH_SHORT).show();
+                    Log.e("Error",t.getMessage());
+                }
+            });
+        }else if (user_type.equals(Tags.app_visitor))
+        {
+            Log.e("lat",mylat+"");
+            Log.e("lng",myLng+"");
+
+            Call<List<MyAdsModel>> call = retrofit.create(Services.class).visitor_getSubDeptAds(Tags.display_nearby,supDept_id,page_index,String.valueOf(mylat),String.valueOf(myLng));
+            call.enqueue(new Callback<List<MyAdsModel>>() {
+                @Override
+                public void onResponse(Call<List<MyAdsModel>> call, Response<List<MyAdsModel>> response) {
+                    if (response.isSuccessful())
+                    {
+                        if (myAdsModelList.size()>0)
+                        {
+                            myAdsModelList.remove(myAdsModelList.size()-1);
+                            adapter.notifyItemRemoved(myAdsModelList.size());
+                            adapter.setLoaded();
+                            myAdsModelList.addAll(response.body());
+                            adapter.notifyDataSetChanged();
+
+                        }else
+                        {
+                            if (response.body().size()>0)
+                            {
+                                progressBar.setVisibility(View.GONE);
+                                no_ads.setVisibility(View.GONE);
+                                myAdsModelList.addAll(response.body());
+                                adapter.notifyDataSetChanged();
+                            }else
+                            {
+                                SubDepartAdsActivity.this.page_index=0;
+                                progressBar.setVisibility(View.GONE);
+                                no_ads.setVisibility(View.VISIBLE);
+                            }
+                        }
+
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<List<MyAdsModel>> call, Throwable t) {
+                    progressBar.setVisibility(View.GONE);
+                    Toast.makeText(SubDepartAdsActivity.this,R.string.something, Toast.LENGTH_SHORT).show();
+                    Log.e("Error",t.getMessage());
                 }
             });
         }
 
     }
 
-    private void getDistance(double mylat, double myLng, double adLat, double adLng, String id_advertisement,int index,int Size) {
-        String url = "https://maps.googleapis.com/maps/api/distancematrix/json?origins="+mylat+","+myLng+"&destinations="+adLat+","+adLng+"&key="+getString(R.string.Api_key);
-        Retrofit retrofit = Api.getRetrofit(Tags.GeoPlaceUrl);
-        Call<PlacesDistanceModel> call = retrofit.create(Services.class).getDistance(url);
-        call.enqueue(new Callback<PlacesDistanceModel>() {
-            @Override
-            public void onResponse(Call<PlacesDistanceModel> call, Response<PlacesDistanceModel> response) {
-                if (response.isSuccessful())
-                {
-                    *//*try {*//*
-                        int dist = response.body().getRows().get(0).getElements().get(0).getDistanceObject().getValue();
-                        int dis =dist/1000;
-                        map.put(id_advertisement,(double)dis);
-                        distList.add((double)dis);
-                        //mapList.add(map);
 
-                       // cont++;
-                       *//* if (cont<size)
-                        {
-                           // getDistance(mylat,myLng,Double.parseDouble(myAdsModelList1.get(cont).getGoogle_lat()), Double.parseDouble(myAdsModelList1.get(cont).getGoogle_long()), myAdsModelList1.get(cont).getId_advertisement());
-                        }*//*if (index<size)
-                        {
-                            cont--;
-                            if (map.size()>0)
-                            {
-                                Collections.sort(distList);
-
-                                for (Double d:distList)
-                                {
-                                    Log.e("distance",d+"_");
-                                    for (String key:map.keySet())
-                                    {
-                                        Log.e("key",key);
-                                        Log.e("dis_key",d+"_"+map.get(key));
-                                        if (d.equals(map.get(key)))
-                                        {
-
-                                            if (!idsList.contains(key))
-                                            {
-                                                idsList.add(key);
-                                                Log.e("sizzzz",idsList.size()+"");
-                                            }
-
-
-                                        }
-                                    }
-                                }
-
-
-
-                                for (String key:idsList)
-                                {
-                                    for (MyAdsModel myAdsModel:myAdsModelList1)
-                                    {
-                                        if (myAdsModel.getId_advertisement().equals(key))
-                                        {
-                                            myAdsModel.setM_distance(String.valueOf(map.get(key)));
-                                            finalmyAdsModelList.add(myAdsModel);
-                                        }
-                                    }
-                                }
-                                if (myAdsModelList.size()>0)
-                                {
-                                    myAdsModelList.remove(myAdsModelList.size()-1);
-                                    adapter.notifyItemRemoved(myAdsModelList.size());
-                                    adapter.setLoaded();
-                                    adapter.notifyDataSetChanged();
-                                }
-                                if (myAdsModelList.size()>0)
-                                {
-                                    myAdsModelList.remove(myAdsModelList.size()-1);
-                                    adapter.notifyItemRemoved(myAdsModelList.size());
-                                }
-                                myAdsModelList.addAll(finalmyAdsModelList);
-                                adapter.notifyDataSetChanged();
-                                progressBar.setVisibility(View.GONE);
-
-                                Log.e("ss2233",idsList.size()+"");
-                            }
-
-
-
-                        }
-                    *//*}catch (NullPointerException e)
-                    {
-
-                    }catch (NumberFormatException e){}
-                    catch (Exception e){}*//*
-
-
-
-                }
-            }
-
-            @Override
-            public void onFailure(Call<PlacesDistanceModel> call, Throwable t) {
-                Log.e("Error",t.getMessage());
-                Toast.makeText(SubDepartAdsActivity.this,R.string.something, Toast.LENGTH_SHORT).show();
-            }
-        });
-
-
-    }*/
 
     public void setPos(int pos)
     {
@@ -717,6 +315,7 @@ public class SubDepartAdsActivity extends AppCompatActivity implements UserSingl
             Intent intent = new Intent(this,AdsDetailsActivity.class);
             intent.putExtra("ad_details",myAdsModel);
             intent.putExtra("whoVisit",Tags.visitor);
+            intent.putExtra("user_id",user_id);
             startActivity(intent);
         }else
             {
@@ -724,6 +323,7 @@ public class SubDepartAdsActivity extends AppCompatActivity implements UserSingl
                 Intent intent = new Intent(this,AdsDetailsActivity.class);
                 intent.putExtra("ad_details",myAdsModel);
                 intent.putExtra("whoVisit",Tags.visitor);
+                intent.putExtra("user_id",user_id);
                 startActivity(intent);
             }
 

@@ -16,10 +16,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.semicolon.tadlaly.Activities.HomeActivity;
 import com.semicolon.tadlaly.Activities.SubDepartAdsActivity;
 import com.semicolon.tadlaly.Adapters.BranchAdapter;
 import com.semicolon.tadlaly.Adapters.Department_Adapter;
@@ -41,7 +43,6 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import me.anwarshahriar.calligrapher.Calligrapher;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -49,6 +50,8 @@ import retrofit2.Retrofit;
 
 public class Home_Fragment extends Fragment {
     public static final String USER_ID="user_id";
+    public static final String USER_TYPE="user_type";
+
     private ViewPager pager;
     private SlideShowPagerAdapter adapter;
     private TabLayout tabLayout;
@@ -65,28 +68,33 @@ public class Home_Fragment extends Fragment {
     private ProgressBar progBar;
     private DepartmentSingletone departmentSingletone;
     private String user_id="";
+    private String user_type="";
+    private ImageView imgPrev,imgNext;
+    private HomeActivity homeActivity;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        Calligrapher calligrapher=new Calligrapher(getActivity());
+      /*  Calligrapher calligrapher=new Calligrapher(getActivity());
         calligrapher.setFont(getActivity(),"JannaLT-Regular.ttf",true);
-        View view = inflater.inflate(R.layout.fragment_home,container,false);
+    */    View view = inflater.inflate(R.layout.fragment_home,container,false);
         initView(view);
         Bundle bundle = getArguments();
         if (bundle!=null)
         {
             user_id = bundle.getString(USER_ID);
+            user_type = bundle.getString(USER_TYPE);
         }
         departmentSingletone = DepartmentSingletone.getInstansce();
         getDepartment();
         return view;
     }
 
-    public static Home_Fragment getInstance(String user_id)
+    public static Home_Fragment getInstance(String user_id,String user_type)
     {
         Home_Fragment home_fragment = new Home_Fragment();
         Bundle bundle = new Bundle();
+        bundle.putString(USER_TYPE,user_type);
         bundle.putString(USER_ID,user_id);
         home_fragment.setArguments(bundle);
         return home_fragment;
@@ -116,7 +124,8 @@ public class Home_Fragment extends Fragment {
                             {
                                 progBar.setVisibility(View.GONE);
                                 no_dept.setVisibility(View.VISIBLE);
-
+                                imgNext.setVisibility(View.INVISIBLE);
+                                imgPrev.setVisibility(View.INVISIBLE);
 
                             }else if (departmentsModelList.size()>0)
                             {
@@ -131,6 +140,10 @@ public class Home_Fragment extends Fragment {
                                 progBar.setVisibility(View.GONE);
 
 
+                            }else if (departmentsModelList.size()==1)
+                            {
+                                imgNext.setVisibility(View.INVISIBLE);
+                                imgPrev.setVisibility(View.INVISIBLE);
                             }
                         }
                     },500);
@@ -195,6 +208,7 @@ public class Home_Fragment extends Fragment {
     }
 
     private void initView(View view) {
+        homeActivity = (HomeActivity) getActivity();
         no_dept = view.findViewById(R.id.no_dept);
         no_branch = view.findViewById(R.id.no_branch);
         subdepartObjectList = new ArrayList<>();
@@ -203,6 +217,8 @@ public class Home_Fragment extends Fragment {
         pager = view.findViewById(R.id.pager);
         tabLayout = view.findViewById(R.id.tab);
         departmentSlider = view.findViewById(R.id.slider);
+        imgPrev = view.findViewById(R.id.imgPrev);
+        imgNext = view.findViewById(R.id.imgNext);
         recView = view.findViewById(R.id.recView);
         manager = new LinearLayoutManager(getActivity(),LinearLayoutManager.HORIZONTAL,false);
         adapter = new SlideShowPagerAdapter(slideShowList,getActivity());
@@ -247,10 +263,37 @@ public class Home_Fragment extends Fragment {
                 no_branch.setVisibility(View.VISIBLE);
 
             }
+            Log.e("AdapterPos",adapterPosition+"");
+            if (adapterPosition==0){
+                imgPrev.setVisibility(View.INVISIBLE);
+                imgNext.setVisibility(View.VISIBLE);
+            }else if (adapterPosition==departmentsModelList.size()-1)
+            {
+                imgNext.setVisibility(View.INVISIBLE);
+                imgPrev.setVisibility(View.VISIBLE);
+            }else
+                {
+                    imgPrev.setVisibility(View.VISIBLE);
+                    imgNext.setVisibility(View.VISIBLE);
 
-
+                }
         });
 
+        imgNext.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                departmentSlider.smoothScrollToPosition(departmentSlider.getCurrentItem()+1);
+
+            }
+        });
+
+        imgPrev.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                departmentSlider.smoothScrollToPosition(departmentSlider.getCurrentItem() - 1);
+            }
+        });
     }
 
     private class Timer_Trans extends TimerTask{
@@ -290,6 +333,8 @@ public class Home_Fragment extends Fragment {
     {
         subdepartObjectList.clear();
         DepartmentsModel departmentsModel = departmentsModelList.get(pos);
+        homeActivity.setTitle(departmentsModel.getMain_department_name());
+
         if (departmentsModel.getSubdepartObjectList().size()>0)
         {
            /* subdepartObjectList.addAll(departmentsModel.getSubdepartObjectList());
@@ -310,11 +355,11 @@ public class Home_Fragment extends Fragment {
 
 
     }
-    public void setSubDeptPos(int pos)
+    public void setSubDeptPos(DepartmentsModel.SubdepartObject subdepartObject)
     {
-        DepartmentsModel.SubdepartObject subdepartObject = subdepartObjectList.get(pos);
         Intent intent = new Intent(getActivity(), SubDepartAdsActivity.class);
         intent.putExtra("user_id",user_id);
+        intent.putExtra("user_type",user_type);
         intent.putExtra("subDeptData",subdepartObject);
         startActivity(intent);
     }

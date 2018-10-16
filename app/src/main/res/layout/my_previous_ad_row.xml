@@ -3,13 +3,14 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_marginBottom="8dp"
+    >
     <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         app:cardCornerRadius="10dp"
-        android:layout_margin="5dp"
         android:layoutDirection="rtl"
         >
         <LinearLayout
@@ -40,54 +41,59 @@
                 android:paddingLeft="5dp"
 
                 >
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
                     android:layout_marginTop="10dp"
+                    android:orientation="horizontal"
+                    android:gravity="center"
                     >
+
                     <TextView
                         android:id="@+id/date"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1.1"
+                        android:layout_weight="1.35"
                         android:gravity="right|center_vertical"
                         android:paddingRight="5dp"
+                        android:singleLine="true"
                         android:textColor="@color/gray0"
                         android:textSize="12sp"
-                        android:singleLine="true"
 
                         />
+
                     <FrameLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight=".9"
-                        >
+                        android:layout_weight=".65">
+
                         <TextView
                             android:id="@+id/state_new"
                             android:layout_width="match_parent"
                             android:layout_height="25dp"
                             android:background="@drawable/ads_item_etbg"
+                            android:gravity="center"
+                            android:singleLine="true"
                             android:text="@string/new_ads"
                             android:textColor="@color/white"
-                            android:gravity="center"
                             android:textStyle="bold"
-                            android:singleLine="true"
                             android:visibility="visible"
 
 
                             />
+
                         <TextView
                             android:id="@+id/state_old"
 
                             android:layout_width="match_parent"
                             android:layout_height="25dp"
                             android:background="@drawable/ads_mosta3mal_bg"
+                            android:gravity="center"
+                            android:singleLine="true"
                             android:text="@string/used"
                             android:textColor="@color/white"
-                            android:gravity="center"
                             android:textStyle="bold"
-                            android:singleLine="true"
                             android:visibility="gone"
 
 
@@ -98,14 +104,16 @@
                 </LinearLayout>
                 <TextView
                     android:id="@+id/name"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="right|center_vertical"
-                    android:textColor="@color/black"
+                    android:textColor="@color/colorPrimary"
                     android:textStyle="bold"
-                    android:textSize="12sp"
+                    android:textSize="16sp"
                     android:layout_marginTop="20dp"
                     android:singleLine="true"
+                    android:paddingRight="10dp"
+                    android:paddingLeft="10dp"
 
                     />
 
@@ -140,7 +148,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:textStyle="bold"
-                        android:textSize="12sp"
+                        android:textSize="14sp"
                         android:textColor="@color/black"
                         android:singleLine="true"
                         android:gravity="center"

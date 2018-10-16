@@ -13,13 +13,16 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.lamudi.phonefield.PhoneInputLayout;
 import com.semicolon.tadlaly.Models.ContactsModel;
 import com.semicolon.tadlaly.Models.ResponseModel;
 import com.semicolon.tadlaly.Models.UserModel;
@@ -33,33 +36,35 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import me.anwarshahriar.calligrapher.Calligrapher;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 
 public class ContactUsActivity extends AppCompatActivity implements UserSingleTone.OnCompleteListener {
-    private ImageView back,whatsApp_Btn,email_Btn;
-    private EditText subject,message;
-    private TextView name,email;
+    private ImageView back, whatsApp_Btn, email_Btn;
+    private EditText subject, message;
+    private TextView name, email;
     private Button send_Btn;
     private UserSingleTone userSingleTone;
     private UserModel userModel;
     private ProgressDialog dialog;
-    private String user_type="";
+    private String user_type = "";
+    private EditText edt_phone;
+    private PhoneInputLayout edt_check_phone;
+    private LinearLayout ll_call;
     private AlertDialog.Builder serviceBuilder;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contac_us);
-        Calligrapher calligrapher=new Calligrapher(this);
-        calligrapher.setFont(this,"OYA-Regular.ttf",true);
+       /* Calligrapher calligrapher=new Calligrapher(this);
+        calligrapher.setFont(this,"OYA-Regular.ttf",true);*/
         getDataFromIntent();
         initView();
         CreateProgress_dialog();
-        if (user_type.equals(Tags.app_user))
-        {
+        if (user_type.equals(Tags.app_user)) {
             userSingleTone = UserSingleTone.getInstance();
             userSingleTone.getUser(this);
         }
@@ -69,41 +74,52 @@ public class ContactUsActivity extends AppCompatActivity implements UserSingleTo
 
     private void getDataFromIntent() {
         Intent intent = getIntent();
-        if (intent!=null)
-        {
-            if (intent.hasExtra("user_type"))
-            {
+        if (intent != null) {
+            if (intent.hasExtra("user_type")) {
                 user_type = intent.getStringExtra("user_type");
             }
         }
     }
 
-    private void CreateServiceDialog()
-    {
+    private void CreateServiceDialog() {
         serviceBuilder = new AlertDialog.Builder(this);
         serviceBuilder.setMessage(R.string.ser_not_ava);
         serviceBuilder.setPositiveButton(R.string.ok, (dialogInterface, i) -> {
-            AlertDialog alertDialog=serviceBuilder.create();
+            AlertDialog alertDialog = serviceBuilder.create();
             alertDialog.dismiss();
             finish();
 
-        } );
+        });
 
-        AlertDialog alertDialog=serviceBuilder.create();
+        AlertDialog alertDialog = serviceBuilder.create();
         alertDialog.setCancelable(true);
         alertDialog.setCanceledOnTouchOutside(false);
 
     }
+
     private void initView() {
         back = findViewById(R.id.back);
         whatsApp_Btn = findViewById(R.id.whatsapp_btn);
         email_Btn = findViewById(R.id.email_btn);
         name = findViewById(R.id.name);
-        email= findViewById(R.id.email);
+        email = findViewById(R.id.email);
+        edt_phone = findViewById(R.id.edt_phone);
+        edt_check_phone = findViewById(R.id.edt_check_phone);
         subject = findViewById(R.id.subject);
         message = findViewById(R.id.message);
         send_Btn = findViewById(R.id.send_btn);
+        ll_call = findViewById(R.id.ll_call);
         back.setOnClickListener(view -> finish());
+        ll_call.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String phone = "0550411663";
+                Uri uri = Uri.parse("tel:" + phone);
+
+                Intent intent = new Intent(Intent.ACTION_DIAL, uri);
+                startActivity(intent);
+            }
+        });
         send_Btn.setOnClickListener(view ->{
             if (user_type.equals(Tags.app_user))
             {
@@ -116,6 +132,7 @@ public class ContactUsActivity extends AppCompatActivity implements UserSingleTo
 
         } );
         whatsApp_Btn.setOnClickListener(view ->{
+
             if (user_type.equals(Tags.app_user))
             {
                 Send(Tags.sendType_whats);
@@ -128,6 +145,7 @@ public class ContactUsActivity extends AppCompatActivity implements UserSingleTo
         } );
         email_Btn.setOnClickListener(view ->
         {
+
             if (user_type.equals(Tags.app_user))
             {
                 Send(Tags.sendType_email);
@@ -154,22 +172,40 @@ public class ContactUsActivity extends AppCompatActivity implements UserSingleTo
 
         String m_subject = subject.getText().toString();
         String m_message = message.getText().toString();
-        if (!TextUtils.isEmpty(m_subject))
+        String m_phone = edt_phone.getText().toString();
+        edt_check_phone.setPhoneNumber(m_phone);
+        if (TextUtils.isEmpty(m_phone))
         {
+            edt_phone.setError(getString(R.string.enter_phone));
+        }else if (!edt_check_phone.isValid())
+        {
+            edt_phone.setError(getString(R.string.inv_phone));
+
+        }
+        else if (TextUtils.isEmpty(m_subject))
+        {
+            edt_phone.setError(null);
+
             subject.setError(getString(R.string.enter_sub));
-        }else if (!TextUtils.isEmpty(m_message))
+        }else if (TextUtils.isEmpty(m_message))
         {
+            edt_phone.setError(null);
+
             subject.setError(null);
             message.setError(getString(R.string.enter_msg));
 
         }else
             {
-                getContacts(type,m_subject,m_message);
+                edt_phone.setError(null);
+                subject.setError(null);
+                message.setError(null);
+
+                getContacts(type,m_subject,m_message,m_phone);
             }
 
     }
 
-    private void getContacts(String type, String m_subject, String m_message)
+    private void getContacts(String type, String m_subject, String m_message,String m_phone)
     {
         Retrofit retrofit = Api.getRetrofit(Tags.Base_Url);
         Call<ContactsModel> call = retrofit.create(Services.class).getContacts();
@@ -178,7 +214,7 @@ public class ContactUsActivity extends AppCompatActivity implements UserSingleTo
             public void onResponse(Call<ContactsModel> call, Response<ContactsModel> response) {
                 if (response.isSuccessful())
                 {
-                    SendData(response.body().getWhatsapp(),response.body().getEmail(),type,m_subject,m_message);
+                    SendData(response.body().getWhatsapp(),response.body().getEmail(),type,m_subject,m_message,m_phone);
 
                 }
             }
@@ -194,7 +230,7 @@ public class ContactUsActivity extends AppCompatActivity implements UserSingleTo
 
     }
 
-    private void SendData(String whatsapp, String email, String type, String m_subject, String m_message)
+    private void SendData(String whatsapp, String email, String type, String m_subject, String m_message, String m_phone)
     {
         if (type.equals(Tags.sendType_normal))
         {
@@ -204,6 +240,7 @@ public class ContactUsActivity extends AppCompatActivity implements UserSingleTo
             map.put("email",userModel.getUser_email());
             map.put("subject",m_subject);
             map.put("message",m_message);
+            map.put("phone",m_phone);
             Retrofit retrofit = Api.getRetrofit(Tags.Base_Url);
             Call<ResponseModel> call = retrofit.create(Services.class).ContactUs(map);
             call.enqueue(new Callback<ResponseModel>() {

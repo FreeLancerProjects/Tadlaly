@@ -1,29 +1,32 @@
 package com.semicolon.tadlaly.Activities;
 
-import android.Manifest;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.semicolon.tadlaly.Adapters.AdsDetailsPagerAdapter;
 import com.semicolon.tadlaly.Models.MyAdsModel;
+import com.semicolon.tadlaly.Models.UserModel;
 import com.semicolon.tadlaly.R;
 import com.semicolon.tadlaly.Services.Api;
 import com.semicolon.tadlaly.Services.Services;
 import com.semicolon.tadlaly.Services.Tags;
+import com.semicolon.tadlaly.SingleTone.UserSingleTone;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
@@ -34,7 +37,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 
-public class AdsDetailsActivity extends AppCompatActivity {
+public class AdsDetailsActivity extends AppCompatActivity implements UserSingleTone.OnCompleteListener{
     private ViewPager pager;
     private TabLayout tab;
     private TextView ad_number, ad_cost, ad_date, ad_viewers, ad_shares, ad_distance, ad_title, ad_details, ad_state_new, ad_state_old, city, no_ads, ad_name,city2;
@@ -48,6 +51,11 @@ public class AdsDetailsActivity extends AppCompatActivity {
     private LinearLayout contactContainer;
     private FrameLayout call_btn, email_btn, whats_btn;
     private final int share_req=968;
+    private UserSingleTone userSingleTone;
+    private UserModel userModel;
+    private String user_id;
+    private AlertDialog alertDialog;
+
 
 
 
@@ -58,6 +66,7 @@ public class AdsDetailsActivity extends AppCompatActivity {
         timer = new Timer();
         initView();
         getDataFromIntent();
+        CreateAlertDialog();
     }
 
 
@@ -67,6 +76,9 @@ public class AdsDetailsActivity extends AppCompatActivity {
         if (intent != null) {
             myAdsModel = (MyAdsModel) intent.getSerializableExtra("ad_details");
             whoVisit = intent.getStringExtra("whoVisit");
+            user_id = intent.getStringExtra("user_id");
+            Log.e("USERType_ADS_Det_Ac",whoVisit);
+            Log.e("USERID_ADS_Det_Ac",user_id);
 
             UpdateUi(myAdsModel, whoVisit);
             Log.e("ads_id",myAdsModel.getId_advertisement());
@@ -105,36 +117,37 @@ public class AdsDetailsActivity extends AppCompatActivity {
         });
     }
     private void initView() {
-        images = new ArrayList<>();
-        pager = findViewById(R.id.pager);
-        tab = findViewById(R.id.tab);
-        back = findViewById(R.id.back);
-        shareBtn = findViewById(R.id.shareBtn);
-        viewerBtn = findViewById(R.id.viewerBtn);
-        no_ads = findViewById(R.id.no_ads);
-        distContainer = findViewById(R.id.distContainer);
-        ad_name = findViewById(R.id.ad_name);
-        ad_number = findViewById(R.id.ad_number);
-        ad_cost = findViewById(R.id.ad_cost);
-        ad_date = findViewById(R.id.ad_date);
-        ad_viewers = findViewById(R.id.viewers);
-        ad_shares = findViewById(R.id.shares);
-        ad_distance = findViewById(R.id.distance);
-        ad_title = findViewById(R.id.ad_title);
-        ad_details = findViewById(R.id.ad_details);
-        ad_state_new = findViewById(R.id.state_new);
-        ad_state_old = findViewById(R.id.state_old);
+        images           = new ArrayList<>();
+        pager            = findViewById(R.id.pager);
+        tab              = findViewById(R.id.tab);
+        back             = findViewById(R.id.back);
+        shareBtn         = findViewById(R.id.shareBtn);
+        viewerBtn        = findViewById(R.id.viewerBtn);
+        no_ads           = findViewById(R.id.no_ads);
+        distContainer    = findViewById(R.id.distContainer);
+        ad_name          = findViewById(R.id.ad_name);
+        ad_number        = findViewById(R.id.ad_number);
+        ad_cost          = findViewById(R.id.ad_cost);
+        ad_date          = findViewById(R.id.ad_date);
+        ad_viewers       = findViewById(R.id.viewers);
+        ad_shares        = findViewById(R.id.shares);
+        ad_distance      = findViewById(R.id.distance);
+        ad_title         = findViewById(R.id.ad_title);
+        ad_details       = findViewById(R.id.ad_details);
+        ad_state_new     = findViewById(R.id.state_new);
+        ad_state_old     = findViewById(R.id.state_old);
         contactContainer = findViewById(R.id.contactContainer);
-        call_btn = findViewById(R.id.call_btn);
-        email_btn = findViewById(R.id.email_btn);
-        whats_btn = findViewById(R.id.whatsapp_btn);
-        city = findViewById(R.id.city);
-        city2 = findViewById(R.id.city2);
+        call_btn         = findViewById(R.id.call_btn);
+        email_btn        = findViewById(R.id.email_btn);
+        whats_btn        = findViewById(R.id.whatsapp_btn);
+        city             = findViewById(R.id.city);
+        city2            = findViewById(R.id.city2);
 
         tab.setupWithViewPager(pager);
         adapter = new AdsDetailsPagerAdapter(images, this);
         pager.setAdapter(adapter);
         back.setOnClickListener(view -> finish());
+
 
         if (checkWhatsAppFounded())
         {
@@ -146,21 +159,46 @@ public class AdsDetailsActivity extends AppCompatActivity {
             }
 
         call_btn.setOnClickListener(view -> {
-            Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + myAdsModel.getPhone()));
-            if (ActivityCompat.checkSelfPermission(AdsDetailsActivity.this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
-                return;
-            }
+            Log.e("phone",myAdsModel.getPhone());
+            Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + myAdsModel.getPhone()));
             startActivity(intent);
         });
         email_btn.setOnClickListener(view -> {
-            //send Message
+
+
+
+
+            if (user_id.equals("0"))
+            {
+                alertDialog.show();
+            }else if (!user_id.equals("0"))
+                {
+                    Intent intent = new Intent(this,SendMsgActivity.class);
+                    intent.putExtra("chat_user_id",myAdsModel.getAdvertisement_user());
+                    intent.putExtra("chat_user_name",myAdsModel.getAdvertisement_owner());
+                    intent.putExtra("chat_user_image",myAdsModel.getAdvertisement_owner_image());
+                    intent.putExtra("chat_user_phone",myAdsModel.getPhone());
+                    intent.putExtra("curr_user_name",userModel.getUser_full_name());
+                    intent.putExtra("curr_user_image",userModel.getUser_photo());
+                    startActivity(intent);
+                }
+
         });
 
         whats_btn.setOnClickListener(view -> {
-            Uri uri = Uri.parse("smsto:"+myAdsModel.getPhone());
-            Intent intent = new Intent(Intent.ACTION_SENDTO,uri);
-            intent.setPackage("com.whatsapp");
-            startActivity(intent);
+            String phone_number = myAdsModel.getPhone();
+            phone_number = phone_number.replace("+","");
+            Intent sendIntent = new Intent(Intent.ACTION_SEND);
+            sendIntent.setType("text/plain");
+            sendIntent.putExtra(Intent.EXTRA_TEXT, "السلام عليكم بخصوص اعلانك في تطبيق تدللي "+myAdsModel.getAdvertisement_title()+"\n"+"الكود"+myAdsModel.getAdvertisement_code());
+            sendIntent.putExtra("jid", phone_number + "@s.whatsapp.net"); //phone number without "+" prefix
+            sendIntent.setPackage("com.whatsapp");
+            if (sendIntent.resolveActivity(getPackageManager()) == null) {
+                Toast.makeText(this, "Error/n" + "", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            startActivity(sendIntent);
+
         });
 
         shareBtn.setOnClickListener(new View.OnClickListener() {
@@ -171,6 +209,25 @@ public class AdsDetailsActivity extends AppCompatActivity {
         });
     }
 
+    private void CreateAlertDialog() {
+        View view = LayoutInflater.from(this).inflate(R.layout.custom_dialog_msging,null);
+        TextView done = view.findViewById(R.id.done);
+
+        alertDialog =  new AlertDialog.Builder(this)
+                .setCancelable(false)
+                .create();
+
+        done.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                alertDialog.dismiss();
+            }
+        });
+
+        alertDialog.setView(view);
+        alertDialog.setCanceledOnTouchOutside(false);
+
+    }
     private void Share() {
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("text/plain");
@@ -232,7 +289,7 @@ public class AdsDetailsActivity extends AppCompatActivity {
     }
     private void  UpdateUi(MyAdsModel myAdsModel ,String whoVisit)
     {
-        Typeface typeface = Typeface.createFromAsset(getAssets(),"OYA-Regular.ttf");
+        //Typeface typeface = Typeface.createFromAsset(getAssets(),"OYA-Regular.ttf");
         if (whoVisit.equals(Tags.me_visit))
         {
             distContainer.setVisibility(View.GONE);
@@ -245,13 +302,24 @@ public class AdsDetailsActivity extends AppCompatActivity {
 
         }else
             {
+                if (!user_id.equals("0"))
+                {
+                    userSingleTone = UserSingleTone.getInstance();
+                    userSingleTone.getUser(this);
+                    Log.e("Register","register_user");
+                }else if (user_id.equals("0"))
+                    {
+                        Log.e("UnRegister","unregister_user");
+
+
+                    }
                 shareBtn.setEnabled(true);
                 viewerBtn.setEnabled(true);
                 distContainer.setVisibility(View.VISIBLE);
                 city.setVisibility(View.GONE);
                 city2.setVisibility(View.VISIBLE);
                 city2.setText(myAdsModel.getCity());
-                city2.setTypeface(typeface);
+                //city2.setTypeface(typeface);
                 ad_distance.setText(myAdsModel.getDistance()+" "+getString(R.string.km));
                 contactContainer.setVisibility(View.VISIBLE);
                 city.setVisibility(View.VISIBLE);
@@ -267,7 +335,7 @@ public class AdsDetailsActivity extends AppCompatActivity {
                     no_ads.setVisibility(View.VISIBLE);
 
                 }
-        ad_shares.setTypeface(typeface);
+       /* ad_shares.setTypeface(typeface);
         ad_viewers.setTypeface(typeface);
         city.setTypeface(typeface);
         ad_number.setTypeface(typeface);
@@ -275,7 +343,7 @@ public class AdsDetailsActivity extends AppCompatActivity {
         ad_date.setTypeface(typeface);
         ad_title.setTypeface(typeface);
         ad_details.setTypeface(typeface);
-        ad_name.setTypeface(typeface);
+        ad_name.setTypeface(typeface);*/
         images.addAll(myAdsModel.getAdvertisement_image());
         adapter.notifyDataSetChanged();
         ad_name.setText(myAdsModel.getAdvertisement_title());
@@ -298,6 +366,12 @@ public class AdsDetailsActivity extends AppCompatActivity {
             }
 
     }
+
+    @Override
+    public void onSuccess(UserModel userModel) {
+        this.userModel = userModel;
+    }
+
     public class TimerClass extends TimerTask{
         @Override
         public void run() {
@@ -325,6 +399,12 @@ public class AdsDetailsActivity extends AppCompatActivity {
         }
     }
 
+    public void setPagerItemClick()
+    {
+        Intent intent = new Intent(AdsDetailsActivity.this,ViewImagesActivity.class);
+        intent.putExtra("images", (Serializable) images);
+        startActivity(intent);
+    }
     @Override
     protected void onDestroy() {
         if (timer!=null)

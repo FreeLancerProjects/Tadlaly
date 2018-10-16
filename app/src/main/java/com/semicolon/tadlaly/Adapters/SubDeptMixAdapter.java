@@ -7,13 +7,11 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
 import com.semicolon.tadlaly.Models.DepartmentsModel;
-import com.semicolon.tadlaly.Models.UserModel;
-import com.semicolon.tadlaly.SingleTone.UserSingleTone;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class SubDeptMixAdapter extends FragmentStatePagerAdapter implements UserSingleTone.OnCompleteListener{
+public class SubDeptMixAdapter extends FragmentStatePagerAdapter {
     List<Fragment>fragmentList;
     List<DepartmentsModel.SubdepartObject> subdepartObjectList;
     Context context;
@@ -23,14 +21,6 @@ public class SubDeptMixAdapter extends FragmentStatePagerAdapter implements User
         this.context=context;
         this.subdepartObjectList = subdepartObjectList;
         fragmentList = new ArrayList<>();
-    }
-
-    @Override
-    public void onSuccess(UserModel userModel) {
-        /*this.userModel = userModel;
-        mylat = Double.parseDouble(userModel.getUser_google_lat());
-        myLng = Double.parseDouble(userModel.getUser_google_long());*/
-
     }
 
 
@@ -52,6 +42,8 @@ public class SubDeptMixAdapter extends FragmentStatePagerAdapter implements User
     @Nullable
     @Override
     public CharSequence getPageTitle(int position) {
-        return subdepartObjectList.get(position).getSub_department_name();
+        String t = subdepartObjectList.get(position).getSub_department_name().trim().replaceAll("\n","");
+        t = t.replaceAll("\t","");
+        return t;
     }
 }

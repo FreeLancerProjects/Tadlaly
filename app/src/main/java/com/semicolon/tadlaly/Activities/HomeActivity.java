@@ -5,11 +5,14 @@ import android.app.NotificationManager;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.BitmapFactory;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -47,8 +50,9 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.util.Locale;
+
 import de.hdodenhof.circleimageview.CircleImageView;
-import me.anwarshahriar.calligrapher.Calligrapher;
 import me.leolin.shortcutbadger.ShortcutBadger;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -63,7 +67,7 @@ public class HomeActivity extends AppCompatActivity
     private Toolbar toolbar;
     private CircleImageView user_image;
     private TextView user_name;
-    private ImageView share,all_ads,search;
+    private LinearLayout share,all_ads,search;
     private UserSingleTone userSingleTone;
     private UserModel userModel;
     private Preferences preferences;
@@ -75,12 +79,15 @@ public class HomeActivity extends AppCompatActivity
     private Home_Fragment home_fragment;
     private LatLngSingleTone latLngSingleTone;
     private NotificationManager notificationManager;
+    private ImageView img_back;
+    private TextView tv_title;
+    private AllAppAdsFragment allAppAdsFragment;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-        Calligrapher calligrapher = new Calligrapher(this);
-        calligrapher.setFont(this, "OYA-Regular.ttf", true);
+        /*Calligrapher calligrapher = new Calligrapher(this);
+        calligrapher.setFont(this, "OYA-Regular.ttf", true);*/
         EventBus.getDefault().register(this);
         getDataFromIntent();
         initView();
@@ -108,7 +115,7 @@ public class HomeActivity extends AppCompatActivity
                         latLngSingleTone = LatLngSingleTone.getInstance();
 
                     }
-                Log.e("user_type",user_type);
+                Log.e("Homeuser_type",user_type);
             }
         }
     }
@@ -164,8 +171,6 @@ public class HomeActivity extends AppCompatActivity
     {
         toolbar =  findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-
         drawer = findViewById(R.id.drawer_layout);
         toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -195,19 +200,26 @@ public class HomeActivity extends AppCompatActivity
 
             }else if (user_type.equals(Tags.app_user))
             {
+                profileContainer.setEnabled(true);
                 userSingleTone = UserSingleTone.getInstance();
                 userSingleTone.getUser(this);
             }
 
         if (user_type.equals(Tags.app_user))
         {
-            home_fragment = Home_Fragment.getInstance(Tags.app_user);
+            //home_fragment = Home_Fragment.getInstance(Tags.app_user);
+
+            home_fragment = Home_Fragment.getInstance(userModel.getUser_id(),Tags.app_user);
+
             getSupportFragmentManager().beginTransaction().replace(R.id.home_fragments_container,home_fragment).commit();
 
 
-        }else
+        }else if (user_type.equals(Tags.app_visitor))
             {
-                home_fragment = Home_Fragment.getInstance(Tags.app_visitor);
+
+                //home_fragment = Home_Fragment.getInstance(Tags.app_visitor);
+                home_fragment = Home_Fragment.getInstance("0",Tags.app_visitor);
+
                 getSupportFragmentManager().beginTransaction().replace(R.id.home_fragments_container,home_fragment).commit();
 
             }
@@ -216,10 +228,41 @@ public class HomeActivity extends AppCompatActivity
         share = findViewById(R.id.share);
         all_ads = findViewById(R.id.ads);
         search = findViewById(R.id.search);
+        img_back = findViewById(R.id.img_back);
+        tv_title = findViewById(R.id.tv_title);
+        img_back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                tv_title.setText(getString(R.string.home));
+                img_back.setVisibility(View.GONE);
+                if (user_type.equals(Tags.app_user))
+                {
+                    home_fragment = Home_Fragment.getInstance(userModel.getUser_id(),Tags.app_user);
+                    getSupportFragmentManager().beginTransaction().replace(R.id.home_fragments_container,home_fragment).commit();
 
+
+                }else
+                {
+                    home_fragment = Home_Fragment.getInstance("0",Tags.app_visitor);
+                    getSupportFragmentManager().beginTransaction().replace(R.id.home_fragments_container,home_fragment).commit();
+
+                }
+            }
+        });
         share.setOnClickListener(this);
         all_ads.setOnClickListener(this);
         search.setOnClickListener(this);
+
+        if (Locale.getDefault().getLanguage().equals("ar"))
+        {
+            img_back.setImageResource(R.drawable.white_back_arrow);
+
+        }else
+            {
+                img_back.setImageResource(R.drawable.right_arrow);
+
+
+            }
 
     }
     private void CreateProgress_dialog()
@@ -245,15 +288,17 @@ public class HomeActivity extends AppCompatActivity
 
             }else
                 {
+                    tv_title.setText(getString(R.string.home));
+                    img_back.setVisibility(View.GONE);
                     if (user_type.equals(Tags.app_user))
                     {
-                        home_fragment = Home_Fragment.getInstance(userModel.getUser_id());
+                        home_fragment = Home_Fragment.getInstance(userModel.getUser_id(),user_type);
                         getSupportFragmentManager().beginTransaction().replace(R.id.home_fragments_container,home_fragment).commit();
 
 
                     }else
                     {
-                        home_fragment = Home_Fragment.getInstance("0");
+                        home_fragment = Home_Fragment.getInstance("0",user_type);
                         getSupportFragmentManager().beginTransaction().replace(R.id.home_fragments_container,home_fragment).commit();
 
                     }
@@ -267,15 +312,17 @@ public class HomeActivity extends AppCompatActivity
         switch (id)
         {
             case R.id.home:
+                tv_title.setText(getString(R.string.home));
+                img_back.setVisibility(View.GONE);
                 if (user_type.equals(Tags.app_user))
                 {
-                    home_fragment = Home_Fragment.getInstance(userModel.getUser_id());
+                    home_fragment = Home_Fragment.getInstance(userModel.getUser_id(),Tags.app_user);
                     getSupportFragmentManager().beginTransaction().replace(R.id.home_fragments_container,home_fragment).commit();
 
 
                 }else
                 {
-                    home_fragment = Home_Fragment.getInstance("0");
+                    home_fragment = Home_Fragment.getInstance("0",Tags.app_visitor);
                     getSupportFragmentManager().beginTransaction().replace(R.id.home_fragments_container,home_fragment).commit();
 
                 }
@@ -315,6 +362,8 @@ public class HomeActivity extends AppCompatActivity
 
                 break;
             case R.id.contactUs:
+                Log.e("user_type000",user_type);
+
                 Intent contact = new Intent(this,ContactUsActivity.class);
                 contact.putExtra("user_type",user_type);
                 startActivity(contact);
@@ -326,10 +375,10 @@ public class HomeActivity extends AppCompatActivity
                 finish();
 
                 break;
-            case R.id.suggestion:
-                /*Intent suggestion = new Intent(this,ContactUsActivity.class);
-                startActivity(suggestion);*/
-                break;
+            /*case R.id.suggestion:
+                *//*Intent suggestion = new Intent(this,ContactUsActivity.class);
+                startActivity(suggestion);*//*
+                break;*/
             case R.id.aboutApp:
                 Intent aboutApp = new Intent(this,AboutAppActivity.class);
                 startActivity(aboutApp);
@@ -413,21 +462,44 @@ public class HomeActivity extends AppCompatActivity
                 Share();
                 break;
             case R.id.ads:
+                tv_title.setText(R.string.all_ads);
+                img_back.setVisibility(View.VISIBLE);
+
                 if (user_type.equals(Tags.app_user))
                 {
-                    AllAppAdsFragment allAppAdsFragment = AllAppAdsFragment.getInstance(Tags.app_user);
+
+                    Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.home_fragments_container);
+                    if (fragment instanceof AllAppAdsFragment)
+                    {
+                        tv_title.setText(getString(R.string.home));
+                        img_back.setVisibility(View.GONE);
+                        getSupportFragmentManager().beginTransaction().replace(R.id.home_fragments_container,home_fragment).commit();
+                        return;
+                    }
+
+                    allAppAdsFragment = AllAppAdsFragment.getInstance(userModel.getUser_id(),Tags.app_user);
                     getSupportFragmentManager().beginTransaction().replace(R.id.home_fragments_container,allAppAdsFragment).commit();
 
                 }else if (user_type.equals(Tags.app_visitor))
                 {
-                    AllAppAdsFragment allAppAdsFragment = AllAppAdsFragment.getInstance(Tags.app_visitor);
+                    Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.home_fragments_container);
+
+                    if (fragment instanceof AllAppAdsFragment)
+                    {
+                        tv_title.setText(getString(R.string.home));
+                        img_back.setVisibility(View.GONE);
+                        getSupportFragmentManager().beginTransaction().replace(R.id.home_fragments_container,home_fragment).commit();
+                        return;
+                    }
+                    allAppAdsFragment = AllAppAdsFragment.getInstance("0",Tags.app_visitor);
                     getSupportFragmentManager().beginTransaction().replace(R.id.home_fragments_container,allAppAdsFragment).commit();
 
                 }
 
                 break;
             case R.id.search:
-                Intent intent = new Intent(HomeActivity.this,GeneralSearchActivity.class);
+
+                Intent intent = new Intent(HomeActivity.this,SearchActivity.class);
                 intent.putExtra("user_type",user_type);
                 startActivity(intent);
                 break;
@@ -436,10 +508,12 @@ public class HomeActivity extends AppCompatActivity
     private void Share()
     {
         try {
-
+            Uri uri = Uri.parse(MediaStore.Images.Media.insertImage(getContentResolver(), BitmapFactory.decodeResource(getResources(),R.drawable.share_image),null,null));
             Intent intent = new Intent(Intent.ACTION_SEND);
-            intent.setType("text/plain");
-            intent.putExtra(Intent.EXTRA_TEXT,"تطبيق تدللي");
+            intent.setType("*/*");
+            intent.putExtra(Intent.EXTRA_STREAM,uri);
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            intent.putExtra(Intent.EXTRA_TEXT,"تطبيق تدللي\n"+"\n"+"IOS URL:   https://itunes.apple.com/us/app/tadlly-%D8%AA%D8%AF%D9%84%D9%84%D9%8A/id1422871307?ls=1&mt=8"+"\n WEB URL : http://tdlly.com/");
             startActivity(intent);
 
         }catch (NullPointerException e)
@@ -459,8 +533,8 @@ public class HomeActivity extends AppCompatActivity
 
         }else
             {
-                Log.e("locationUpdate_Lat",locationModel.getLat()+"");
-                Log.e("locationUpdate_Lng",locationModel.getLng()+"");
+                Log.e("locationUpdate_Lat2",locationModel.getLat()+"");
+                Log.e("locationUpdate_Lng2",locationModel.getLng()+"");
                 latLngSingleTone.setLatLng(locationModel.getLat(),locationModel.getLng());
             }
     }
@@ -539,10 +613,23 @@ public class HomeActivity extends AppCompatActivity
     public void SetMyadsData(MyAdsModel myAdsModel)
     {
         try {
-            Intent intent = new Intent(this,AdsDetailsActivity.class);
-            intent.putExtra("ad_details",myAdsModel);
-            intent.putExtra("whoVisit",Tags.visitor);
-            startActivity(intent);
+            if (user_type.equals(Tags.app_user))
+            {
+                Intent intent = new Intent(this,AdsDetailsActivity.class);
+                intent.putExtra("ad_details",myAdsModel);
+                intent.putExtra("whoVisit",Tags.visitor);
+                intent.putExtra("user_id",userModel.getUser_id());
+                startActivity(intent);
+            }else if (user_type.equals(Tags.app_visitor))
+            {
+                Intent intent = new Intent(this,AdsDetailsActivity.class);
+                intent.putExtra("ad_details",myAdsModel);
+                intent.putExtra("whoVisit",Tags.visitor);
+                intent.putExtra("user_id","0");
+
+                startActivity(intent);
+            }
+
         }catch (NullPointerException e)
         {
 
@@ -563,4 +650,12 @@ public class HomeActivity extends AppCompatActivity
     public void onSuccess(double lat, double lng) {
 
     }
+
+    public void setTitle(String title)
+    {
+        tv_title.setText(title);
+        img_back.setVisibility(View.VISIBLE);
+    }
+
+
 }

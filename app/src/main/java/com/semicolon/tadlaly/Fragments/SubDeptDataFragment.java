@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -53,7 +54,7 @@ public class SubDeptDataFragment extends Fragment implements UserSingleTone.OnCo
         {
             subdepartObjectList2 = (List<DepartmentsModel.SubdepartObject>) bundle.getSerializable("subDept_data");
             user_id = bundle.getString("user_id");
-
+            Log.e("SDDF_id",user_id);
             for (DepartmentsModel.SubdepartObject object:subdepartObjectList2)
             {
                 fragmentList.add(SubDataFragment.newInstance(object.getSub_department_id(),user_id));
@@ -81,6 +82,11 @@ public class SubDeptDataFragment extends Fragment implements UserSingleTone.OnCo
         subDeptMixAdapter.AddFragment(fragmentList);
         pager.setAdapter(subDeptMixAdapter);
         tab.setupWithViewPager(pager);
+
+
+
+
+
     }
 
        @Override

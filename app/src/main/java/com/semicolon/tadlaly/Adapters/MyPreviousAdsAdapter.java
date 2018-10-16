@@ -1,7 +1,6 @@
 package com.semicolon.tadlaly.Adapters;
 
 import android.content.Context;
-import android.graphics.Typeface;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
@@ -146,14 +145,14 @@ public class MyPreviousAdsAdapter extends RecyclerView.Adapter <RecyclerView.Vie
         public void BindData(MyAdsModel myAdsModel)
         {
 
-            Typeface typeface =Typeface.createFromAsset(context.getAssets(),"OYA-Regular.ttf");
+           // Typeface typeface =Typeface.createFromAsset(context.getAssets(),"OYA-Regular.ttf");
             if (myAdsModel.getAdvertisement_image().size()>0)
             {
                 Picasso.with(context).load(Uri.parse(Tags.Image_Url+myAdsModel.getAdvertisement_image().get(0).getPhoto_name())).into(img);
                 Log.e("size1",myAdsModel.getAdvertisement_image().size()+"");
             }
-            date.setTypeface(typeface);
-            date.setText(myAdsModel.getAdvertisement_date());
+            //date.setTypeface(typeface);
+            date.setText("منذ "+myAdsModel.getAdvertisement_date());
 
             if (myAdsModel.getAdvertisement_type().equals(Tags.ad_new))
             {
@@ -164,9 +163,9 @@ public class MyPreviousAdsAdapter extends RecyclerView.Adapter <RecyclerView.Vie
                     state_new.setVisibility(View.GONE);
                     state_old.setVisibility(View.VISIBLE);
                 }
-            name.setTypeface(typeface);
+           // name.setTypeface(typeface);
             name.setText(myAdsModel.getAdvertisement_title());
-            cost.setTypeface(typeface);
+            //cost.setTypeface(typeface);
             cost.setText(myAdsModel.getAdvertisement_price()+" ريال");
             viewers.setText(myAdsModel.getView_count());
         }

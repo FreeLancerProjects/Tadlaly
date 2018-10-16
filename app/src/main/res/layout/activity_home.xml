@@ -8,7 +8,6 @@
     android:fitsSystemWindows="true"
     tools:openDrawer="start"
     android:scrollbars="none"
-    android:layoutDirection="rtl"
     >
 
     <include
