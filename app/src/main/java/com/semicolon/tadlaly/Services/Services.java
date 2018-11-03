@@ -112,9 +112,11 @@ public interface Services {
 
     @Multipart
     @POST("Api/UpdateAdvertisement/{advertisement_id}")
-    Call<MyAdsModel> updateMyAds(@Path("advertisement_id") String advertisement_id,@FieldMap Map<String,RequestBody> map,@Part List<MultipartBody.Part> imgs);
+    Call<MyAdsModel> updateMyAdsWithImage(@Path("advertisement_id") String advertisement_id, @PartMap Map<String,RequestBody> map, @Part List<MultipartBody.Part> imgs);
 
-    @GET("Api/UpdateLocation/{user_id}/{id_photo}")
+
+
+    @GET("Api/DeletePhoto/{user_id}/{id_photo}")
     Call<ResponseModel> deleteAdsImage(@Path("user_id") String user_id,@Path("id_photo") String id_photo);
     /*@GET()
     Observable<PlacesDistanceModel> getDistance(@Url String url);*/

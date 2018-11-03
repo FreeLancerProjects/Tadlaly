@@ -55,7 +55,7 @@ public class OldAds_Fragment extends Fragment implements UserSingleTone.OnComple
     private UserSingleTone userSingleTone;
     private UserModel userModel;
     private TextView no_ads;
-    private int page_index =2;
+    private int page_index =1;
 
     @Nullable
     @Override

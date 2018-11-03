@@ -84,6 +84,7 @@ public class UpdateAdsActivity extends AppCompatActivity implements DepartmentSi
     private Bitmap bitmap1,bitmap2,bitmap3,bitmap4,bitmap5,bitmap6;
     private String isVisible;
     private ImageView image1_delete,image2_delete,image3_delete,image4_delete,image5_delete,image6_delete;
+    private ImageView image1_delete_from_gallery,image2_delete_from_gallery,image3_delete_from_gallery,image4_delete_from_gallery,image5_delete_from_gallery,image6_delete_from_gallery;
     private List<ImageView> imageDeleteList;
     private SpinnerDeptAdapter deptAdapter;
     private SpinnerBranchAdapter branchAdapter;
@@ -104,6 +105,14 @@ public class UpdateAdsActivity extends AppCompatActivity implements DepartmentSi
     private final String read_perm = Manifest.permission.READ_EXTERNAL_STORAGE;
     private List<Uri> uriList;
     private List<MyAdsModel.Images> imagesList;
+    private boolean canAddImg1=true;
+    private boolean canAddImg2=true;
+    private boolean canAddImg3=true;
+    private boolean canAddImg4=true;
+    private boolean canAddImg5=true;
+    private boolean canAddImg6=true;
+    private Map<Integer,Uri > map;
+
     @Override
     protected void attachBaseContext(Context newBase) {
         Paper.init(newBase);
@@ -129,6 +138,7 @@ public class UpdateAdsActivity extends AppCompatActivity implements DepartmentSi
 
     private void
     initView() {
+        map = new HashMap<>();
         deptList = new ArrayList<>();
         roundedImageViewList = new ArrayList<>();
         imageDeleteList = new ArrayList<>();
@@ -158,6 +168,13 @@ public class UpdateAdsActivity extends AppCompatActivity implements DepartmentSi
         roundedImageViewList.add(img4);
         roundedImageViewList.add(img5);
         roundedImageViewList.add(img6);
+
+        image1_delete_from_gallery = findViewById(R.id.image1_delete_from_gallery);
+        image2_delete_from_gallery = findViewById(R.id.image2_delete_from_gallery);
+        image3_delete_from_gallery = findViewById(R.id.image3_delete_from_gallery);
+        image4_delete_from_gallery = findViewById(R.id.image4_delete_from_gallery);
+        image5_delete_from_gallery = findViewById(R.id.image5_delete_from_gallery);
+        image6_delete_from_gallery = findViewById(R.id.image6_delete_from_gallery);
 
         image1_delete = findViewById(R.id.image1_delete);
         image2_delete = findViewById(R.id.image2_delete);
@@ -280,6 +297,14 @@ public class UpdateAdsActivity extends AppCompatActivity implements DepartmentSi
         img4.setOnClickListener(this);
         img5.setOnClickListener(this);
         img6.setOnClickListener(this);
+
+        image1_delete_from_gallery.setOnClickListener(this);
+        image2_delete_from_gallery.setOnClickListener(this);
+        image3_delete_from_gallery.setOnClickListener(this);
+        image4_delete_from_gallery.setOnClickListener(this);
+        image5_delete_from_gallery.setOnClickListener(this);
+        image6_delete_from_gallery.setOnClickListener(this);
+
         updateBtn.setOnClickListener(this);
         location.setOnClickListener(this);
 
@@ -399,7 +424,68 @@ public class UpdateAdsActivity extends AppCompatActivity implements DepartmentSi
 
             }
 
+            if (imagesList.size()==0)
+            {
+                canAddImg1 = true;
+                canAddImg2 = true;
+                canAddImg3 = true;
+                canAddImg4 = true;
+                canAddImg5 = true;
+                canAddImg6 = true;
+
+            }else if (imagesList.size()==1)
+            {
+                canAddImg1 = false;
+                canAddImg2 = true;
+                canAddImg3 = true;
+                canAddImg4 = true;
+                canAddImg5 = true;
+                canAddImg6 = true;
+            }else if (imagesList.size()==2)
+            {
+                canAddImg1 = false;
+                canAddImg2 = false;
+                canAddImg3 = true;
+                canAddImg4 = true;
+                canAddImg5 = true;
+                canAddImg6 = true;
+            }else if (imagesList.size()==3)
+            {
+                canAddImg1 = false;
+                canAddImg2 = false;
+                canAddImg3 = false;
+                canAddImg4 = true;
+                canAddImg5 = true;
+                canAddImg6 = true;
+            }else if (imagesList.size()==4)
+            {
+                canAddImg1 = false;
+                canAddImg2 = false;
+                canAddImg3 = false;
+                canAddImg4 = false;
+                canAddImg5 = true;
+                canAddImg6 = true;
+            }else if (imagesList.size()==5)
+            {
+                canAddImg1 = false;
+                canAddImg2 = false;
+                canAddImg3 = false;
+                canAddImg4 = false;
+                canAddImg5 = false;
+                canAddImg6 = true;
+            }
+            else if (imagesList.size()==6)
+            {
+                canAddImg1 = false;
+                canAddImg2 = false;
+                canAddImg3 = false;
+                canAddImg4 = false;
+                canAddImg5 = false;
+                canAddImg6 = false;
+            }
+
         }
+
 
     }
 
@@ -501,6 +587,7 @@ public class UpdateAdsActivity extends AppCompatActivity implements DepartmentSi
         });
 
         alertDialog.setCanceledOnTouchOutside(false);
+        alertDialog.setView(view);
         alertDialog.getWindow().getAttributes().windowAnimations=R.style.dialog;
         alertDialog.show();
 
@@ -523,7 +610,38 @@ public class UpdateAdsActivity extends AppCompatActivity implements DepartmentSi
                             if (response.body().getSuccess_delete()==1)
                             {
                                 imageDeleteList.get(position).setVisibility(View.GONE);
-                                imageDeleteList.get(position).setImageResource(R.drawable.imgs_bg);
+
+                                roundedImageViewList.get(position).setImageBitmap(null);
+                                roundedImageViewList.get(position).setImageResource(R.drawable.imgs_bg);
+                                if (position==0)
+                                {
+                                    bitmap1=null;
+                                }else if (position==1)
+                                {
+                                    bitmap2=null;
+
+                                }
+                                else if (position==2)
+                                {
+                                    bitmap3=null;
+
+                                }
+                                else if (position==3)
+                                {
+                                    bitmap4=null;
+
+                                }
+                                else if (position==4)
+                                {
+                                    bitmap5=null;
+
+                                }
+                                else if (position==5)
+                                {
+                                    bitmap6=null;
+
+                                }
+                                finish();
                             }else
                                 {
                                     Toast.makeText(UpdateAdsActivity.this,R.string.something, Toast.LENGTH_SHORT).show();
@@ -549,22 +667,46 @@ public class UpdateAdsActivity extends AppCompatActivity implements DepartmentSi
         switch (id)
         {
             case R.id.img1:
-                CheckReadPermission(img1_req);
+                if (canAddImg1)
+                {
+                    CheckReadPermission(img1_req);
+
+                }
                 break;
             case R.id.img2:
-                CheckReadPermission(img2_req);
+                if (canAddImg2)
+                {
+                    CheckReadPermission(img2_req);
+
+                }
                 break;
             case R.id.img3:
-                CheckReadPermission(img3_req);
+                if (canAddImg3)
+                {
+                    CheckReadPermission(img3_req);
+
+                }
                 break;
             case R.id.img4:
-                CheckReadPermission(img4_req);
+                if (canAddImg4)
+                {
+                    CheckReadPermission(img4_req);
+
+                }
                 break;
             case R.id.img5:
-                CheckReadPermission(img5_req);
+                if (canAddImg5)
+                {
+                    CheckReadPermission(img5_req);
+
+                }
                 break;
             case R.id.img6:
-                CheckReadPermission(img6_req);
+                if (canAddImg6)
+                {
+                    CheckReadPermission(img6_req);
+
+                }
                 break;
 
             case R.id.image1_delete:
@@ -588,6 +730,56 @@ public class UpdateAdsActivity extends AppCompatActivity implements DepartmentSi
                 break;
             case R.id.image6_delete:
                 CreateDeleteAlertDialog(imagesList.get(5).getId_photo(),5);
+
+                break;
+
+                ////////////////////////
+            case R.id.image1_delete_from_gallery:
+
+                bitmap1=null;
+                img1.setImageBitmap(bitmap1);
+                img1.setImageResource(R.drawable.imgs_bg);
+                map.remove(1);
+                image1_delete_from_gallery.setVisibility(View.GONE);
+                break;
+            case R.id.image2_delete_from_gallery:
+                bitmap2=null;
+                img2.setImageBitmap(bitmap2);
+                img2.setImageResource(R.drawable.imgs_bg);
+                map.remove(2);
+                image2_delete_from_gallery.setVisibility(View.GONE);
+
+                break;
+            case R.id.image3_delete_from_gallery:
+                bitmap3=null;
+                img3.setImageBitmap(bitmap3);
+                img3.setImageResource(R.drawable.imgs_bg);
+                map.remove(3);
+                image3_delete_from_gallery.setVisibility(View.GONE);
+
+                break;
+            case R.id.image4_delete_from_gallery:
+                bitmap4=null;
+                img4.setImageBitmap(bitmap4);
+                img4.setImageResource(R.drawable.imgs_bg);
+                map.remove(4);
+                image4_delete_from_gallery.setVisibility(View.GONE);
+
+                break;
+            case R.id.image5_delete_from_gallery:
+                bitmap5=null;
+                img5.setImageBitmap(bitmap5);
+                img5.setImageResource(R.drawable.imgs_bg);
+                map.remove(5);
+                image5_delete_from_gallery.setVisibility(View.GONE);
+
+                break;
+            case R.id.image6_delete_from_gallery:
+                bitmap6=null;
+                img6.setImageBitmap(bitmap6);
+                img6.setImageResource(R.drawable.imgs_bg);
+                map.remove(6);
+                image6_delete_from_gallery.setVisibility(View.GONE);
 
                 break;
             case R.id.update_btn:
@@ -702,11 +894,13 @@ public class UpdateAdsActivity extends AppCompatActivity implements DepartmentSi
 
     }
     private void UpdateAds() {
+
         String m_name = ad_title.getText().toString();
         String m_address= ad_address.getText().toString();
         String m_price = ad_cost.getText().toString();
         String m_phone = phone.getPhoneNumber();
         String m_content = ad_content.getText().toString();
+
 
         if (TextUtils.isEmpty(m_name))
         {
@@ -769,69 +963,88 @@ public class UpdateAdsActivity extends AppCompatActivity implements DepartmentSi
             ad_content.setError(getString(R.string.enter_ad_content));
         }else
             {
-                //images[]
                 dialog.show();
-                String[] split = m_price.split(" ");
-                Log.e("cost",split[0]);
 
-                RequestBody dept_id_part = Common.getRequestBody(m_dept_id);
-                RequestBody branch_id_part = Common.getRequestBody(m_branch_id);
-                RequestBody name_part = Common.getRequestBody(m_name);
-                RequestBody content_part = Common.getRequestBody(m_content);
-                RequestBody price_part = Common.getRequestBody(split[0]);
-                RequestBody type_part = Common.getRequestBody(mType);
-                RequestBody lat_part = Common.getRequestBody(userModel.getUser_google_lat());
-                RequestBody lng_part = Common.getRequestBody(userModel.getUser_google_long());
-                RequestBody city_part = Common.getRequestBody(m_address);
-                RequestBody phone_part = Common.getRequestBody(m_phone);
-                RequestBody show_phone_part = Common.getRequestBody(isVisible);
+                if (map.size()==0)
+                {
+                    Toast.makeText(this, R.string.ch_ad_imgs, Toast.LENGTH_SHORT).show();
+                }else if (map.size()>0)
+                {
+                    UpdateAdsWithImage(m_price,m_name,m_content,m_address,m_phone);
+                }
 
-                List<MultipartBody.Part> partList = getMultipartBodyList(uriList);
 
-                Map<String, RequestBody> map = new HashMap<>();
-                map.put("main_department",dept_id_part);
-                map.put("sub_department",branch_id_part);
-                map.put("advertisement_title",name_part);
-                map.put("advertisement_content",content_part);
-                map.put("advertisement_price",price_part);
-                map.put("advertisement_type",type_part);
-                map.put("google_lat",lat_part);
-                map.put("google_long",lng_part);
-                map.put("city",city_part);
-                map.put("phone",phone_part);
-                map.put("show_phone",show_phone_part);
-
-                Retrofit retrofit = Api.getRetrofit(Tags.Base_Url);
-                Call<MyAdsModel> call = retrofit.create(Services.class).updateMyAds(myAdsModel.getId_advertisement(), map, partList);
-                call.enqueue(new Callback<MyAdsModel>() {
-                    @Override
-                    public void onResponse(Call<MyAdsModel> call, Response<MyAdsModel> response) {
-                        if (response.isSuccessful())
-                        {
-                            if (response.body().getSuccess()==1)
-                            {
-                                dialog.dismiss();
-                                Toast.makeText(UpdateAdsActivity.this, R.string.ad_upd_succ, Toast.LENGTH_SHORT).show();
-                                finish();
-                            }
-                            else if (response.body().getSuccess()==0)
-                                {
-                                    dialog.dismiss();
-                                    Toast.makeText(UpdateAdsActivity.this, R.string.error, Toast.LENGTH_SHORT).show();
-
-                                }
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<MyAdsModel> call, Throwable t) {
-                        Log.e("Error",t.getMessage());
-                        Toast.makeText(UpdateAdsActivity.this,R.string.error, Toast.LENGTH_SHORT).show();
-                    }
-                });
             }
 
     }
+
+    private void UpdateAdsWithImage(String m_price,String m_name,String m_content,String m_address,String m_phone) {
+
+        for (Integer key : map.keySet())
+        {
+            uriList.add(map.get(key));
+        }
+        String[] split = m_price.split(" ");
+        Log.e("cost",split[0]);
+
+        RequestBody dept_id_part = Common.getRequestBody(m_dept_id);
+        RequestBody branch_id_part = Common.getRequestBody(m_branch_id);
+        RequestBody name_part = Common.getRequestBody(m_name);
+        RequestBody content_part = Common.getRequestBody(m_content);
+        RequestBody price_part = Common.getRequestBody(split[0]);
+        RequestBody type_part = Common.getRequestBody(mType);
+        RequestBody lat_part = Common.getRequestBody(userModel.getUser_google_lat());
+        RequestBody lng_part = Common.getRequestBody(userModel.getUser_google_long());
+        RequestBody city_part = Common.getRequestBody(m_address);
+        RequestBody phone_part = Common.getRequestBody(m_phone);
+        RequestBody show_phone_part = Common.getRequestBody(isVisible);
+
+        List<MultipartBody.Part> partList = getMultipartBodyList(uriList);
+
+        Map<String, RequestBody> map = new HashMap<>();
+        map.put("main_department",dept_id_part);
+        map.put("sub_department",branch_id_part);
+        map.put("advertisement_title",name_part);
+        map.put("advertisement_content",content_part);
+        map.put("advertisement_price",price_part);
+        map.put("advertisement_type",type_part);
+        map.put("google_lat",lat_part);
+        map.put("google_long",lng_part);
+        map.put("city",city_part);
+        map.put("phone",phone_part);
+        map.put("show_phone",show_phone_part);
+
+        Retrofit retrofit = Api.getRetrofit(Tags.Base_Url);
+        Call<MyAdsModel> call = retrofit.create(Services.class).updateMyAdsWithImage(myAdsModel.getId_advertisement(), map, partList);
+        call.enqueue(new Callback<MyAdsModel>() {
+            @Override
+            public void onResponse(Call<MyAdsModel> call, Response<MyAdsModel> response) {
+                if (response.isSuccessful())
+                {
+                    if (response.body().getSuccess()==1)
+                    {
+                        dialog.dismiss();
+                        Toast.makeText(UpdateAdsActivity.this, R.string.ad_upd_succ, Toast.LENGTH_SHORT).show();
+                        finish();
+                    }
+                    else if (response.body().getSuccess()==0)
+                    {
+                        dialog.dismiss();
+                        Toast.makeText(UpdateAdsActivity.this, R.string.error, Toast.LENGTH_SHORT).show();
+
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<MyAdsModel> call, Throwable t) {
+                Log.e("Error",t.getMessage());
+                Toast.makeText(UpdateAdsActivity.this,R.string.error, Toast.LENGTH_SHORT).show();
+            }
+        });
+
+    }
+
 
     private void SelectImage(int req)
     {
@@ -847,42 +1060,64 @@ public class UpdateAdsActivity extends AppCompatActivity implements DepartmentSi
         {
 
             Uri uri = data.getData();
-            uriList.add(uri);
+            //uriList.add(uri);
             bitmap1 = BitmapFactory.decodeFile(Common.getImagePathFromUri(this,uri));
             img1.setImageBitmap(bitmap1);
+            map.put(1,uri);
+            image1_delete_from_gallery.setVisibility(View.VISIBLE);
 
         }else if (requestCode==img2_req && resultCode==RESULT_OK && data!=null)
         {
             Uri uri = data.getData();
-            uriList.add(uri);
+            //uriList.add(uri);
             bitmap2 = BitmapFactory.decodeFile(Common.getImagePathFromUri(this,uri));
             img2.setImageBitmap(bitmap2);
+            map.put(2,uri);
+            image2_delete_from_gallery.setVisibility(View.VISIBLE);
+
+
         }
         else if (requestCode==img3_req && resultCode==RESULT_OK && data!=null)
         {
             Uri uri = data.getData();
-            uriList.add(uri);
+            //uriList.add(uri);
             bitmap3 = BitmapFactory.decodeFile(Common.getImagePathFromUri(this,uri));
             img3.setImageBitmap(bitmap3);
+            map.put(3,uri);
+            image3_delete_from_gallery.setVisibility(View.VISIBLE);
+
+
 
         }else if (requestCode==img4_req && resultCode==RESULT_OK && data!=null)
         {
             Uri uri = data.getData();
-            uriList.add(uri);
+            //uriList.add(uri);
             bitmap4 = BitmapFactory.decodeFile(Common.getImagePathFromUri(this,uri));
             img4.setImageBitmap(bitmap4);
+            map.put(4,uri);
+            image4_delete_from_gallery.setVisibility(View.VISIBLE);
+
+
         }else if (requestCode==img5_req && resultCode==RESULT_OK && data!=null)
         {
             Uri uri = data.getData();
-            uriList.add(uri);
+            //uriList.add(4,uri);
             bitmap5 = BitmapFactory.decodeFile(Common.getImagePathFromUri(this,uri));
             img5.setImageBitmap(bitmap5);
+            map.put(5,uri);
+            image5_delete_from_gallery.setVisibility(View.VISIBLE);
+
+
         }else if (requestCode==img6_req && resultCode==RESULT_OK && data!=null)
         {
             Uri uri = data.getData();
-            uriList.add(uri);
+            //uriList.add(uri);
             bitmap6 = BitmapFactory.decodeFile(Common.getImagePathFromUri(this,uri));
             img6.setImageBitmap(bitmap6);
+            map.put(6,uri);
+            image6_delete_from_gallery.setVisibility(View.VISIBLE);
+
+
         }
 
     }
@@ -891,7 +1126,7 @@ public class UpdateAdsActivity extends AppCompatActivity implements DepartmentSi
     {
         List<MultipartBody.Part> partList = new ArrayList<>();
         for (Uri uri:uriList) {
-            MultipartBody.Part part = Common.getMultiPartBody(uri,this);
+            MultipartBody.Part part = Common.getListMultiPartBody(uri,this);
             partList.add(part);
         }
         return partList;

@@ -304,6 +304,15 @@
                                 android:padding="6dp"
                                 android:visibility="gone"
                                 />
+                            <ImageView
+                                android:id="@+id/image1_delete_from_gallery"
+                                android:layout_width="25dp"
+                                android:layout_height="25dp"
+                                android:background="@drawable/del_bg"
+                                android:src="@drawable/del"
+                                android:padding="6dp"
+                                android:visibility="gone"
+                                />
                         </FrameLayout>
 
                         <FrameLayout
@@ -324,6 +333,15 @@
                                 />
                             <ImageView
                                 android:id="@+id/image2_delete"
+                                android:layout_width="25dp"
+                                android:layout_height="25dp"
+                                android:background="@drawable/del_bg"
+                                android:src="@drawable/del"
+                                android:padding="6dp"
+                                android:visibility="gone"
+                                />
+                            <ImageView
+                                android:id="@+id/image2_delete_from_gallery"
                                 android:layout_width="25dp"
                                 android:layout_height="25dp"
                                 android:background="@drawable/del_bg"
@@ -359,6 +377,15 @@
                                 android:padding="6dp"
                                 android:visibility="gone"
                                 />
+                            <ImageView
+                                android:id="@+id/image3_delete_from_gallery"
+                                android:layout_width="25dp"
+                                android:layout_height="25dp"
+                                android:background="@drawable/del_bg"
+                                android:src="@drawable/del"
+                                android:padding="6dp"
+                                android:visibility="gone"
+                                />
                         </FrameLayout>
 
 
@@ -380,6 +407,15 @@
                                 />
                             <ImageView
                                 android:id="@+id/image4_delete"
+                                android:layout_width="25dp"
+                                android:layout_height="25dp"
+                                android:background="@drawable/del_bg"
+                                android:src="@drawable/del"
+                                android:padding="6dp"
+                                android:visibility="gone"
+                                />
+                            <ImageView
+                                android:id="@+id/image4_delete_from_gallery"
                                 android:layout_width="25dp"
                                 android:layout_height="25dp"
                                 android:background="@drawable/del_bg"
@@ -414,6 +450,15 @@
                                 android:padding="6dp"
                                 android:visibility="gone"
                                 />
+                            <ImageView
+                                android:id="@+id/image5_delete_from_gallery"
+                                android:layout_width="25dp"
+                                android:layout_height="25dp"
+                                android:background="@drawable/del_bg"
+                                android:src="@drawable/del"
+                                android:padding="6dp"
+                                android:visibility="gone"
+                                />
                         </FrameLayout>
 
 
@@ -435,6 +480,15 @@
                                 />
                             <ImageView
                                 android:id="@+id/image6_delete"
+                                android:layout_width="25dp"
+                                android:layout_height="25dp"
+                                android:background="@drawable/del_bg"
+                                android:src="@drawable/del"
+                                android:padding="6dp"
+                                android:visibility="gone"
+                                />
+                            <ImageView
+                                android:id="@+id/image6_delete_from_gallery"
                                 android:layout_width="25dp"
                                 android:layout_height="25dp"
                                 android:background="@drawable/del_bg"

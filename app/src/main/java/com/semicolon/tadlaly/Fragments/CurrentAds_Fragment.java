@@ -63,7 +63,7 @@ public class CurrentAds_Fragment extends Fragment implements View.OnLongClickLis
     private String isSell="-1";
     private RadioButton sellBtn,undoBtn;
     private List<String> ads_ids;
-    private int page_index=2;
+    private int page_index=1;
 
     @Nullable
     @Override

@@ -54,7 +54,7 @@ public class SubDataFragment extends Fragment implements UserSingleTone.OnComple
     private List<Double> distList;
     private Map<String,Double> map;
     private List<String> idsList;
-    private int page_index=2;
+    private int page_index=1;
     private String button_type="nearby";
     private String user_id="";
     private Call<List<MyAdsModel>> call;

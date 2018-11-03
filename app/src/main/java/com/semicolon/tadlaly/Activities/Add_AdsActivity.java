@@ -97,8 +97,6 @@ public class Add_AdsActivity extends AppCompatActivity implements UserSingleTone
     private int img_num=0;
     private final int IMG_REQ=2;
     private Bitmap bitmap1,bitmap2,bitmap3,bitmap4,bitmap5,bitmap6;
-    private List<Bitmap> bitmapList;
-    private List<String> encodeImages;
     private Button send_btn;
     private EditText address,ads_content,ad_title;
     private TextView phone,location,cost;
@@ -169,8 +167,6 @@ public class Add_AdsActivity extends AppCompatActivity implements UserSingleTone
         departmentsModelList = new ArrayList<>();
         deptList = new ArrayList<>();
         //deptName = new ArrayList<>();
-        encodeImages = new ArrayList<>();
-        bitmapList = new ArrayList<>();
         back = findViewById(R.id.back);
         send_btn = findViewById(R.id.send_btn);
         uploadImages = findViewById(R.id.uploadImages);
@@ -391,7 +387,7 @@ public class Add_AdsActivity extends AppCompatActivity implements UserSingleTone
                             ads_content.setError(getString(R.string.enter_ad_content));
 
                         }
-                        else if(bitmapList.size()==0)
+                        else if(uriList.size()==0)
                         {
                             Toast.makeText(this, R.string.ch_ad_imgs, Toast.LENGTH_SHORT).show();
                             ads_content.setError(null);
@@ -516,7 +512,8 @@ public class Add_AdsActivity extends AppCompatActivity implements UserSingleTone
         alertDialog.setCanceledOnTouchOutside(false);
 
     }
-    private void getDataFromIntent() {
+    private void getDataFromIntent()
+    {
         Intent intent =getIntent();
         if (intent!=null)
         {
@@ -526,7 +523,6 @@ public class Add_AdsActivity extends AppCompatActivity implements UserSingleTone
             }
         }
     }
-
     private void CheckReadPermission()
     {
         if (ContextCompat.checkSelfPermission(this,read_perm)!=PackageManager.PERMISSION_GRANTED)
@@ -538,9 +534,8 @@ public class Add_AdsActivity extends AppCompatActivity implements UserSingleTone
                 selectImages();
             }
     }
-
-
-    private void UpdateAdapter(String id,int pos) {
+    private void UpdateAdapter(String id,int pos)
+    {
         subdepartObjectList.clear();
         branchList.clear();
 
@@ -588,7 +583,6 @@ public class Add_AdsActivity extends AppCompatActivity implements UserSingleTone
 
 
     }
-
     private void CreateProgressDialog()
     {
         ProgressBar bar = new ProgressBar(this);
@@ -913,7 +907,6 @@ public class Add_AdsActivity extends AppCompatActivity implements UserSingleTone
             String m_loc = location.getText().toString();
             //String m_cost = cost.getText().toString();
             String m_phone = phone.getText().toString();
-            //images[]
             Log.e("1",m_title);
             Log.e("2",m_address);
             Log.e("3",price);
@@ -979,7 +972,7 @@ public class Add_AdsActivity extends AppCompatActivity implements UserSingleTone
                 public void onFailure(Call<ResponseModel> call, Throwable t) {
                     Log.e("Error",t.getMessage());
                     Toast.makeText(Add_AdsActivity.this,R.string.something, Toast.LENGTH_SHORT).show();
-
+                    dialog.dismiss();
                 }
             });
 
@@ -995,7 +988,7 @@ public class Add_AdsActivity extends AppCompatActivity implements UserSingleTone
         List<MultipartBody.Part> partList = new ArrayList<>();
         for (Uri uri:uriList)
         {
-            MultipartBody.Part part = Common.getMultiPartBody(uri,this);
+            MultipartBody.Part part = Common.getListMultiPartBody(uri,this);
             partList.add(part);
         }
         return partList;
@@ -1173,7 +1166,8 @@ public class Add_AdsActivity extends AppCompatActivity implements UserSingleTone
     @Override
     public void onLocationChanged(Location location) {
         LocationModel locationModel = new LocationModel(location.getLatitude(),location.getLongitude());
-
+        lat = location.getLatitude();
+        lng = location.getLongitude();
         Add_AdsActivity.this.location.setText(getLocation(location.getLatitude(),locationModel.getLng()));
     }
 

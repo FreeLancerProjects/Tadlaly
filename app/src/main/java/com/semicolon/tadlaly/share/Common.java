@@ -115,6 +115,15 @@ public class Common {
         return part;
     }
 
+    public static MultipartBody.Part getListMultiPartBody(Uri uri, Context context)
+    {
+        String path = getImagePathFromUri(context,uri);
+        File file = getFileFromPath(path);
+        RequestBody requestBody = RequestBody.create(MediaType.parse("image/*"),file);
+        MultipartBody.Part part = MultipartBody.Part.createFormData("images[]",file.getName(),requestBody);
+        return part;
+    }
+
     public static RequestBody getRequestBody(String content)
     {
         RequestBody requestBody = RequestBody.create(MediaType.parse("text/plain"),content);

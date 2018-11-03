@@ -25,7 +25,7 @@ public class AllAppAdsFragment extends Fragment implements UserSingleTone.OnComp
     private String user_type;
     private UserModel userModel;
     private UserSingleTone userSingleTone;
-    private int page_index=2;
+    private int page_index=1;
     private double mylat=0.0,myLng=0.0;
     private LatLngSingleTone latLngSingleTone;
     private ViewPager pager;

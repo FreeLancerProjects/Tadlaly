@@ -20,7 +20,6 @@ import com.github.siyamed.shapeimageview.RoundedImageView;
 import com.semicolon.tadlaly.Activities.GeneralSearchActivity;
 import com.semicolon.tadlaly.Activities.HomeActivity;
 import com.semicolon.tadlaly.Activities.SubDepartAdsActivity;
-import com.semicolon.tadlaly.Fragments.AllAppAdsFragment;
 import com.semicolon.tadlaly.Models.MyAdsModel;
 import com.semicolon.tadlaly.R;
 import com.semicolon.tadlaly.Services.Tags;
@@ -88,12 +87,6 @@ public class SubDeptAdsAdapter extends RecyclerView.Adapter <RecyclerView.ViewHo
                             generalSearchActivity.image_top.setVisibility(View.VISIBLE);
 
 
-                        }else if (type.equals("3"))
-                        {
-                            AllAppAdsFragment allAppAdsFragment = (AllAppAdsFragment) fragment;
-                            allAppAdsFragment.image_top.setVisibility(View.VISIBLE);
-
-
                         }
                         if (!loading&&totalItemCount<=(lastVisibleItem+Threshold))
                         {
@@ -118,12 +111,6 @@ public class SubDeptAdsAdapter extends RecyclerView.Adapter <RecyclerView.ViewHo
                             }else if (type.equals("2"))
                             {
                                 generalSearchActivity.image_top.setVisibility(View.GONE);
-
-
-                            }else if (type.equals("3"))
-                            {
-                                AllAppAdsFragment allAppAdsFragment = (AllAppAdsFragment) fragment;
-                                allAppAdsFragment.image_top.setVisibility(View.GONE);
 
 
                             }

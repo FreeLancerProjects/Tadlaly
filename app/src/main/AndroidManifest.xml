@@ -70,7 +70,9 @@
         <activity android:name=".Activities.GpsActivity">
 
         </activity>
-        <activity android:name=".Activities.UpdateAdsActivity" />
+        <activity android:name=".Activities.UpdateAdsActivity"
+            android:windowSoftInputMode="stateAlwaysHidden"
+            />
         <activity android:name=".Activities.SendMsgActivity" />
         <activity android:name=".Activities.AllMessagesActivity" />
         <activity android:name=".Activities.GeneralSearchActivity" />

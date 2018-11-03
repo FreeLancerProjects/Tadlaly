@@ -46,7 +46,7 @@ public class Fragment_AllAds_Recent extends Fragment implements UserSingleTone.O
     private List<MyAdsModel> myAdsModelList;
     public ImageView image_top;
     private String user_type;
-    private int page_index=2;
+    private int page_index=1;
     private LatLngSingleTone latLngSingleTone;
     private double myLat=0.0,myLng=0.0;
     private String user_id;
@@ -103,7 +103,13 @@ public class Fragment_AllAds_Recent extends Fragment implements UserSingleTone.O
             }
         }
 
-
+        image_top.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                image_top.setVisibility(View.GONE);
+                recView.smoothScrollToPosition(0);
+            }
+        });
 
     }
 
