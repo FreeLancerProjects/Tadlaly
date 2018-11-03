@@ -1,5 +1,6 @@
 package com.semicolon.tadlaly.Activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -11,11 +12,22 @@ import com.semicolon.tadlaly.Fragments.UpdatePassword_Fragment;
 import com.semicolon.tadlaly.Fragments.UpdateProfileItems_Fragment;
 import com.semicolon.tadlaly.R;
 import com.semicolon.tadlaly.Services.Tags;
+import com.semicolon.tadlaly.language.LanguageHelper;
+
+import java.util.Locale;
+
+import io.paperdb.Paper;
 
 public class UpdateProfileActivity extends AppCompatActivity {
     private String type;
     private ImageView back;
     private TextView title;
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        Paper.init(newBase);
+
+        super.attachBaseContext(LanguageHelper.onAttach(newBase, Paper.book().read("language",Locale.getDefault().getLanguage())));
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

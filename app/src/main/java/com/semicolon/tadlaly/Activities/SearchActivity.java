@@ -4,21 +4,23 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.PorterDuff;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.AutoCompleteTextView;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -30,28 +32,33 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.miguelcatalan.materialsearchview.MaterialSearchView;
 import com.semicolon.tadlaly.Adapters.SearchAdsAdapter;
 import com.semicolon.tadlaly.Models.MyAdsModel;
 import com.semicolon.tadlaly.Models.UserModel;
 import com.semicolon.tadlaly.R;
 import com.semicolon.tadlaly.Services.Api;
+import com.semicolon.tadlaly.Services.Preferences;
 import com.semicolon.tadlaly.Services.Services;
 import com.semicolon.tadlaly.Services.Tags;
 import com.semicolon.tadlaly.SingleTone.UserSingleTone;
+import com.semicolon.tadlaly.language.LanguageHelper;
+import com.semicolon.tadlaly.share.Common;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
+import io.paperdb.Paper;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 public class SearchActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks, LocationListener ,UserSingleTone.OnCompleteListener{
     private ImageView back;
-    private ProgressBar progressBar;
-    private AutoCompleteTextView searchView;
     private TextView no_search_result;
     private LinearLayout no_result_container;
+    private ProgressBar progBar;
     private String user_type = "";
     private GoogleApiClient googleApiClient;
     private LocationRequest locationRequest;
@@ -65,7 +72,17 @@ public class SearchActivity extends AppCompatActivity implements GoogleApiClient
     private RecyclerView.LayoutManager manager;
     private SearchAdsAdapter searchAdsAdapter;
     private String query="";
+    private Toolbar toolbar;
+    private MaterialSearchView search_view;
+    private Preferences preferences;
+    private String [] suggestions;
 
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        Paper.init(newBase);
+
+        super.attachBaseContext(LanguageHelper.onAttach(newBase, Paper.book().read("language",Locale.getDefault().getLanguage())));
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,10 +91,14 @@ public class SearchActivity extends AppCompatActivity implements GoogleApiClient
     }
 
     private void initView() {
+        preferences = new Preferences(this);
+        toolbar = findViewById(R.id.toolBar);
+        setSupportActionBar(toolbar);
+        progBar = findViewById(R.id.progBar);
+        progBar.getIndeterminateDrawable().setColorFilter(ContextCompat.getColor(this,R.color.colorPrimary), PorterDuff.Mode.SRC_IN);
         myAdsModelList = new ArrayList<>();
         back = findViewById(R.id.back);
-        progressBar = findViewById(R.id.progBar);
-        searchView = findViewById(R.id.searchView);
+        search_view = findViewById(R.id.msv);
         no_result_container = findViewById(R.id.no_result_container);
         no_search_result = findViewById(R.id.no_search_result);
         recView = findViewById(R.id.recView);
@@ -85,21 +106,45 @@ public class SearchActivity extends AppCompatActivity implements GoogleApiClient
         recView.setLayoutManager(manager);
         searchAdsAdapter = new SearchAdsAdapter(recView,this,myAdsModelList);
         recView.setAdapter(searchAdsAdapter);
-        searchView.setOnEditorActionListener((textView, i, keyEvent) -> {
-            if (EditorInfo.IME_ACTION_SEARCH == i
-                    || KeyEvent.ACTION_DOWN == keyEvent.getAction()
-                    || KeyEvent.KEYCODE_ENTER == keyEvent.getAction()
-                    )
-
-            {
-                HideKeyBoard();
-                query = searchView.getText().toString();
-                Search(query,1);
-            }
-            return false;
-        });
         back.setOnClickListener(view -> finish());
+        search_view.showSuggestions();
+        suggestions = preferences.getSuggestionList();
 
+        if (suggestions.length>0)
+        {
+            search_view.setSuggestions(suggestions);
+
+        }
+        search_view.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                Log.e("clllllecek","ccccccccccssssssssss");
+                String suggestion = suggestions[position];
+                preferences.setSuggestions(suggestion);
+                Search(suggestion,0);
+            }
+        });
+
+
+        search_view.setOnQueryTextListener(new MaterialSearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+
+                preferences.setSuggestions(query);
+                Common.CloseKeyBoard(SearchActivity.this,search_view);
+                search_view.closeSearch();
+                Search(query,0);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                search_view.setSuggestions(preferences.getSuggestionList());
+
+                return false;
+            }
+        });
         getDataFromIntent();
         initGoogleApiClient();
         initOnLoadMore();
@@ -151,12 +196,12 @@ public class SearchActivity extends AppCompatActivity implements GoogleApiClient
 
     private void Search(String query,int page_index) {
 
+
         if (!TextUtils.isEmpty(query)) {
             Log.e("q",query);
             Log.e("ind",page_index+"");
             myAdsModelList.clear();
-            progressBar.setVisibility(View.VISIBLE);
-
+            progBar.setVisibility(View.VISIBLE);
             Api.getRetrofit(Tags.Base_Url)
                     .create(Services.class)
                     .searchby_name(page_index,user_id,query,myLat,myLng)
@@ -165,7 +210,8 @@ public class SearchActivity extends AppCompatActivity implements GoogleApiClient
                         public void onResponse(Call<List<MyAdsModel>> call, Response<List<MyAdsModel>> response) {
                             if (response.isSuccessful())
                             {
-                                progressBar.setVisibility(View.GONE);
+                                progBar.setVisibility(View.GONE);
+
                                 if (response.body().size()>0)
                                 {
 
@@ -187,6 +233,8 @@ public class SearchActivity extends AppCompatActivity implements GoogleApiClient
                         @Override
                         public void onFailure(Call<List<MyAdsModel>> call, Throwable t) {
                             Log.e("Error",t.getMessage());
+                            progBar.setVisibility(View.GONE);
+                            Toast.makeText(SearchActivity.this,R.string.something, Toast.LENGTH_SHORT).show();
                         }
                     });
         }else
@@ -253,8 +301,7 @@ public class SearchActivity extends AppCompatActivity implements GoogleApiClient
     }
     private void HideKeyBoard()
     {
-        InputMethodManager manager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        manager.hideSoftInputFromWindow(searchView.getWindowToken(),0);
+        Common.CloseKeyBoard(this,search_view);
     }
     public void SetMyadsData(MyAdsModel myAdsModel)
     {
@@ -334,5 +381,25 @@ public class SearchActivity extends AppCompatActivity implements GoogleApiClient
     public void onSuccess(UserModel userModel) {
         this.userModel = userModel;
         this.user_id = this.userModel.getUser_id();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.item_search,menu);
+        MenuItem menuItem = menu.findItem(R.id.item);
+        search_view.setMenuItem(menuItem);
+        return true;
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (search_view.isSearchOpen())
+        {
+            search_view.closeSearch();
+        }else
+            {
+                super.onBackPressed();
+
+            }
     }
 }

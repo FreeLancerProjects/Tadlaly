@@ -42,7 +42,7 @@ public class BranchAdapter extends RecyclerView.Adapter<BranchAdapter.myHolder> 
 
     private void setFadeAnimation(View view) {
         ScaleAnimation animation = new ScaleAnimation(0f,1f,0f,1f);
-        animation.setDuration(1500);
+        animation.setDuration(800);
         view.startAnimation(animation);
     }
 

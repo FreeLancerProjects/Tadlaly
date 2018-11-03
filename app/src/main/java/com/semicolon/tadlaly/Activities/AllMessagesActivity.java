@@ -24,10 +24,13 @@ import com.semicolon.tadlaly.Services.Api;
 import com.semicolon.tadlaly.Services.Services;
 import com.semicolon.tadlaly.Services.Tags;
 import com.semicolon.tadlaly.SingleTone.UserSingleTone;
+import com.semicolon.tadlaly.language.LanguageHelper;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
+import io.paperdb.Paper;
 import me.leolin.shortcutbadger.ShortcutBadger;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -45,6 +48,12 @@ public class AllMessagesActivity extends Activity implements UserSingleTone.OnCo
     private UserSingleTone userSingleTone;
     private TextView no_msg;
     private NotificationManager notificationManager;
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        Paper.init(newBase);
+
+        super.attachBaseContext(LanguageHelper.onAttach(newBase, Paper.book().read("language",Locale.getDefault().getLanguage())));
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

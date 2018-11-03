@@ -206,6 +206,7 @@
                 android:textStyle="bold"
                 android:background="@drawable/et_bg_trans"
                 android:gravity="center_vertical"
+                android:inputType="phone"
 
 
 
@@ -284,76 +285,167 @@
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
                         >
-                        <com.github.siyamed.shapeimageview.RoundedImageView
-                            android:id="@+id/img1"
-                            android:layout_width="105dp"
-                            android:layout_height="100dp"
-                            android:src="@drawable/imgs_bg"
-                            android:scaleType="centerCrop"
-                            android:layout_marginRight="5dp"
-                            app:siBorderWidth="1dp"
-                            app:siRadius="10dp"
-                            app:siBorderColor="@color/gray2"
-                            />
-                        <com.github.siyamed.shapeimageview.RoundedImageView
-                            android:id="@+id/img2"
-                            android:layout_width="105dp"
-                            android:layout_height="100dp"                            android:src="@drawable/imgs_bg"
-                            android:scaleType="centerCrop"
-                            android:layout_marginRight="5dp"
-                            app:siBorderWidth="1dp"
-                            app:siRadius="10dp"
-                            app:siBorderColor="@color/gray2"
-                            />
+                        <FrameLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            >
+                            <com.github.siyamed.shapeimageview.RoundedImageView
+                                android:id="@+id/img1"
+                                android:layout_width="105dp"
+                                android:layout_height="100dp"
+                                android:src="@drawable/imgs_bg"
+                                android:scaleType="centerCrop"
+                                android:layout_marginRight="5dp"
+                                app:siBorderWidth="1dp"
+                                app:siRadius="10dp"
+                                app:siBorderColor="@color/gray2"
+                                />
+                            <ImageView
+                                android:id="@+id/delete_img1"
+                                android:layout_width="25dp"
+                                android:layout_height="25dp"
+                                android:src="@drawable/del"
+                                android:visibility="gone"
+                                android:padding="7dp"
+                                android:background="@drawable/del_bg"
+                                />
+                        </FrameLayout>
 
-                        <com.github.siyamed.shapeimageview.RoundedImageView
-                            android:id="@+id/img3"
+                        <FrameLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            >
+                            <com.github.siyamed.shapeimageview.RoundedImageView
+                                android:id="@+id/img2"
+                                android:layout_width="105dp"
+                                android:layout_height="100dp"
+                                android:src="@drawable/imgs_bg"
+                                android:scaleType="centerCrop"
+                                android:layout_marginRight="5dp"
+                                app:siBorderWidth="1dp"
+                                app:siRadius="10dp"
+                                app:siBorderColor="@color/gray2"
+                                />
 
-                            android:layout_width="105dp"
-                            android:layout_height="100dp"
-                            android:src="@drawable/imgs_bg"
-                            android:scaleType="centerCrop"
-                            app:siBorderWidth="1dp"
-                            app:siRadius="10dp"
-                            app:siBorderColor="@color/gray2"
-                            android:layout_marginRight="5dp"
-                            />
+                            <ImageView
+                                android:id="@+id/delete_img2"
+                                android:layout_width="25dp"
+                                android:layout_height="25dp"
+                                android:src="@drawable/del"
+                                android:visibility="gone"
+                                android:padding="7dp"
+                                android:background="@drawable/del_bg"
+                                />
+                        </FrameLayout>
 
-                        <com.github.siyamed.shapeimageview.RoundedImageView
-                            android:id="@+id/img4"
-                            android:layout_width="105dp"
-                            android:layout_height="100dp"
-                            android:src="@drawable/imgs_bg"
-                            android:scaleType="centerCrop"
-                            android:layout_marginRight="5dp"
-                            app:siBorderWidth="1dp"
-                            app:siRadius="10dp"
-                            app:siBorderColor="@color/gray2"
-                            />
-                        <com.github.siyamed.shapeimageview.RoundedImageView
-                            android:id="@+id/img5"
-                            android:layout_width="105dp"
-                            android:layout_height="100dp"
-                            android:src="@drawable/imgs_bg"
-                            android:scaleType="centerCrop"
-                            android:layout_marginRight="5dp"
-                            app:siBorderWidth="1dp"
-                            app:siRadius="10dp"
-                            app:siBorderColor="@color/gray2"
-                            />
+                        <FrameLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            >
 
-                        <com.github.siyamed.shapeimageview.RoundedImageView
-                            android:id="@+id/img6"
+                            <com.github.siyamed.shapeimageview.RoundedImageView
+                                android:id="@+id/img3"
 
-                            android:layout_width="105dp"
-                            android:layout_height="100dp"
-                            android:src="@drawable/imgs_bg"
-                            android:scaleType="centerCrop"
-                            app:siBorderWidth="1dp"
-                            app:siRadius="10dp"
-                            app:siBorderColor="@color/gray2"
-                            android:layout_marginRight="5dp"
-                            />
+                                android:layout_width="105dp"
+                                android:layout_height="100dp"
+                                android:src="@drawable/imgs_bg"
+                                android:scaleType="centerCrop"
+                                app:siBorderWidth="1dp"
+                                app:siRadius="10dp"
+                                app:siBorderColor="@color/gray2"
+                                android:layout_marginRight="5dp"
+                                />
+
+                            <ImageView
+                                android:id="@+id/delete_img3"
+                                android:layout_width="25dp"
+                                android:layout_height="25dp"
+                                android:src="@drawable/del"
+                                android:visibility="gone"
+                                android:padding="7dp"
+                                android:background="@drawable/del_bg"
+                                />
+                        </FrameLayout>
+
+                        <FrameLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            >
+                            <com.github.siyamed.shapeimageview.RoundedImageView
+                                android:id="@+id/img4"
+                                android:layout_width="105dp"
+                                android:layout_height="100dp"
+                                android:src="@drawable/imgs_bg"
+                                android:scaleType="centerCrop"
+                                android:layout_marginRight="5dp"
+                                app:siBorderWidth="1dp"
+                                app:siRadius="10dp"
+                                app:siBorderColor="@color/gray2"
+                                />
+                            <ImageView
+                                android:id="@+id/delete_img4"
+                                android:layout_width="25dp"
+                                android:layout_height="25dp"
+                                android:src="@drawable/del"
+                                android:visibility="gone"
+                                android:padding="7dp"
+                                android:background="@drawable/del_bg"
+                                />
+                        </FrameLayout>
+                        <FrameLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            >
+                            <com.github.siyamed.shapeimageview.RoundedImageView
+                                android:id="@+id/img5"
+                                android:layout_width="105dp"
+                                android:layout_height="100dp"
+                                android:src="@drawable/imgs_bg"
+                                android:scaleType="centerCrop"
+                                android:layout_marginRight="5dp"
+                                app:siBorderWidth="1dp"
+                                app:siRadius="10dp"
+                                app:siBorderColor="@color/gray2"
+                                />
+
+                            <ImageView
+                                android:id="@+id/delete_img5"
+                                android:layout_width="25dp"
+                                android:layout_height="25dp"
+                                android:src="@drawable/del"
+                                android:visibility="gone"
+                                android:padding="7dp"
+                                android:background="@drawable/del_bg"
+                                />
+                        </FrameLayout>
+
+                        <FrameLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            >
+                            <com.github.siyamed.shapeimageview.RoundedImageView
+                                android:id="@+id/img6"
+
+                                android:layout_width="105dp"
+                                android:layout_height="100dp"
+                                android:src="@drawable/imgs_bg"
+                                android:scaleType="centerCrop"
+                                app:siBorderWidth="1dp"
+                                app:siRadius="10dp"
+                                app:siBorderColor="@color/gray2"
+                                android:layout_marginRight="5dp"
+                                />
+
+                            <ImageView
+                                android:id="@+id/delete_img6"
+                                android:layout_width="25dp"
+                                android:layout_height="25dp"
+                                android:src="@drawable/del"
+                                android:visibility="gone"
+                                android:padding="7dp"
+                                android:background="@drawable/del_bg"
+                                />
+                        </FrameLayout>
 
                     </LinearLayout>
                 </HorizontalScrollView>

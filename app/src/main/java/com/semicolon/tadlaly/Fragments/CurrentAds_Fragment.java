@@ -389,6 +389,7 @@ public class CurrentAds_Fragment extends Fragment implements View.OnLongClickLis
                Intent intent = new Intent(getActivity(), AdsDetailsActivity.class);
                intent.putExtra("ad_details",myAdsModel);
                intent.putExtra("whoVisit",Tags.me_visit);
+               intent.putExtra("user_id",userModel.getUser_id());
                getActivity().startActivity(intent);
 
            }else
@@ -397,6 +398,7 @@ public class CurrentAds_Fragment extends Fragment implements View.OnLongClickLis
                    Intent intent = new Intent(getActivity(), AdsDetailsActivity.class);
                    intent.putExtra("ad_details",myAdsModel);
                    intent.putExtra("whoVisit",Tags.me_visit);
+                   intent.putExtra("user_id",userModel.getUser_id());
                    getActivity().startActivity(intent);
                }
 

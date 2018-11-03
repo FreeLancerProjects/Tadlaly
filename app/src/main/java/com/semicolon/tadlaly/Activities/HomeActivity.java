@@ -1,17 +1,24 @@
 package com.semicolon.tadlaly.Activities;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.app.NotificationManager;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.BitmapFactory;
+import android.content.IntentSender;
+import android.content.pm.PackageManager;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
+import android.os.Handler;
+import android.os.Looper;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
@@ -20,47 +27,63 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResult;
+import com.google.android.gms.location.LocationSettingsStatusCodes;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 import com.semicolon.tadlaly.Fragments.AllAppAdsFragment;
 import com.semicolon.tadlaly.Fragments.Home_Fragment;
 import com.semicolon.tadlaly.Models.LocationModel;
 import com.semicolon.tadlaly.Models.MyAdsModel;
 import com.semicolon.tadlaly.Models.ResponseModel;
-import com.semicolon.tadlaly.Models.TokenModel;
 import com.semicolon.tadlaly.Models.UserModel;
 import com.semicolon.tadlaly.R;
 import com.semicolon.tadlaly.Services.Api;
 import com.semicolon.tadlaly.Services.Preferences;
 import com.semicolon.tadlaly.Services.Services;
 import com.semicolon.tadlaly.Services.Tags;
-import com.semicolon.tadlaly.Services.UpdateLatLng;
 import com.semicolon.tadlaly.SingleTone.LatLngSingleTone;
 import com.semicolon.tadlaly.SingleTone.UserSingleTone;
+import com.semicolon.tadlaly.language.LanguageHelper;
 import com.squareup.picasso.Picasso;
-
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.Locale;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import io.paperdb.Paper;
 import me.leolin.shortcutbadger.ShortcutBadger;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 
+import static org.greenrobot.eventbus.EventBus.TAG;
+
 public class HomeActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener,UserSingleTone.OnCompleteListener,View.OnClickListener ,LatLngSingleTone.onLatLngSuccess{
+        implements NavigationView.OnNavigationItemSelectedListener,UserSingleTone.OnCompleteListener,View.OnClickListener ,LatLngSingleTone.onLatLngSuccess,GoogleApiClient.ConnectionCallbacks,GoogleApiClient.OnConnectionFailedListener,LocationListener{
     private DrawerLayout drawer;
     private ActionBarDrawerToggle toggle;
     private NavigationView navigationView;
@@ -72,7 +95,6 @@ public class HomeActivity extends AppCompatActivity
     private UserModel userModel;
     private Preferences preferences;
     private ProgressDialog dialog;
-    private Intent serviceIntent;
     private LinearLayout profileContainer;
     private String user_type="";
     private AlertDialog.Builder serviceBuilder;
@@ -82,90 +104,28 @@ public class HomeActivity extends AppCompatActivity
     private ImageView img_back;
     private TextView tv_title;
     private AllAppAdsFragment allAppAdsFragment;
+    private GoogleApiClient googleApiClient;
+    private LocationRequest locationRequest;
+    private final String fineLoc = Manifest.permission.ACCESS_FINE_LOCATION;
+    private final int loc_req = 1255;
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        Paper.init(newBase);
+
+        super.attachBaseContext(LanguageHelper.onAttach(newBase,Paper.book().read("language",Locale.getDefault().getLanguage())));
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         /*Calligrapher calligrapher = new Calligrapher(this);
         calligrapher.setFont(this, "OYA-Regular.ttf", true);*/
-        EventBus.getDefault().register(this);
         getDataFromIntent();
         initView();
-        StartService_UpdateLatLng();
         CreateProgress_dialog();
         CreateServiceDialog();
         notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-
-    }
-
-    private void getDataFromIntent()
-    {
-        Intent intent = getIntent();
-        if (intent!=null)
-        {
-            if (intent.hasExtra("user_type"))
-            {
-
-                user_type = intent.getStringExtra("user_type");
-
-                if (user_type.equals(Tags.app_user)){
-                    preferences = new Preferences(this);
-                }else
-                    {
-                        latLngSingleTone = LatLngSingleTone.getInstance();
-
-                    }
-                Log.e("Homeuser_type",user_type);
-            }
-        }
-    }
-
-    private void CreateServiceDialog()
-    {
-        serviceBuilder = new AlertDialog.Builder(this);
-        serviceBuilder.setMessage(R.string.ser_not_ava);
-        serviceBuilder.setPositiveButton(R.string.ok, (dialogInterface, i) -> {
-            AlertDialog alertDialog=serviceBuilder.create();
-            alertDialog.dismiss();
-        } );
-
-        AlertDialog alertDialog=serviceBuilder.create();
-        alertDialog.setCancelable(true);
-        alertDialog.setCanceledOnTouchOutside(false);
-
-
-    }
-    private void StartService_UpdateLatLng() {
-        serviceIntent = new Intent(this, UpdateLatLng.class);
-        startService(serviceIntent);
-    }
-
-    @Override
-    protected void onStart()
-    {
-        super.onStart();
-        if (user_type.equals(Tags.app_user)){
-            //userSingleTone.getUser(this);
-            Log.e("token",user_type);
-            UpdateToken(FirebaseInstanceId.getInstance().getToken());
-        }
-
-    }
-    private void UpdateUi(UserModel userModel)
-    {
-        try {
-            Picasso.with(this).load(Uri.parse(Tags.Image_Url+userModel.getUser_photo())).into(user_image);
-            user_name.setText(userModel.getUser_full_name());
-            Log.e("ssss","Update Ui");
-
-        }catch (NullPointerException e)
-        {
-
-        }catch (Exception e)
-        {
-
-        }
-
+        CheckPermissionLocation();
     }
     private void initView()
     {
@@ -193,17 +153,17 @@ public class HomeActivity extends AppCompatActivity
         });
 
         if (user_type.equals(Tags.app_visitor))
-            {
-                profileContainer.setEnabled(false);
-                user_name.setText(R.string.visitor);
-                user_image.setImageResource(R.drawable.visitor);
+        {
+            profileContainer.setEnabled(false);
+            user_name.setText(R.string.visitor);
+            user_image.setImageResource(R.drawable.visitor);
 
-            }else if (user_type.equals(Tags.app_user))
-            {
-                profileContainer.setEnabled(true);
-                userSingleTone = UserSingleTone.getInstance();
-                userSingleTone.getUser(this);
-            }
+        }else if (user_type.equals(Tags.app_user))
+        {
+            profileContainer.setEnabled(true);
+            userSingleTone = UserSingleTone.getInstance();
+            userSingleTone.getUser(this);
+        }
 
         if (user_type.equals(Tags.app_user))
         {
@@ -215,14 +175,14 @@ public class HomeActivity extends AppCompatActivity
 
 
         }else if (user_type.equals(Tags.app_visitor))
-            {
+        {
 
-                //home_fragment = Home_Fragment.getInstance(Tags.app_visitor);
-                home_fragment = Home_Fragment.getInstance("0",Tags.app_visitor);
+            //home_fragment = Home_Fragment.getInstance(Tags.app_visitor);
+            home_fragment = Home_Fragment.getInstance("0",Tags.app_visitor);
 
-                getSupportFragmentManager().beginTransaction().replace(R.id.home_fragments_container,home_fragment).commit();
+            getSupportFragmentManager().beginTransaction().replace(R.id.home_fragments_container,home_fragment).commit();
 
-            }
+        }
 
 
         share = findViewById(R.id.share);
@@ -258,13 +218,106 @@ public class HomeActivity extends AppCompatActivity
             img_back.setImageResource(R.drawable.white_back_arrow);
 
         }else
-            {
-                img_back.setImageResource(R.drawable.right_arrow);
+        {
+            img_back.setImageResource(R.drawable.right_arrow);
 
 
-            }
+        }
 
     }
+    private void getDataFromIntent()
+    {
+        Intent intent = getIntent();
+        if (intent!=null)
+        {
+            if (intent.hasExtra("user_type"))
+            {
+
+                user_type = intent.getStringExtra("user_type");
+
+                if (user_type.equals(Tags.app_user)){
+                    preferences = new Preferences(this);
+                }else
+                {
+                    latLngSingleTone = LatLngSingleTone.getInstance();
+
+                }
+                Log.e("Homeuser_type",user_type);
+            }
+        }
+    }
+    private void CheckPermissionLocation()
+    {
+        if (ContextCompat.checkSelfPermission(this,fineLoc)!=PackageManager.PERMISSION_GRANTED)
+        {
+            String [] perm = {fineLoc};
+            ActivityCompat.requestPermissions(this,perm,loc_req);
+        }else
+            {
+                BuildGoogleApiClient();
+
+            }
+    }
+    @Override
+    protected void onStart()
+    {
+        super.onStart();
+        if (user_type.equals(Tags.app_user)){
+            //userSingleTone.getUser(this);
+            Log.e("token",user_type);
+            UpdateToken();
+        }
+
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode==loc_req)
+        {
+            if (grantResults.length>0)
+            {
+                if (grantResults[0]==PackageManager.PERMISSION_GRANTED)
+                {
+                    BuildGoogleApiClient();
+                }
+            }
+        }
+    }
+
+    private void CreateServiceDialog()
+    {
+        serviceBuilder = new AlertDialog.Builder(this);
+        serviceBuilder.setMessage(R.string.ser_not_ava);
+        serviceBuilder.setPositiveButton(R.string.ok, (dialogInterface, i) -> {
+            AlertDialog alertDialog=serviceBuilder.create();
+            alertDialog.dismiss();
+        } );
+
+        AlertDialog alertDialog=serviceBuilder.create();
+        alertDialog.setCancelable(true);
+        alertDialog.setCanceledOnTouchOutside(false);
+
+
+    }
+
+    private void UpdateUi(UserModel userModel)
+    {
+        try {
+            Picasso.with(this).load(Uri.parse(Tags.Image_Url+userModel.getUser_photo())).into(user_image);
+            user_name.setText(userModel.getUser_full_name());
+            Log.e("ssss","Update Ui");
+
+        }catch (NullPointerException e)
+        {
+
+        }catch (Exception e)
+        {
+
+        }
+
+    }
+
     private void CreateProgress_dialog()
     {
         ProgressBar bar = new ProgressBar(this);
@@ -311,6 +364,10 @@ public class HomeActivity extends AppCompatActivity
         int id = item.getItemId();
         switch (id)
         {
+            case R.id.change_language:
+                createLanguageDialog();
+                break;
+
             case R.id.home:
                 tv_title.setText(getString(R.string.home));
                 img_back.setVisibility(View.GONE);
@@ -405,6 +462,54 @@ public class HomeActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+    private void createLanguageDialog() {
+        AlertDialog alertDialog = new AlertDialog.Builder(this)
+                .setCancelable(false)
+                .create();
+        View view = LayoutInflater.from(this).inflate(R.layout.custom_lang_dialog,null);
+        Button btn_ar = view.findViewById(R.id.btn_ar);
+        Button btn_en = view.findViewById(R.id.btn_en);
+
+        btn_ar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!Paper.book().read("language",Locale.getDefault().getLanguage()).equals("ar"))
+                {
+                    Paper.book().write("language","ar");
+                    LanguageHelper.setLocality("ar",HomeActivity.this);
+                    refreshLayout();
+                }
+
+
+            }
+        });
+        btn_en.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!Paper.book().read("language",Locale.getDefault().getLanguage()).equals("en"))
+                {
+                    Paper.book().write("language","en");
+                    LanguageHelper.setLocality("en",HomeActivity.this);
+                    refreshLayout();
+                }
+
+
+            }
+        });
+
+        alertDialog.setCanceledOnTouchOutside(false);
+        alertDialog.getWindow().getAttributes().windowAnimations=R.style.dialog;
+        alertDialog.setView(view);
+        alertDialog.show();
+    }
+
+    private void refreshLayout() {
+        Intent intent =getIntent();
+        finish();
+        startActivity(intent);
+    }
+
     private void LogOut()
     {
         dialog.show();
@@ -508,75 +613,59 @@ public class HomeActivity extends AppCompatActivity
     private void Share()
     {
         try {
-            Uri uri = Uri.parse(MediaStore.Images.Media.insertImage(getContentResolver(), BitmapFactory.decodeResource(getResources(),R.drawable.share_image),null,null));
+            //Uri uri = Uri.parse(MediaStore.Images.Media.insertImage(getContentResolver(), BitmapFactory.decodeResource(getResources(),R.drawable.share_image),null,null));
             Intent intent = new Intent(Intent.ACTION_SEND);
             intent.setType("*/*");
-            intent.putExtra(Intent.EXTRA_STREAM,uri);
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             intent.putExtra(Intent.EXTRA_TEXT,"تطبيق تدللي\n"+"\n"+"IOS URL:   https://itunes.apple.com/us/app/tadlly-%D8%AA%D8%AF%D9%84%D9%84%D9%8A/id1422871307?ls=1&mt=8"+"\n WEB URL : http://tdlly.com/");
-            startActivity(intent);
+            startActivityForResult(intent,10);
+
 
         }catch (NullPointerException e)
         {
         }catch (Exception e){}
     }
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void LocationListener(LocationModel locationModel)
+
+
+    private void UpdateToken()
     {
+        FirebaseInstanceId.getInstance().getInstanceId()
+                .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                        if (task.isSuccessful())
+                        {
+                            String token = task.getResult().getToken();
+                            Retrofit retrofit = Api.getRetrofit(Tags.Base_Url);
+                            Call<UserModel> call = retrofit.create(Services.class).UpdateToken(userModel.getUser_id(), token);
+                            call.enqueue(new Callback<UserModel>() {
+                                @Override
+                                public void onResponse(Call<UserModel> call, Response<UserModel> response) {
+                                    if (response.isSuccessful())
+                                    {
+                                        if (response.body().getSuccess()==1)
+                                        {
+                                            Log.e("token","token updated successfully");
+                                            preferences.UpdatePref(response.body());
+                                            userSingleTone.setUserModel(response.body());
 
+                                        }else if (response.body().getSuccess()==0)
+                                        {
+                                            Log.e("token","token Not updated ");
 
-        if (user_type.equals(Tags.app_user))
-        {
-            Log.e("locationUpdate_Lat",locationModel.getLat()+"");
-            Log.e("locationUpdate_Lng",locationModel.getLng()+"");
-            UpdateLocation(locationModel.getLat(),locationModel.getLng());
+                                        }
+                                    }
+                                }
 
-        }else
-            {
-                Log.e("locationUpdate_Lat2",locationModel.getLat()+"");
-                Log.e("locationUpdate_Lng2",locationModel.getLng()+"");
-                latLngSingleTone.setLatLng(locationModel.getLat(),locationModel.getLng());
-            }
-    }
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void TokenListener(TokenModel tokenModel)
-    {
-        if (user_type.equals(Tags.app_user))
-        {
-            Log.e("token",tokenModel.getToken_id());
-            UpdateToken(tokenModel.getToken_id());
-        }
-
-
-    }
-    private void UpdateToken(String token)
-    {
-        Retrofit retrofit = Api.getRetrofit(Tags.Base_Url);
-        Call<UserModel> call = retrofit.create(Services.class).UpdateToken(userModel.getUser_id(), token);
-        call.enqueue(new Callback<UserModel>() {
-            @Override
-            public void onResponse(Call<UserModel> call, Response<UserModel> response) {
-                if (response.isSuccessful())
-                {
-                    if (response.body().getSuccess()==1)
-                    {
-                        Log.e("token","token updated successfully");
-                        preferences.UpdatePref(response.body());
-                        userSingleTone.setUserModel(response.body());
-
-                    }else if (response.body().getSuccess()==0)
-                    {
-                        Log.e("token","token Not updated ");
-
+                                @Override
+                                public void onFailure(Call<UserModel> call, Throwable t) {
+                                    Log.e("Error",t.getMessage());
+                                }
+                            });
+                        }
                     }
-                }
-            }
+                });
 
-            @Override
-            public void onFailure(Call<UserModel> call, Throwable t) {
-                Log.e("Error",t.getMessage());
-            }
-        });
     }
     private void UpdateLocation(double lat, double lng)
     {
@@ -640,8 +729,6 @@ public class HomeActivity extends AppCompatActivity
     protected void onDestroy()
     {
         super.onDestroy();
-        stopService(serviceIntent);
-        EventBus.getDefault().unregister(this);
 
 
     }
@@ -658,4 +745,154 @@ public class HomeActivity extends AppCompatActivity
     }
 
 
+    protected synchronized void BuildGoogleApiClient() {
+        googleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
+        googleApiClient.connect();
+    }
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+    }
+
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+
+        StartLocationUpdate();
+    }
+
+    private void StartLocationUpdate() {
+
+        initLocationRequest();
+
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
+                .addLocationRequest(locationRequest);
+        builder.setAlwaysShow(true);
+        builder.setNeedBle(true);
+        PendingResult<LocationSettingsResult> result = LocationServices.SettingsApi.checkLocationSettings(googleApiClient,builder.build());
+        result.setResultCallback(new ResultCallback<LocationSettingsResult>() {
+            @Override
+            public void onResult(@NonNull LocationSettingsResult locationSettingsResult) {
+                final Status status = locationSettingsResult.getStatus();
+                switch (status.getStatusCode()) {
+                    case LocationSettingsStatusCodes.SUCCESS:
+                        if (ActivityCompat.checkSelfPermission(HomeActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(HomeActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                        }
+                        LocationServices.getFusedLocationProviderClient(HomeActivity.this).requestLocationUpdates(locationRequest,new LocationCallback()
+                        {
+                            @Override
+                            public void onLocationResult(LocationResult locationResult) {
+                                onLocationChanged(locationResult.getLastLocation());
+                            }
+                        }, Looper.myLooper());
+                        break;
+                    case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+                        try {
+                            // Show the dialog by calling startResolutionForResult(),
+                            // and check the result in onActivityResult().
+                            status.startResolutionForResult(
+                                    HomeActivity.this,
+                                    8);
+                        } catch (IntentSender.SendIntentException e) {
+                            // Ignore the error.
+                        }
+                        Log.i(TAG, "Location settings are not satisfied. Show the user a dialog to upgrade location settings ");
+
+                        break;
+
+                }
+            }
+        });
+
+    }
+
+    private void initLocationRequest()
+    {
+        locationRequest = new LocationRequest();
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        locationRequest.setInterval(1000*60*5);
+        locationRequest.setFastestInterval(1000*60*5);
+    }
+    @Override
+    public void onConnectionSuspended(int i)
+    {
+        if (googleApiClient!=null)
+        {
+            googleApiClient.connect();
+        }
+    }
+
+
+    @Override
+    public void onLocationChanged(Location location) {
+        LocationModel locationModel = new LocationModel(location.getLatitude(),location.getLongitude());
+        if (user_type.equals(Tags.app_user))
+        {
+            Log.e("locationUpdate_Lat",locationModel.getLat()+"");
+            Log.e("locationUpdate_Lng",locationModel.getLng()+"");
+            UpdateLocation(locationModel.getLat(),locationModel.getLng());
+
+        }else
+        {
+            Log.e("locationUpdate_Lat2",locationModel.getLat()+"");
+            Log.e("locationUpdate_Lng2",locationModel.getLng()+"");
+            latLngSingleTone.setLatLng(locationModel.getLat(),locationModel.getLng());
+        }
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode==8)
+        {
+
+            if (resultCode==RESULT_OK)
+            {
+                if (ActivityCompat.checkSelfPermission(HomeActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(HomeActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                }
+                LocationServices.getFusedLocationProviderClient(HomeActivity.this).requestLocationUpdates(locationRequest,new LocationCallback()
+                {
+                    @Override
+                    public void onLocationResult(LocationResult locationResult) {
+                        onLocationChanged(locationResult.getLastLocation());
+                    }
+                }, Looper.myLooper());
+
+            }
+        }else if (requestCode==10)
+        {
+            new Handler()
+                    .postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            createCongDialog();
+
+                        }
+                    },200);
+        }
+    }
+
+    private void createCongDialog() {
+          AlertDialog alertDialog = new AlertDialog.Builder(this)
+                .setCancelable(true)
+                .create();
+        View view = LayoutInflater.from(this).inflate(R.layout.custom_dialog_cong,null);
+        Button donBtn = view.findViewById(R.id.doneBtn);
+        donBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                alertDialog.dismiss();
+            }
+        });
+        alertDialog.setCanceledOnTouchOutside(false);
+        alertDialog.setView(view);
+        alertDialog.getWindow().getAttributes().windowAnimations=R.style.dialog;
+        alertDialog.show();
+
+
+    }
 }

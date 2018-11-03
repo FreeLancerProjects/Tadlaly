@@ -184,6 +184,17 @@
     <string name="undefined">غير محدد</string>
     <string name="sorry">عفوا</string>
     <string name="sign_in_or_create_a_new_account_so_you_can_send_a_message_to_the_owner_of_the_ad">قم بتسجيل الدخول او انشاء حساب جديد حتى تتكن من ارسال رسالة الي صاحب الاعلان.</string>
+    <string name="new_account">حساب جديد</string>
+    <string name="perm_read_denied">قم بالسماح للتطبيق للوصول الى الصور</string>
+    <string name="select_language">إختر اللغة</string>
+    <string name="change_language">تغيير اللغة</string>
+    <string name="wait">انتظر قليلا...</string>
+    <string name="cong_lottery">مبروك تم دخولك السحب</string>
+    <string name="delete_image">حذف الصورة ؟</string>
+    <string name="deltng">جار الحذف...</string>
+    <string name="sar">ريال</string>
+    <string name="nearby">الاقرب</string>
+    <string name="recent">الاحدث</string>
 
     <string-array name="depart_array">
         <item>القسم</item>

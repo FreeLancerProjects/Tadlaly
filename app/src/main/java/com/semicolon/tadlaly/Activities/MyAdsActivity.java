@@ -1,5 +1,6 @@
 package com.semicolon.tadlaly.Activities;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
@@ -13,6 +14,11 @@ import com.semicolon.tadlaly.Adapters.MyAdsPagerAdapter;
 import com.semicolon.tadlaly.Fragments.CurrentAds_Fragment;
 import com.semicolon.tadlaly.Fragments.OldAds_Fragment;
 import com.semicolon.tadlaly.R;
+import com.semicolon.tadlaly.language.LanguageHelper;
+
+import java.util.Locale;
+
+import io.paperdb.Paper;
 
 public class MyAdsActivity extends AppCompatActivity {
     private TabLayout tab;
@@ -22,7 +28,12 @@ public class MyAdsActivity extends AppCompatActivity {
     private ImageView back;
     private TextView delete;
 
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        Paper.init(newBase);
 
+        super.attachBaseContext(LanguageHelper.onAttach(newBase, Paper.book().read("language",Locale.getDefault().getLanguage())));
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

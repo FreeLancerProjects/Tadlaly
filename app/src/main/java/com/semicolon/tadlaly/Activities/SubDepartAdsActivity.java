@@ -1,5 +1,6 @@
 package com.semicolon.tadlaly.Activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
@@ -24,12 +25,15 @@ import com.semicolon.tadlaly.Services.Services;
 import com.semicolon.tadlaly.Services.Tags;
 import com.semicolon.tadlaly.SingleTone.LatLngSingleTone;
 import com.semicolon.tadlaly.SingleTone.UserSingleTone;
+import com.semicolon.tadlaly.language.LanguageHelper;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
+import io.paperdb.Paper;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -58,8 +62,13 @@ public class SubDepartAdsActivity extends AppCompatActivity implements UserSingl
     private String user_id="";
     private String user_type="";
     private LatLngSingleTone latLngSingleTone;
+    public ImageView image_top;
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        Paper.init(newBase);
 
-
+        super.attachBaseContext(LanguageHelper.onAttach(newBase, Paper.book().read("language",Locale.getDefault().getLanguage())));
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,13 +89,14 @@ public class SubDepartAdsActivity extends AppCompatActivity implements UserSingl
         idsList = new ArrayList<>();
         myAdsModelList = new ArrayList<>();
         back = findViewById(R.id.back);
+        image_top = findViewById(R.id.image_top);
         subDept_name = findViewById(R.id.subDept_name);
         no_ads = findViewById(R.id.no_ads);
         progressBar = findViewById(R.id.progBar);
         recView = findViewById(R.id.recView);
         manager = new LinearLayoutManager(this);
         recView.setLayoutManager(manager);
-        adapter = new SubDeptAdsAdapter(recView,this,myAdsModelList,"1");
+        adapter = new SubDeptAdsAdapter(recView,this,myAdsModelList,"1",null);
         recView.setAdapter(adapter);
         back.setOnClickListener(view -> finish());
         progressBar.getIndeterminateDrawable().setColorFilter(ContextCompat.getColor(this,R.color.colorPrimary), PorterDuff.Mode.SRC_IN);
@@ -98,6 +108,14 @@ public class SubDepartAdsActivity extends AppCompatActivity implements UserSingl
                 adapter.notifyItemInserted(myAdsModelList.size()-1);
                 int index = page_index;
                 onLoadgetData(supDept_id,user_id,index);
+            }
+        });
+
+        image_top.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                recView.smoothScrollToPosition(0);
+                image_top.setVisibility(View.GONE);
             }
         });
 

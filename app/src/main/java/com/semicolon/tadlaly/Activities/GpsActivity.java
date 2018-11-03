@@ -3,76 +3,189 @@ package com.semicolon.tadlaly.Activities;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.provider.Settings;
+import android.os.Looper;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.widget.Button;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResult;
+import com.google.android.gms.location.LocationSettingsStates;
+import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.semicolon.tadlaly.R;
+import com.semicolon.tadlaly.language.LanguageHelper;
 
-public class GpsActivity extends AppCompatActivity {
+import java.util.Locale;
 
+import io.paperdb.Paper;
+
+import static org.greenrobot.eventbus.EventBus.TAG;
+
+public class GpsActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener,GoogleApiClient.ConnectionCallbacks,LocationListener{
+
+    private GoogleApiClient googleApiClient;
+    private LocationRequest locationRequest;
     private LocationManager manager;
-    private AlertDialog dialog;
-    private final int gps_req=1558;
-    private final int per_req=12235;
-    private final String FineLoc = Manifest.permission.ACCESS_FINE_LOCATION;
-    private String[] permissions = {FineLoc};
-     @Override
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        Paper.init(newBase);
+
+        super.attachBaseContext(LanguageHelper.onAttach(newBase, Paper.book().read("language",Locale.getDefault().getLanguage())));
+    }
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gps);
         manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        CreateAlertDialog();
-        checkPermission();
+        if (isGPSOpen())
+        {
+            navigateToLogin();
+        }else
+            {
+                BuildGoogleApiClient();
+
+            }
 
 
 
 
     }
 
-    private void CreateAlertDialog()
+    private boolean isGPSOpen()
     {
-        View view = LayoutInflater.from(this).inflate(R.layout.custom_gps_dialog,null);
-        Button button = view.findViewById(R.id.openBtn);
-        button.setOnClickListener(view1 -> {
-            Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-            startActivityForResult(intent,gps_req);
-            dialog.dismiss();
-        });
-        dialog = new AlertDialog.Builder(this)
-                .setCancelable(true)
-                .setView(view)
-                .create();
-        dialog.setCanceledOnTouchOutside(false);
+        if (manager.isProviderEnabled(LocationManager.GPS_PROVIDER))
+        {
+            return true;
+        }
+        return false;
+    }
+
+    protected synchronized void BuildGoogleApiClient() {
+        googleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
+        googleApiClient.connect();
+    }
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
 
     }
+
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+
+        StartLocationUpdate();
+    }
+
+    private void StartLocationUpdate() {
+
+        initLocationRequest();
+
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
+                .addLocationRequest(locationRequest);
+        builder.setAlwaysShow(true);
+        builder.setNeedBle(true);
+        PendingResult<LocationSettingsResult> result = LocationServices.SettingsApi.checkLocationSettings(googleApiClient,builder.build());
+        result.setResultCallback(new ResultCallback<LocationSettingsResult>() {
+            @Override
+            public void onResult(@NonNull LocationSettingsResult locationSettingsResult) {
+                final Status status = locationSettingsResult.getStatus();
+                switch (status.getStatusCode()) {
+                    case LocationSettingsStatusCodes.SUCCESS:
+                        if (ActivityCompat.checkSelfPermission(GpsActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(GpsActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                        }
+                        LocationServices.getFusedLocationProviderClient(GpsActivity.this).requestLocationUpdates(locationRequest,new LocationCallback()
+                        {
+                            @Override
+                            public void onLocationResult(LocationResult locationResult) {
+                                onLocationChanged(locationResult.getLastLocation());
+                            }
+                        }, Looper.myLooper());
+                        break;
+                    case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+                        try {
+                            // Show the dialog by calling startResolutionForResult(),
+                            // and check the result in onActivityResult().
+                            status.startResolutionForResult(
+                                    GpsActivity.this,
+                                    8);
+                        } catch (IntentSender.SendIntentException e) {
+                            // Ignore the error.
+                        }
+                        Log.i(TAG, "Location settings are not satisfied. Show the user a dialog to upgrade location settings ");
+
+                        break;
+
+                }
+            }
+        });
+
+    }
+
+    private void initLocationRequest()
+    {
+        locationRequest = new LocationRequest();
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        locationRequest.setInterval(1000*60*5);
+        locationRequest.setFastestInterval(1000*60*5);
+    }
+
+
+
+
+    @Override
+    public void onConnectionSuspended(int i) {
+        if (googleApiClient!=null)
+        {
+            googleApiClient.connect();
+        }
+    }
+
+
+    @Override
+    public void onLocationChanged(Location location) {
+        Log.e("laaaaaaaaaaaat",location.getLatitude()+"_____");
+        Log.e("loooooong",location.getLongitude()+"_____");
+
+
+
+    }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode==gps_req)
+        if (requestCode==8)
         {
-            if (resultCode==RESULT_CANCELED)
+            final LocationSettingsStates states = LocationSettingsStates.fromIntent(data);
+            if (resultCode==RESULT_OK)
             {
-                if (manager.isProviderEnabled(LocationManager.GPS_PROVIDER))
+                navigateToLogin();
+            }else
                 {
                     navigateToLogin();
 
-                }else
-                {
-                    dialog.show();
                 }
-            }
         }
     }
 
@@ -82,48 +195,7 @@ public class GpsActivity extends AppCompatActivity {
         startActivity(intent);
         finish();
     }
-    private void checkPermission() {
-        if (ActivityCompat.checkSelfPermission(getApplicationContext(), FineLoc) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this, permissions, per_req);
-        } else {
-            Log.e("9", "a");
-
-            if (manager.isProviderEnabled(LocationManager.GPS_PROVIDER))
-            {
-                navigateToLogin();
-
-            }else
-            {
-                dialog.show();
-            }
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if(requestCode==per_req)
-        {
-            if (grantResults.length>0)
-            {
-                if (grantResults[0]==PackageManager.PERMISSION_GRANTED)
-                {
-
-                    if (manager.isProviderEnabled(LocationManager.GPS_PROVIDER))
-                    {
-                        navigateToLogin();
-
-                    }else
-                    {
-                        dialog.show();
-                    }
-                }
 
 
 
-
-            }
-        }
-
-    }
 }

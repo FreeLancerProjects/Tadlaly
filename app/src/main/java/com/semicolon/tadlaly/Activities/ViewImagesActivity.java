@@ -1,5 +1,6 @@
 package com.semicolon.tadlaly.Activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -13,12 +14,16 @@ import android.widget.TextView;
 import com.semicolon.tadlaly.Adapters.ViewImageAdapter;
 import com.semicolon.tadlaly.Models.MyAdsModel;
 import com.semicolon.tadlaly.R;
+import com.semicolon.tadlaly.language.LanguageHelper;
 import com.yarolegovich.discretescrollview.DiscreteScrollView;
 import com.yarolegovich.discretescrollview.transform.Pivot;
 import com.yarolegovich.discretescrollview.transform.ScaleTransformer;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+
+import io.paperdb.Paper;
 
 public class ViewImagesActivity extends AppCompatActivity {
     private ImageView back,img_prev,img_next;
@@ -26,6 +31,12 @@ public class ViewImagesActivity extends AppCompatActivity {
     private TextView tv_title;
     private ViewImageAdapter adapter;
     private List<MyAdsModel.Images> imagePathList;
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        Paper.init(newBase);
+
+        super.attachBaseContext(LanguageHelper.onAttach(newBase, Paper.book().read("language",Locale.getDefault().getLanguage())));
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

@@ -19,7 +19,7 @@
             app:siBorderAlpha="0"
 
             />
-        <com.github.siyamed.shapeimageview.RoundedImageView
+       <!-- <com.github.siyamed.shapeimageview.RoundedImageView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="centerCrop"
@@ -28,7 +28,7 @@
             app:siBorderAlpha="0"
             android:background="@drawable/ads_img"
 
-            />
+            />-->
     </FrameLayout>
 
 </FrameLayout>

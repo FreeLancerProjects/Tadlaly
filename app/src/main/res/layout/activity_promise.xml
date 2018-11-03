@@ -193,7 +193,7 @@
                         android:gravity="center"
                         android:textColor="@color/black"
                         android:textSize="11sp"
-                        android:text="من 2000-10.000"
+                        android:text="من 10.000-2000"
                         android:layout_marginTop="5dp"
                         android:layout_marginRight="5dp"
                         android:layout_marginLeft="5dp"
@@ -257,7 +257,7 @@
                         android:gravity="center"
                         android:textColor="@color/black"
                         android:textSize="11sp"
-                        android:text="10 %"
+                        android:text="8 %"
                         android:layout_marginTop="5dp"
                         android:layout_marginRight="5dp"
                         android:layout_marginLeft="5dp"
@@ -270,7 +270,7 @@
                         android:gravity="center"
                         android:textColor="@color/black"
                         android:textSize="11sp"
-                        android:text="5 %"
+                        android:text="4 %"
                         android:layout_marginTop="5dp"
                         android:layout_marginRight="5dp"
                         android:layout_marginLeft="5dp"
@@ -565,5 +565,5 @@
         </LinearLayout>
     </ScrollView>
 </LinearLayout>
-    <include layout="@layout/bottom_sheet"/>
+    <!--<include layout="@layout/bottom_sheet"/>-->
 </android.support.design.widget.CoordinatorLayout>

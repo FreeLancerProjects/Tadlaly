@@ -3,6 +3,7 @@ package com.semicolon.tadlaly.Adapters;
 import android.content.Context;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -19,6 +20,7 @@ import com.github.siyamed.shapeimageview.RoundedImageView;
 import com.semicolon.tadlaly.Activities.GeneralSearchActivity;
 import com.semicolon.tadlaly.Activities.HomeActivity;
 import com.semicolon.tadlaly.Activities.SubDepartAdsActivity;
+import com.semicolon.tadlaly.Fragments.AllAppAdsFragment;
 import com.semicolon.tadlaly.Models.MyAdsModel;
 import com.semicolon.tadlaly.R;
 import com.semicolon.tadlaly.Services.Tags;
@@ -42,12 +44,14 @@ public class SubDeptAdsAdapter extends RecyclerView.Adapter <RecyclerView.ViewHo
     private boolean loading;
     private LinearLayoutManager mLinearLayoutManager;
     int pos;
+    Fragment fragment;
 
 
-    public SubDeptAdsAdapter(RecyclerView recView,Context context, List<MyAdsModel> myAdsModelList,String type) {
+    public SubDeptAdsAdapter(RecyclerView recView,Context context, List<MyAdsModel> myAdsModelList,String type,Fragment fragment) {
         this.context = context;
         this.myAdsModelList = myAdsModelList;
         this.type=type;
+        this.fragment = fragment;
         if (type.equals("1"))
         {
             this.subDepartAdsActivity = (SubDepartAdsActivity) context;
@@ -72,6 +76,25 @@ public class SubDeptAdsAdapter extends RecyclerView.Adapter <RecyclerView.ViewHo
                         totalItemCount = mLinearLayoutManager.getItemCount();
                         lastVisibleItem = mLinearLayoutManager.findLastVisibleItemPosition();
 
+                        Log.e("fc",mLinearLayoutManager.findFirstCompletelyVisibleItemPosition()+"___");
+                        if (type.equals("1"))
+                        {
+                            subDepartAdsActivity.image_top.setVisibility(View.VISIBLE);
+
+
+
+                        }else if (type.equals("2"))
+                        {
+                            generalSearchActivity.image_top.setVisibility(View.VISIBLE);
+
+
+                        }else if (type.equals("3"))
+                        {
+                            AllAppAdsFragment allAppAdsFragment = (AllAppAdsFragment) fragment;
+                            allAppAdsFragment.image_top.setVisibility(View.VISIBLE);
+
+
+                        }
                         if (!loading&&totalItemCount<=(lastVisibleItem+Threshold))
                         {
                             if (onLoadListener !=null)
@@ -84,7 +107,27 @@ public class SubDeptAdsAdapter extends RecyclerView.Adapter <RecyclerView.ViewHo
                         }
 
 
-                    }
+                    }else
+                        {
+                            if (type.equals("1"))
+                            {
+
+                                subDepartAdsActivity.image_top.setVisibility(View.GONE);
+
+
+                            }else if (type.equals("2"))
+                            {
+                                generalSearchActivity.image_top.setVisibility(View.GONE);
+
+
+                            }else if (type.equals("3"))
+                            {
+                                AllAppAdsFragment allAppAdsFragment = (AllAppAdsFragment) fragment;
+                                allAppAdsFragment.image_top.setVisibility(View.GONE);
+
+
+                            }
+                        }
 
 
                 }
@@ -143,6 +186,8 @@ public class SubDeptAdsAdapter extends RecyclerView.Adapter <RecyclerView.ViewHo
             }
 
             lastpos = position;*/
+
+
             Animation animation = AnimationUtils.loadAnimation(context,R.anim.right_to_left);
             holder.itemView.startAnimation(animation);
 

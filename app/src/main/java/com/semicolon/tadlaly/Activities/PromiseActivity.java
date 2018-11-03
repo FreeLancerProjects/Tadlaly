@@ -1,30 +1,22 @@
 package com.semicolon.tadlaly.Activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.support.annotation.NonNull;
-import android.support.design.widget.BottomSheetBehavior;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.semicolon.tadlaly.Models.RulesModel;
 import com.semicolon.tadlaly.R;
-import com.semicolon.tadlaly.Services.Api;
-import com.semicolon.tadlaly.Services.Services;
-import com.semicolon.tadlaly.Services.Tags;
+import com.semicolon.tadlaly.language.LanguageHelper;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
+import java.util.Locale;
+
+import io.paperdb.Paper;
 
 public class PromiseActivity extends AppCompatActivity implements View.OnClickListener{
     private ImageView back,img_ekhaa;
@@ -33,14 +25,20 @@ public class PromiseActivity extends AppCompatActivity implements View.OnClickLi
     private boolean brand2=false;
     private boolean brand3=false;
     private TextView txt_quran;
-    private View root;
+    /*private View root;
     private TextView tv_title,tv_content;
     private ProgressBar progBar;
     private Button agree_btn;
     private BottomSheetBehavior behavior;
-    private boolean isRules_readed= false;
+    private boolean isRules_readed= false;*/
 
 
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        Paper.init(newBase);
+
+        super.attachBaseContext(LanguageHelper.onAttach(newBase, Paper.book().read("language",Locale.getDefault().getLanguage())));
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,12 +64,12 @@ public class PromiseActivity extends AppCompatActivity implements View.OnClickLi
         disagreeBtn2 = findViewById(R.id.disagreeBtn2);
         disagreeBtn3 = findViewById(R.id.disagreeBtn3);
 
-        tv_title = findViewById(R.id.tv_title);
+       /* tv_title = findViewById(R.id.tv_title);
         tv_content = findViewById(R.id.tv_content);
         progBar = findViewById(R.id.progBar);
         agree_btn = findViewById(R.id.agree_btn);
         root = findViewById(R.id.root);
-        behavior = BottomSheetBehavior.from(root);
+        behavior = BottomSheetBehavior.from(root);*/
 
         agreeBtn1.setOnClickListener(this);
         agreeBtn2.setOnClickListener(this);
@@ -79,10 +77,11 @@ public class PromiseActivity extends AppCompatActivity implements View.OnClickLi
         disagreeBtn1.setOnClickListener(this);
         disagreeBtn2.setOnClickListener(this);
         disagreeBtn3.setOnClickListener(this);
-        agree_btn.setOnClickListener(this);
+       // agree_btn.setOnClickListener(this);
         img_ekhaa.setOnClickListener(this);
         send_btn.setOnClickListener(this);
 
+/*
         behavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
@@ -97,6 +96,7 @@ public class PromiseActivity extends AppCompatActivity implements View.OnClickLi
 
             }
         });
+*/
     }
 
     @Override
@@ -170,9 +170,12 @@ public class PromiseActivity extends AppCompatActivity implements View.OnClickLi
 
                 }else
                     {
+                        Intent intent2 = getIntent();
+                        setResult(RESULT_OK,intent2);
+                        finish();
 
-                        behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-                        getRulesData();
+                       // behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                      //  getRulesData();
                     }
                 break;
             case R.id.img_ekhaa:
@@ -181,7 +184,7 @@ public class PromiseActivity extends AppCompatActivity implements View.OnClickLi
                 startActivity(intent);
                 break;
 
-            case R.id.agree_btn:
+            /*case R.id.agree_btn:
 
 
                 behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
@@ -197,11 +200,11 @@ public class PromiseActivity extends AppCompatActivity implements View.OnClickLi
                         },1000);
 
 
-                break;
+                break;*/
         }
     }
 
-    private void getRulesData() {
+    /*private void getRulesData() {
         Retrofit retrofit = Api.getRetrofit(Tags.Base_Url);
         Call<RulesModel> call = retrofit.create(Services.class).getRules();
         call.enqueue(new Callback<RulesModel>() {
@@ -224,9 +227,9 @@ public class PromiseActivity extends AppCompatActivity implements View.OnClickLi
                 Log.e("Error",t.getMessage());
             }
         });
-    }
+    }*/
 
-    @Override
+    /*@Override
     public void onBackPressed() {
         if (behavior.getState()==BottomSheetBehavior.STATE_EXPANDED)
         {
@@ -254,5 +257,5 @@ public class PromiseActivity extends AppCompatActivity implements View.OnClickLi
                 super.onBackPressed();
 
             }
-    }
+    }*/
 }

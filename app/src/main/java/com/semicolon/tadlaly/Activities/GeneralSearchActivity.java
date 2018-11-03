@@ -1,5 +1,6 @@
 package com.semicolon.tadlaly.Activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
@@ -34,12 +35,15 @@ import com.semicolon.tadlaly.Services.Tags;
 import com.semicolon.tadlaly.SingleTone.DepartmentSingletone;
 import com.semicolon.tadlaly.SingleTone.LatLngSingleTone;
 import com.semicolon.tadlaly.SingleTone.UserSingleTone;
+import com.semicolon.tadlaly.language.LanguageHelper;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
+import io.paperdb.Paper;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -74,7 +78,13 @@ public class GeneralSearchActivity extends AppCompatActivity implements Departme
     private String user_type="";
     private Call<List<MyAdsModel>> call;
     private LatLngSingleTone latLngSingleTone;
+    public ImageView image_top;
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        Paper.init(newBase);
 
+        super.attachBaseContext(LanguageHelper.onAttach(newBase, Paper.book().read("language",Locale.getDefault().getLanguage())));
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -131,6 +141,7 @@ public class GeneralSearchActivity extends AppCompatActivity implements Departme
         finalmyAdsModelList = new ArrayList<>();
         myAdsModelList1 = new ArrayList<>();
         back = findViewById(R.id.back);
+        image_top = findViewById(R.id.image_top);
         spinner_dept = findViewById(R.id.spinner_dept);
         spinner_branch = findViewById(R.id.spinner_branch);
         search_btn = findViewById(R.id.search_btn);
@@ -140,7 +151,7 @@ public class GeneralSearchActivity extends AppCompatActivity implements Departme
         recView = findViewById(R.id.recView);
         manager = new LinearLayoutManager(this);
         recView.setLayoutManager(manager);
-        adapter = new SubDeptAdsAdapter(recView,this,myAdsModelList,"2");
+        adapter = new SubDeptAdsAdapter(recView,this,myAdsModelList,"2",null);
         recView.setAdapter(adapter);
         back.setOnClickListener(view -> finish());
         spinnerDeptAdapter = new SpinnerDeptAdapter(this,R.layout.spinner_item,spinner_deptModelList);
@@ -201,6 +212,13 @@ public class GeneralSearchActivity extends AppCompatActivity implements Departme
 
         search_btn.setOnClickListener(view -> Search(page_index++));
 
+        image_top.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                recView.smoothScrollToPosition(0);
+                image_top.setVisibility(View.GONE);
+            }
+        });
     }
 
     private void Search(int page_index)

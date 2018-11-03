@@ -1,6 +1,7 @@
 package com.semicolon.tadlaly.Activities;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -25,13 +26,16 @@ import com.semicolon.tadlaly.Services.Api;
 import com.semicolon.tadlaly.Services.Services;
 import com.semicolon.tadlaly.Services.Tags;
 import com.semicolon.tadlaly.SingleTone.UserSingleTone;
+import com.semicolon.tadlaly.language.LanguageHelper;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import io.paperdb.Paper;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -57,7 +61,12 @@ public class AdsDetailsActivity extends AppCompatActivity implements UserSingleT
     private AlertDialog alertDialog;
 
 
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        Paper.init(newBase);
 
+        super.attachBaseContext(LanguageHelper.onAttach(newBase, Paper.book().read("language",Locale.getDefault().getLanguage())));
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,8 +87,6 @@ public class AdsDetailsActivity extends AppCompatActivity implements UserSingleT
             whoVisit = intent.getStringExtra("whoVisit");
             user_id = intent.getStringExtra("user_id");
             Log.e("USERType_ADS_Det_Ac",whoVisit);
-            Log.e("USERID_ADS_Det_Ac",user_id);
-
             UpdateUi(myAdsModel, whoVisit);
             Log.e("ads_id",myAdsModel.getId_advertisement());
             if (whoVisit.equals(Tags.visitor))
@@ -117,6 +124,7 @@ public class AdsDetailsActivity extends AppCompatActivity implements UserSingleT
         });
     }
     private void initView() {
+
         images           = new ArrayList<>();
         pager            = findViewById(R.id.pager);
         tab              = findViewById(R.id.tab);

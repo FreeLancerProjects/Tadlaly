@@ -15,20 +15,31 @@ import com.semicolon.tadlaly.Models.UserModel;
 import java.util.List;
 import java.util.Map;
 
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.http.Field;
 import retrofit2.http.FieldMap;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
+import retrofit2.http.Multipart;
 import retrofit2.http.POST;
+import retrofit2.http.Part;
+import retrofit2.http.PartMap;
 import retrofit2.http.Path;
 import retrofit2.http.Url;
 
 public interface Services {
 
-    @FormUrlEncoded
+    @Multipart
     @POST("Api/Registration")
-    Call<UserModel> Register(@FieldMap Map<String,String> map);
+    Call<UserModel> Register_with_image(@PartMap Map<String, RequestBody> map,
+                             @Part MultipartBody.Part user_photo
+                             );
+    @Multipart
+    @POST("Api/Registration")
+    Call<UserModel> Register_no_image(@PartMap Map<String, RequestBody> map
+    );
 
     @FormUrlEncoded
     @POST("Api/Login")
@@ -48,9 +59,9 @@ public interface Services {
     @POST("Api/RestMyPass")
     Call<ResponseModel> ResetPassword(@FieldMap Map<String,String> map);
 
-    @FormUrlEncoded
+    @Multipart
     @POST("Api/UpdateProfile/{user_id}")
-    Call<UserModel> updatePhoto(@Path("user_id") String user_id,@Field("user_photo")String photo);
+    Call<UserModel> updatePhoto(@Path("user_id") String user_id,MultipartBody.Part user_photo);
 
     @FormUrlEncoded
     @POST("Api/UpdateProfile/{user_id}")
@@ -86,9 +97,9 @@ public interface Services {
     @GET("Api/AboutUs")
     Call<AboutAppModel> AboutApp();
 
-    @FormUrlEncoded
+    @Multipart
     @POST("Api/AddMyAdvertisement/{user_id}")
-    Call<ResponseModel> Add_Ad(@Path("user_id") String user_id,@FieldMap Map<String,String> map,@Field("images[]") List<String> encodedImages);
+    Call<ResponseModel> Add_Ad(@Path("user_id") String user_id,@PartMap Map<String,RequestBody> map,@Part List<MultipartBody.Part> encodedImages);
 
     @GET("Api/CurrentAdvertisement/{user_id}/{page_index}")
     Call<List<MyAdsModel>> getCurrentAds(@Path("user_id") String user_id,@Path("page_index") int page_index);
@@ -99,9 +110,12 @@ public interface Services {
     @GET()
     Call<MyLocation> getMyLocationAddress(@Url String url);
 
-    @FormUrlEncoded
+    @Multipart
     @POST("Api/UpdateAdvertisement/{advertisement_id}")
-    Call<MyAdsModel> updateMyAds(@Path("advertisement_id") String advertisement_id,@FieldMap Map<String,String> map,@Field("images[]") List<String> imgs);
+    Call<MyAdsModel> updateMyAds(@Path("advertisement_id") String advertisement_id,@FieldMap Map<String,RequestBody> map,@Part List<MultipartBody.Part> imgs);
+
+    @GET("Api/UpdateLocation/{user_id}/{id_photo}")
+    Call<ResponseModel> deleteAdsImage(@Path("user_id") String user_id,@Path("id_photo") String id_photo);
     /*@GET()
     Observable<PlacesDistanceModel> getDistance(@Url String url);*/
 
@@ -180,5 +194,15 @@ public interface Services {
     @FormUrlEncoded
     @POST("Api/FindAdvertisement/{page_index}")
     Call<List<MyAdsModel>> searchby_name(@Path("page_index") int page_index,@Field("user_id") String user_id,@Field("search_title") String search_title,@Field("user_google_lat") double user_google_lat,@Field("user_google_long") double user_google_long);
+
+    @FormUrlEncoded
+    @POST("Api/AdSearch/{user_id}/{type}/{page_index}")
+    Call<List<MyAdsModel>> getAllAdsBasedOn_New_Nearby(@Path("user_id") String user_id,
+                                                 @Path("type") String type,
+                                                 @Path("page_index") int page_index,
+                                                 @Field("user_google_lat") String user_google_lat,
+                                                 @Field("user_google_long") String user_google_long
+
+    );
 }
 

@@ -3,6 +3,7 @@ package com.semicolon.tadlaly.Activities;
 import android.Manifest;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.PorterDuff;
@@ -35,12 +36,15 @@ import com.semicolon.tadlaly.Services.Api;
 import com.semicolon.tadlaly.Services.Services;
 import com.semicolon.tadlaly.Services.Tags;
 import com.semicolon.tadlaly.SingleTone.UserSingleTone;
+import com.semicolon.tadlaly.language.LanguageHelper;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import io.paperdb.Paper;
 import me.leolin.shortcutbadger.ShortcutBadger;
 import pl.tajchert.waitingdots.DotsTextView;
 import retrofit2.Call;
@@ -66,6 +70,13 @@ public class SendMsgActivity extends AppCompatActivity implements UserSingleTone
     private UserSingleTone userSingleTone;
     private LinearLayout loading_container;
     private String chat_id="",chat_name="",chat_image="",chat_phone="",curr_name="",curr_image="";
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        Paper.init(newBase);
+
+        super.attachBaseContext(LanguageHelper.onAttach(newBase, Paper.book().read("language",Locale.getDefault().getLanguage())));
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

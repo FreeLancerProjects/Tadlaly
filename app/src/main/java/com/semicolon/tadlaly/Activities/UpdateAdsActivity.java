@@ -1,7 +1,11 @@
 package com.semicolon.tadlaly.Activities;
 
+import android.Manifest;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.PorterDuff;
@@ -9,11 +13,13 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
-import android.util.Base64;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -32,6 +38,7 @@ import com.semicolon.tadlaly.Adapters.SpinnerBranchAdapter;
 import com.semicolon.tadlaly.Adapters.SpinnerDeptAdapter;
 import com.semicolon.tadlaly.Models.DepartmentsModel;
 import com.semicolon.tadlaly.Models.MyAdsModel;
+import com.semicolon.tadlaly.Models.ResponseModel;
 import com.semicolon.tadlaly.Models.Spinner_DeptModel;
 import com.semicolon.tadlaly.Models.Spinner_branchModel;
 import com.semicolon.tadlaly.Models.UserModel;
@@ -42,22 +49,25 @@ import com.semicolon.tadlaly.Services.Services;
 import com.semicolon.tadlaly.Services.Tags;
 import com.semicolon.tadlaly.SingleTone.DepartmentSingletone;
 import com.semicolon.tadlaly.SingleTone.UserSingleTone;
+import com.semicolon.tadlaly.language.LanguageHelper;
+import com.semicolon.tadlaly.share.Common;
 import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Target;
 
-import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
+import io.paperdb.Paper;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 
-public class UpdateAdsActivity extends AppCompatActivity implements DepartmentSingletone.onCompleteListener,View.OnLongClickListener,View.OnClickListener,UserSingleTone.OnCompleteListener{
+public class UpdateAdsActivity extends AppCompatActivity implements DepartmentSingletone.onCompleteListener,View.OnClickListener,UserSingleTone.OnCompleteListener{
     private ImageView back;
     private Button updateBtn;
     private TextView location;
@@ -66,13 +76,15 @@ public class UpdateAdsActivity extends AppCompatActivity implements DepartmentSi
     private PhoneInputLayout phone;
     private CheckBox checkbox_phone_state;
     private RoundedImageView img1,img2,img3,img4,img5,img6;
+    private List<RoundedImageView> roundedImageViewList;
     private MyAdsModel myAdsModel;
     private DepartmentSingletone departmentSingletone;
     private List<DepartmentsModel> departmentsModelList;
     private List<Spinner_DeptModel> deptList;
     private Bitmap bitmap1,bitmap2,bitmap3,bitmap4,bitmap5,bitmap6;
     private String isVisible;
-    private Target target1,target2,target3,target4,target5,target6;
+    private ImageView image1_delete,image2_delete,image3_delete,image4_delete,image5_delete,image6_delete;
+    private List<ImageView> imageDeleteList;
     private SpinnerDeptAdapter deptAdapter;
     private SpinnerBranchAdapter branchAdapter;
     private List<Spinner_branchModel> spinner_branchModelList;
@@ -84,14 +96,20 @@ public class UpdateAdsActivity extends AppCompatActivity implements DepartmentSi
     private final  int img4_req=4;
     private final  int img5_req=5;
     private final  int img6_req=6;
-    private List<Bitmap> bitmapList;
-   // private Typeface typeface;
     private String mType="",m_dept_id="",m_branch_id="";
     private UserModel userModel;
     private UserSingleTone userSingleTone;
-    private List<String> encodedImages ;
     private ProgressDialog dialog;
     private GetLocationDetails getLocationDetails;
+    private final String read_perm = Manifest.permission.READ_EXTERNAL_STORAGE;
+    private List<Uri> uriList;
+    private List<MyAdsModel.Images> imagesList;
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        Paper.init(newBase);
+
+        super.attachBaseContext(LanguageHelper.onAttach(newBase, Paper.book().read("language",Locale.getDefault().getLanguage())));
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -99,6 +117,7 @@ public class UpdateAdsActivity extends AppCompatActivity implements DepartmentSi
         //typeface = Typeface.createFromAsset(getAssets(), "OYA-Regular.ttf");
         CreateProgress_dialog();
         initView();
+        uriList = new ArrayList<>();
         userSingleTone = UserSingleTone.getInstance();
         userSingleTone.getUser(this);
         departmentSingletone = DepartmentSingletone.getInstansce();
@@ -108,26 +127,22 @@ public class UpdateAdsActivity extends AppCompatActivity implements DepartmentSi
 
 
 
-    private void initView() {
-        encodedImages = new ArrayList<>();
+    private void
+    initView() {
         deptList = new ArrayList<>();
-        bitmapList = new ArrayList<>();
+        roundedImageViewList = new ArrayList<>();
+        imageDeleteList = new ArrayList<>();
         spinner_branchModelList = new ArrayList<>();
         back = findViewById(R.id.back);
         updateBtn = findViewById(R.id.update_btn);
-        //updateBtn.setTypeface(typeface);
         depart_spinner = findViewById(R.id.depart_spinner);
         branch_spinner = findViewById(R.id.branch_spinner);
         location = findViewById(R.id.location);
         ad_type = findViewById(R.id.ad_type);
         ad_title = findViewById(R.id.ad_title);
-        //ad_title.setTypeface(typeface);
         ad_address = findViewById(R.id.ad_address);
-        //ad_address.setTypeface(typeface);
         ad_cost = findViewById(R.id.ad_cost);
-        //ad_cost.setTypeface(typeface);
         ad_content = findViewById(R.id.ad_content);
-        //ad_content.setTypeface(typeface);
         phone = findViewById(R.id.phone);
         checkbox_phone_state = findViewById(R.id.checkbox_phone_state);
         img1 = findViewById(R.id.img1);
@@ -136,6 +151,27 @@ public class UpdateAdsActivity extends AppCompatActivity implements DepartmentSi
         img4 = findViewById(R.id.img4);
         img5 = findViewById(R.id.img5);
         img6 = findViewById(R.id.img6);
+
+        roundedImageViewList.add(img1);
+        roundedImageViewList.add(img2);
+        roundedImageViewList.add(img3);
+        roundedImageViewList.add(img4);
+        roundedImageViewList.add(img5);
+        roundedImageViewList.add(img6);
+
+        image1_delete = findViewById(R.id.image1_delete);
+        image2_delete = findViewById(R.id.image2_delete);
+        image3_delete = findViewById(R.id.image3_delete);
+        image4_delete = findViewById(R.id.image4_delete);
+        image5_delete = findViewById(R.id.image5_delete);
+        image6_delete = findViewById(R.id.image6_delete);
+
+        imageDeleteList.add(image1_delete);
+        imageDeleteList.add(image2_delete);
+        imageDeleteList.add(image3_delete);
+        imageDeleteList.add(image4_delete);
+        imageDeleteList.add(image5_delete);
+        imageDeleteList.add(image6_delete);
 
         back.setOnClickListener(view -> finish());
         type = getResources().getStringArray(R.array.ad_state);
@@ -230,12 +266,13 @@ public class UpdateAdsActivity extends AppCompatActivity implements DepartmentSi
             }
         });
 
-        img1.setOnLongClickListener(this);
-        img2.setOnLongClickListener(this);
-        img3.setOnLongClickListener(this);
-        img4.setOnLongClickListener(this);
-        img5.setOnLongClickListener(this);
-        img6.setOnLongClickListener(this);
+
+        image1_delete.setOnClickListener(this);
+        image2_delete.setOnClickListener(this);
+        image3_delete.setOnClickListener(this);
+        image4_delete.setOnClickListener(this);
+        image5_delete.setOnClickListener(this);
+        image6_delete.setOnClickListener(this);
 
         img1.setOnClickListener(this);
         img2.setOnClickListener(this);
@@ -247,7 +284,17 @@ public class UpdateAdsActivity extends AppCompatActivity implements DepartmentSi
         location.setOnClickListener(this);
 
     }
-
+    private void CheckReadPermission(int req)
+    {
+        if (ContextCompat.checkSelfPermission(this,read_perm )!= PackageManager.PERMISSION_GRANTED)
+        {
+            String [] perm = {read_perm};
+            ActivityCompat.requestPermissions(this,perm,req);
+        }else
+            {
+                SelectImage(req);
+            }
+    }
     private void CreateProgress_dialog() {
         ProgressBar bar = new ProgressBar(this);
         Drawable drawable = bar.getIndeterminateDrawable().mutate();
@@ -304,7 +351,8 @@ public class UpdateAdsActivity extends AppCompatActivity implements DepartmentSi
         }
     }
 
-    private void UpdateUi(MyAdsModel myAdsModel) {
+    private void UpdateUi(MyAdsModel myAdsModel)
+    {
         ad_title.setText(myAdsModel.getAdvertisement_title());
         ad_address.setText(myAdsModel.getCity());
         ad_content.setText(myAdsModel.getAdvertisement_content());
@@ -340,466 +388,14 @@ public class UpdateAdsActivity extends AppCompatActivity implements DepartmentSi
 
 
 
-        List<MyAdsModel.Images> imagesList = myAdsModel.getAdvertisement_image();
+        imagesList = myAdsModel.getAdvertisement_image();
         if (imagesList.size()>0)
         {
-            if (imagesList.size()==1)
+            for (int position =0;position<imagesList.size();position++)
             {
-                bitmapList.clear();
-
-                target1 = new Target() {
-                    @Override
-                    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                        bitmap1 = bitmap;
-                        img1.setImageBitmap(bitmap1);
-                        bitmapList.add(bitmap1);
-
-                    }
-
-                    @Override
-                    public void onBitmapFailed(Drawable errorDrawable) {
-
-                    }
-
-                    @Override
-                    public void onPrepareLoad(Drawable placeHolderDrawable) {
-
-                    }
-                };
-                Picasso.with(this).load(Uri.parse(Tags.Image_Url)+imagesList.get(0).getPhoto_name()).into(target1);
-            }else if (imagesList.size()==2)
-            {
-                bitmapList.clear();
-                target1 = new Target() {
-                    @Override
-                    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                        bitmap1 = bitmap;
-                        img1.setImageBitmap(bitmap1);
-                        bitmapList.add(bitmap);
-
-                    }
-
-                    @Override
-                    public void onBitmapFailed(Drawable errorDrawable) {
-
-                    }
-
-                    @Override
-                    public void onPrepareLoad(Drawable placeHolderDrawable) {
-
-                    }
-                };
-                target2 = new Target() {
-                    @Override
-                    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                        bitmap2 = bitmap;
-                        img2.setImageBitmap(bitmap);
-                        bitmapList.add(bitmap);
-
-
-                    }
-
-                    @Override
-                    public void onBitmapFailed(Drawable errorDrawable) {
-
-                    }
-
-                    @Override
-                    public void onPrepareLoad(Drawable placeHolderDrawable) {
-
-                    }
-                };
-                Picasso.with(this).load(Uri.parse(Tags.Image_Url+imagesList.get(0).getPhoto_name())).into(target1);
-                Picasso.with(this).load(Uri.parse(Tags.Image_Url+imagesList.get(1).getPhoto_name())).into(target2);
-
-
-
-
-            }
-            else if (imagesList.size()==3)
-            {
-                bitmapList.clear();
-                target1 = new Target() {
-                    @Override
-                    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                        bitmap1 = bitmap;
-                        img1.setImageBitmap(bitmap1);
-                        bitmapList.add(bitmap1);
-
-                    }
-
-                    @Override
-                    public void onBitmapFailed(Drawable errorDrawable) {
-
-                    }
-
-                    @Override
-                    public void onPrepareLoad(Drawable placeHolderDrawable) {
-
-                    }
-                };
-                target2 = new Target() {
-                    @Override
-                    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                        bitmap2 = bitmap;
-                        img2.setImageBitmap(bitmap2);
-                        bitmapList.add(bitmap2);
-
-                    }
-
-                    @Override
-                    public void onBitmapFailed(Drawable errorDrawable) {
-
-                    }
-
-                    @Override
-                    public void onPrepareLoad(Drawable placeHolderDrawable) {
-
-                    }
-                };
-                target3 = new Target() {
-                    @Override
-                    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                        bitmap3 = bitmap;
-                        img3.setImageBitmap(bitmap3);
-                        bitmapList.add(bitmap3);
-
-                    }
-
-                    @Override
-                    public void onBitmapFailed(Drawable errorDrawable) {
-
-                    }
-
-                    @Override
-                    public void onPrepareLoad(Drawable placeHolderDrawable) {
-
-                    }
-                };
-                Picasso.with(this).load(Uri.parse(Tags.Image_Url+imagesList.get(0).getPhoto_name())).into(target1);
-                Picasso.with(this).load(Uri.parse(Tags.Image_Url+imagesList.get(1).getPhoto_name())).into(target2);
-                Picasso.with(this).load(Uri.parse(Tags.Image_Url+imagesList.get(2).getPhoto_name())).into(target3);
-
-            }
-            else if (imagesList.size()==4)
-            {
-                bitmapList.clear();
-                target1 = new Target() {
-                    @Override
-                    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                        bitmap1 = bitmap;
-                        img1.setImageBitmap(bitmap1);
-                        bitmapList.add(bitmap1);
-
-                    }
-
-                    @Override
-                    public void onBitmapFailed(Drawable errorDrawable) {
-
-                    }
-
-                    @Override
-                    public void onPrepareLoad(Drawable placeHolderDrawable) {
-
-                    }
-                };
-                target2 = new Target() {
-                    @Override
-                    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                        bitmap2 = bitmap;
-                        img2.setImageBitmap(bitmap2);
-                        bitmapList.add(bitmap2);
-
-                    }
-
-                    @Override
-                    public void onBitmapFailed(Drawable errorDrawable) {
-
-                    }
-
-                    @Override
-                    public void onPrepareLoad(Drawable placeHolderDrawable) {
-
-                    }
-                };
-                target3 = new Target() {
-                    @Override
-                    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                        bitmap3 = bitmap;
-                        img3.setImageBitmap(bitmap3);
-                        bitmapList.add(bitmap3);
-
-                    }
-
-                    @Override
-                    public void onBitmapFailed(Drawable errorDrawable) {
-
-                    }
-
-                    @Override
-                    public void onPrepareLoad(Drawable placeHolderDrawable) {
-
-                    }
-                };
-                target4 = new Target() {
-                    @Override
-                    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                        bitmap4 = bitmap;
-                        img4.setImageBitmap(bitmap4);
-                        bitmapList.add(bitmap4);
-
-                    }
-
-                    @Override
-                    public void onBitmapFailed(Drawable errorDrawable) {
-
-                    }
-
-                    @Override
-                    public void onPrepareLoad(Drawable placeHolderDrawable) {
-
-                    }
-                };
-                Picasso.with(this).load(Uri.parse(Tags.Image_Url+imagesList.get(0).getPhoto_name())).into(target1);
-                Picasso.with(this).load(Uri.parse(Tags.Image_Url+imagesList.get(1).getPhoto_name())).into(target2);
-                Picasso.with(this).load(Uri.parse(Tags.Image_Url+imagesList.get(2).getPhoto_name())).into(target3);
-                Picasso.with(this).load(Uri.parse(Tags.Image_Url+imagesList.get(3).getPhoto_name())).into(target4);
-
-            }
-            else if (imagesList.size()==5)
-            {
-                bitmapList.clear();
-                target1 = new Target() {
-                    @Override
-                    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                        bitmap1 = bitmap;
-                        img1.setImageBitmap(bitmap1);
-                        bitmapList.add(bitmap1);
-
-                    }
-
-                    @Override
-                    public void onBitmapFailed(Drawable errorDrawable) {
-
-                    }
-
-                    @Override
-                    public void onPrepareLoad(Drawable placeHolderDrawable) {
-
-                    }
-                };
-                target2 = new Target() {
-                    @Override
-                    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                        bitmap2 = bitmap;
-                        img2.setImageBitmap(bitmap2);
-                        bitmapList.add(bitmap2);
-
-                    }
-
-                    @Override
-                    public void onBitmapFailed(Drawable errorDrawable) {
-
-                    }
-
-                    @Override
-                    public void onPrepareLoad(Drawable placeHolderDrawable) {
-
-                    }
-                };
-                target3 = new Target() {
-                    @Override
-                    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                        bitmap3 = bitmap;
-                        img3.setImageBitmap(bitmap3);
-                        bitmapList.add(bitmap3);
-
-                    }
-
-                    @Override
-                    public void onBitmapFailed(Drawable errorDrawable) {
-
-                    }
-
-                    @Override
-                    public void onPrepareLoad(Drawable placeHolderDrawable) {
-
-                    }
-                };
-                target4 = new Target() {
-                    @Override
-                    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                        bitmap4 = bitmap;
-                        img4.setImageBitmap(bitmap4);
-                        bitmapList.add(bitmap4);
-
-
-                    }
-
-                    @Override
-                    public void onBitmapFailed(Drawable errorDrawable) {
-
-                    }
-
-                    @Override
-                    public void onPrepareLoad(Drawable placeHolderDrawable) {
-
-                    }
-                };
-                target5 = new Target() {
-                    @Override
-                    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                        bitmap5 = bitmap;
-                        img5.setImageBitmap(bitmap5);
-                        bitmapList.add(bitmap5);
-
-
-                    }
-
-                    @Override
-                    public void onBitmapFailed(Drawable errorDrawable) {
-
-                    }
-
-                    @Override
-                    public void onPrepareLoad(Drawable placeHolderDrawable) {
-
-                    }
-                };
-                Picasso.with(this).load(Uri.parse(Tags.Image_Url+imagesList.get(0).getPhoto_name())).into(target1);
-                Picasso.with(this).load(Uri.parse(Tags.Image_Url+imagesList.get(1).getPhoto_name())).into(target2);
-                Picasso.with(this).load(Uri.parse(Tags.Image_Url+imagesList.get(2).getPhoto_name())).into(target3);
-                Picasso.with(this).load(Uri.parse(Tags.Image_Url+imagesList.get(3).getPhoto_name())).into(target4);
-                Picasso.with(this).load(Uri.parse(Tags.Image_Url+imagesList.get(4).getPhoto_name())).into(target5);
-
-            }
-            else if (imagesList.size()==6)
-            {
-                target1 = new Target() {
-                    @Override
-                    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                        bitmap1 = bitmap;
-                        img1.setImageBitmap(bitmap1);
-                        bitmapList.add(bitmap1);
-
-
-                    }
-
-                    @Override
-                    public void onBitmapFailed(Drawable errorDrawable) {
-
-                    }
-
-                    @Override
-                    public void onPrepareLoad(Drawable placeHolderDrawable) {
-
-                    }
-                };
-                target2 = new Target() {
-                    @Override
-                    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                        bitmap2 = bitmap;
-                        img2.setImageBitmap(bitmap2);
-                        bitmapList.add(bitmap2);
-
-
-                    }
-
-                    @Override
-                    public void onBitmapFailed(Drawable errorDrawable) {
-
-                    }
-
-                    @Override
-                    public void onPrepareLoad(Drawable placeHolderDrawable) {
-
-                    }
-                };
-                target3 = new Target() {
-                    @Override
-                    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                        bitmap3 = bitmap;
-                        img3.setImageBitmap(bitmap3);
-                        bitmapList.add(bitmap3);
-
-
-                    }
-
-                    @Override
-                    public void onBitmapFailed(Drawable errorDrawable) {
-
-                    }
-
-                    @Override
-                    public void onPrepareLoad(Drawable placeHolderDrawable) {
-
-                    }
-                };
-                target4 = new Target() {
-                    @Override
-                    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                        bitmap4 = bitmap;
-                        img4.setImageBitmap(bitmap4);
-                        bitmapList.add(bitmap4);
-
-
-                    }
-
-                    @Override
-                    public void onBitmapFailed(Drawable errorDrawable) {
-
-                    }
-
-                    @Override
-                    public void onPrepareLoad(Drawable placeHolderDrawable) {
-
-                    }
-                };
-                target5 = new Target() {
-                    @Override
-                    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                        bitmap5 = bitmap;
-                        img5.setImageBitmap(bitmap5);
-                        bitmapList.add(bitmap5);
-
-
-                    }
-
-                    @Override
-                    public void onBitmapFailed(Drawable errorDrawable) {
-
-                    }
-
-                    @Override
-                    public void onPrepareLoad(Drawable placeHolderDrawable) {
-
-                    }
-                };
-                target6 = new Target() {
-                    @Override
-                    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                        bitmap6 = bitmap;
-                        img6.setImageBitmap(bitmap6);
-                        bitmapList.add(bitmap6);
-
-                    }
-
-                    @Override
-                    public void onBitmapFailed(Drawable errorDrawable) {
-
-                    }
-
-                    @Override
-                    public void onPrepareLoad(Drawable placeHolderDrawable) {
-
-                    }
-                };
-                Picasso.with(this).load(Uri.parse(Tags.Image_Url+imagesList.get(0).getPhoto_name())).into(target1);
-                Picasso.with(this).load(Uri.parse(Tags.Image_Url+imagesList.get(1).getPhoto_name())).into(target2);
-                Picasso.with(this).load(Uri.parse(Tags.Image_Url+imagesList.get(2).getPhoto_name())).into(target3);
-                Picasso.with(this).load(Uri.parse(Tags.Image_Url+imagesList.get(3).getPhoto_name())).into(target4);
-                Picasso.with(this).load(Uri.parse(Tags.Image_Url+imagesList.get(4).getPhoto_name())).into(target5);
-                Picasso.with(this).load(Uri.parse(Tags.Image_Url+imagesList.get(5).getPhoto_name())).into(target6);
+                MyAdsModel.Images images =imagesList.get(position);
+                Picasso.with(this).load(Uri.parse(Tags.Image_Url+images.getPhoto_name())).into(roundedImageViewList.get(position));
+                imageDeleteList.get(position).setVisibility(View.VISIBLE);
 
             }
 
@@ -881,105 +477,71 @@ public class UpdateAdsActivity extends AppCompatActivity implements DepartmentSi
 
     }
 
+    private void CreateDeleteAlertDialog(String img_id,int position)
+    {
+        AlertDialog alertDialog = new AlertDialog.Builder(this)
+                .setCancelable(true)
+                .create();
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        Picasso.with(this).cancelRequest(target1);
-        Picasso.with(this).cancelRequest(target2);
-        Picasso.with(this).cancelRequest(target3);
-        Picasso.with(this).cancelRequest(target4);
-        Picasso.with(this).cancelRequest(target5);
-        Picasso.with(this).cancelRequest(target6);
+        View view = LayoutInflater.from(this).inflate(R.layout.custom_delete_dialog,null);
+        Button deleteBtn = view.findViewById(R.id.deleteBtn);
+        Button cancelBtn = view.findViewById(R.id.cancelBtn);
+        deleteBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                alertDialog.dismiss();
+                deleteImage(img_id,position);
+            }
+        });
+        cancelBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                alertDialog.dismiss();
+            }
+        });
+
+        alertDialog.setCanceledOnTouchOutside(false);
+        alertDialog.getWindow().getAttributes().windowAnimations=R.style.dialog;
+        alertDialog.show();
 
     }
 
-    @Override
-    public boolean onLongClick(View view) {
-        int id = view.getId();
-        switch (id)
-        {
-            case R.id.img1:
-                if (bitmapList.size()>0)
-                {
-                    img1.setImageBitmap(null);
-                    img1.setBackgroundResource(R.drawable.imgs_bg);
-                    bitmap1=null;
-                    bitmapList.remove(0);
-                }
+    private void deleteImage(String img_id,int position)
+    {
+        ProgressDialog dialog  = Common.createProgressDialog(this,getString(R.string.deltng));
+        dialog.show();
+        Api.getRetrofit(Tags.Base_Url)
+                .create(Services.class)
+                .deleteAdsImage(userModel.getUser_id(),img_id)
+                .enqueue(new Callback<ResponseModel>() {
+                    @Override
+                    public void onResponse(Call<ResponseModel> call, Response<ResponseModel> response) {
+                        if (response.isSuccessful())
+                        {
+                            dialog.dismiss();
 
+                            if (response.body().getSuccess_delete()==1)
+                            {
+                                imageDeleteList.get(position).setVisibility(View.GONE);
+                                imageDeleteList.get(position).setImageResource(R.drawable.imgs_bg);
+                            }else
+                                {
+                                    Toast.makeText(UpdateAdsActivity.this,R.string.something, Toast.LENGTH_SHORT).show();
 
-                break;
-            case R.id.img2:
-                if (bitmapList.size()>=2)
-                {
-                    img2.setImageBitmap(null);
-                    img2.setBackgroundResource(R.drawable.imgs_bg);
-                    bitmap2=null;
-                    bitmapList.remove(1);
-                }
+                                }
+                        }
+                    }
 
-
-
-
-
-                break;
-            case R.id.img3:
-                if (bitmapList.size()>=3)
-                {
-                    img3.setImageBitmap(null);
-                    img3.setBackgroundResource(R.drawable.imgs_bg);
-                    bitmap3=null;
-                    bitmapList.remove(2);
-                }
-
-
-
-
-                break;
-            case R.id.img4:
-                if (bitmapList.size()>=4)
-                {
-                    img4.setImageBitmap(null);
-                    img4.setBackgroundResource(R.drawable.imgs_bg);
-                    bitmap4=null;
-                    bitmapList.remove(3);
-                }
-
-
-
-
-                break;
-            case R.id.img5:
-                if (bitmapList.size()>=5)
-                {
-                    img5.setImageBitmap(null);
-                    img5.setBackgroundResource(R.drawable.imgs_bg);
-                    bitmap5=null;
-                    bitmapList.remove(4);
-                }
-
-
-
-
-                break;
-            case R.id.img6:
-                if (bitmapList.size()==6)
-                {
-                    img6.setImageBitmap(null);
-                    img6.setBackgroundResource(R.drawable.imgs_bg);
-                    bitmap6=null;
-                    bitmapList.remove(5);
-                }
-
-
-
-
-                break;
-
-        }
-        return true;
+                    @Override
+                    public void onFailure(Call<ResponseModel> call, Throwable t) {
+                        Log.e("error",t.getMessage());
+                        dialog.dismiss();
+                        Toast.makeText(UpdateAdsActivity.this,R.string.something, Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
+
+
 
     @Override
     public void onClick(View view) {
@@ -987,22 +549,46 @@ public class UpdateAdsActivity extends AppCompatActivity implements DepartmentSi
         switch (id)
         {
             case R.id.img1:
-                SelectImage(img1_req);
+                CheckReadPermission(img1_req);
                 break;
             case R.id.img2:
-                SelectImage(img2_req);
+                CheckReadPermission(img2_req);
                 break;
             case R.id.img3:
-                SelectImage(img3_req);
+                CheckReadPermission(img3_req);
                 break;
             case R.id.img4:
-                SelectImage(img4_req);
+                CheckReadPermission(img4_req);
                 break;
             case R.id.img5:
-                SelectImage(img5_req);
+                CheckReadPermission(img5_req);
                 break;
             case R.id.img6:
-                SelectImage(img6_req);
+                CheckReadPermission(img6_req);
+                break;
+
+            case R.id.image1_delete:
+                CreateDeleteAlertDialog(imagesList.get(0).getId_photo(),0);
+                break;
+            case R.id.image2_delete:
+                CreateDeleteAlertDialog(imagesList.get(1).getId_photo(),1);
+
+                break;
+            case R.id.image3_delete:
+                CreateDeleteAlertDialog(imagesList.get(2).getId_photo(),2);
+
+                break;
+            case R.id.image4_delete:
+                CreateDeleteAlertDialog(imagesList.get(3).getId_photo(),3);
+
+                break;
+            case R.id.image5_delete:
+                CreateDeleteAlertDialog(imagesList.get(4).getId_photo(),4);
+
+                break;
+            case R.id.image6_delete:
+                CreateDeleteAlertDialog(imagesList.get(5).getId_photo(),5);
+
                 break;
             case R.id.update_btn:
                 UpdateAds();
@@ -1013,7 +599,90 @@ public class UpdateAdsActivity extends AppCompatActivity implements DepartmentSi
         }
     }
 
-    private void getLocation() {
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults)
+    {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode==img1_req)
+        {
+            if (grantResults.length>0)
+            {
+                if (grantResults[0]==PackageManager.PERMISSION_GRANTED)
+                {
+                    SelectImage(img1_req);
+                }else
+                    {
+                        Toast.makeText(this,R.string.perm_read_denied, Toast.LENGTH_SHORT).show();
+                    }
+            }
+        }else if (requestCode==img2_req)
+        {
+            if (grantResults.length>0)
+            {
+                if (grantResults[0]==PackageManager.PERMISSION_GRANTED)
+                {
+                    SelectImage(img2_req);
+                }else
+                {
+                    Toast.makeText(this,R.string.perm_read_denied, Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
+        else if (requestCode==img3_req)
+        {
+            if (grantResults.length>0)
+            {
+                if (grantResults[0]==PackageManager.PERMISSION_GRANTED)
+                {
+                    SelectImage(img3_req);
+                }else
+                {
+                    Toast.makeText(this,R.string.perm_read_denied, Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
+        else if (requestCode==img4_req)
+        {
+            if (grantResults.length>0)
+            {
+                if (grantResults[0]==PackageManager.PERMISSION_GRANTED)
+                {
+                    SelectImage(img4_req);
+                }else
+                {
+                    Toast.makeText(this,R.string.perm_read_denied, Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
+        else if (requestCode==img5_req)
+        {
+            if (grantResults.length>0)
+            {
+                if (grantResults[0]==PackageManager.PERMISSION_GRANTED)
+                {
+                    SelectImage(img5_req);
+                }else
+                {
+                    Toast.makeText(this,R.string.perm_read_denied, Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
+        else if (requestCode==img6_req)
+        {
+            if (grantResults.length>0)
+            {
+                if (grantResults[0]==PackageManager.PERMISSION_GRANTED)
+                {
+                    SelectImage(img6_req);
+                }else
+                {
+                    Toast.makeText(this,R.string.perm_read_denied, Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
+    }
+    private void getLocation()
+    {
         if (getLocationDetails==null)
         {
             getLocationDetails = new GetLocationDetails();
@@ -1032,7 +701,6 @@ public class UpdateAdsActivity extends AppCompatActivity implements DepartmentSi
         this.location.setText(location);
 
     }
-
     private void UpdateAds() {
         String m_name = ad_title.getText().toString();
         String m_address= ad_address.getText().toString();
@@ -1101,25 +769,40 @@ public class UpdateAdsActivity extends AppCompatActivity implements DepartmentSi
             ad_content.setError(getString(R.string.enter_ad_content));
         }else
             {
+                //images[]
                 dialog.show();
                 String[] split = m_price.split(" ");
                 Log.e("cost",split[0]);
-                encodedImages = EncodedImage(bitmapList);
-                Map<String,String> map = new HashMap<>();
-                map.put("main_department",m_dept_id);
-                map.put("sub_department",m_branch_id);
-                map.put("advertisement_title",m_name);
-                map.put("advertisement_content",m_content);
-                map.put("advertisement_price",split[0]);
-                map.put("advertisement_type",mType);
-                map.put("google_lat",userModel.getUser_google_lat());
-                map.put("google_long",userModel.getUser_google_long());
-                map.put("city",m_address);
-                map.put("phone",m_phone);
-                map.put("show_phone",isVisible);
+
+                RequestBody dept_id_part = Common.getRequestBody(m_dept_id);
+                RequestBody branch_id_part = Common.getRequestBody(m_branch_id);
+                RequestBody name_part = Common.getRequestBody(m_name);
+                RequestBody content_part = Common.getRequestBody(m_content);
+                RequestBody price_part = Common.getRequestBody(split[0]);
+                RequestBody type_part = Common.getRequestBody(mType);
+                RequestBody lat_part = Common.getRequestBody(userModel.getUser_google_lat());
+                RequestBody lng_part = Common.getRequestBody(userModel.getUser_google_long());
+                RequestBody city_part = Common.getRequestBody(m_address);
+                RequestBody phone_part = Common.getRequestBody(m_phone);
+                RequestBody show_phone_part = Common.getRequestBody(isVisible);
+
+                List<MultipartBody.Part> partList = getMultipartBodyList(uriList);
+
+                Map<String, RequestBody> map = new HashMap<>();
+                map.put("main_department",dept_id_part);
+                map.put("sub_department",branch_id_part);
+                map.put("advertisement_title",name_part);
+                map.put("advertisement_content",content_part);
+                map.put("advertisement_price",price_part);
+                map.put("advertisement_type",type_part);
+                map.put("google_lat",lat_part);
+                map.put("google_long",lng_part);
+                map.put("city",city_part);
+                map.put("phone",phone_part);
+                map.put("show_phone",show_phone_part);
 
                 Retrofit retrofit = Api.getRetrofit(Tags.Base_Url);
-                Call<MyAdsModel> call = retrofit.create(Services.class).updateMyAds(myAdsModel.getId_advertisement(), map, encodedImages);
+                Call<MyAdsModel> call = retrofit.create(Services.class).updateMyAds(myAdsModel.getId_advertisement(), map, partList);
                 call.enqueue(new Callback<MyAdsModel>() {
                     @Override
                     public void onResponse(Call<MyAdsModel> call, Response<MyAdsModel> response) {
@@ -1162,90 +845,62 @@ public class UpdateAdsActivity extends AppCompatActivity implements DepartmentSi
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode==img1_req && resultCode==RESULT_OK && data!=null)
         {
+
             Uri uri = data.getData();
-            try {
-                bitmap1 = BitmapFactory.decodeStream(getContentResolver().openInputStream(uri));
-                img1.setImageBitmap(bitmap1);
-                bitmapList.add(0,bitmap1);
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
+            uriList.add(uri);
+            bitmap1 = BitmapFactory.decodeFile(Common.getImagePathFromUri(this,uri));
+            img1.setImageBitmap(bitmap1);
+
         }else if (requestCode==img2_req && resultCode==RESULT_OK && data!=null)
         {
             Uri uri = data.getData();
-            try {
-                bitmap2 = BitmapFactory.decodeStream(getContentResolver().openInputStream(uri));
-                img2.setImageBitmap(bitmap2);
-                bitmapList.add(1,bitmap2);
-
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
+            uriList.add(uri);
+            bitmap2 = BitmapFactory.decodeFile(Common.getImagePathFromUri(this,uri));
+            img2.setImageBitmap(bitmap2);
         }
         else if (requestCode==img3_req && resultCode==RESULT_OK && data!=null)
         {
             Uri uri = data.getData();
-            try {
-                bitmap3 = BitmapFactory.decodeStream(getContentResolver().openInputStream(uri));
-                img3.setImageBitmap(bitmap3);
-                bitmapList.add(2,bitmap3);
+            uriList.add(uri);
+            bitmap3 = BitmapFactory.decodeFile(Common.getImagePathFromUri(this,uri));
+            img3.setImageBitmap(bitmap3);
 
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
         }else if (requestCode==img4_req && resultCode==RESULT_OK && data!=null)
         {
             Uri uri = data.getData();
-            try {
-                bitmap4 = BitmapFactory.decodeStream(getContentResolver().openInputStream(uri));
-                img4.setImageBitmap(bitmap4);
-                bitmapList.add(3,bitmap4);
-
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
+            uriList.add(uri);
+            bitmap4 = BitmapFactory.decodeFile(Common.getImagePathFromUri(this,uri));
+            img4.setImageBitmap(bitmap4);
         }else if (requestCode==img5_req && resultCode==RESULT_OK && data!=null)
         {
             Uri uri = data.getData();
-            try {
-                bitmap5 = BitmapFactory.decodeStream(getContentResolver().openInputStream(uri));
-                img5.setImageBitmap(bitmap5);
-                bitmapList.add(4,bitmap5);
-
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
+            uriList.add(uri);
+            bitmap5 = BitmapFactory.decodeFile(Common.getImagePathFromUri(this,uri));
+            img5.setImageBitmap(bitmap5);
         }else if (requestCode==img6_req && resultCode==RESULT_OK && data!=null)
         {
             Uri uri = data.getData();
-            try {
-                bitmap6 = BitmapFactory.decodeStream(getContentResolver().openInputStream(uri));
-                img6.setImageBitmap(bitmap6);
-                bitmapList.add(5,bitmap6);
-
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
+            uriList.add(uri);
+            bitmap6 = BitmapFactory.decodeFile(Common.getImagePathFromUri(this,uri));
+            img6.setImageBitmap(bitmap6);
         }
 
     }
 
-    private List<String> EncodedImage(List<Bitmap> bitmaps)
+    private List<MultipartBody.Part> getMultipartBodyList(List<Uri> uriList)
     {
-        List<String> encodedImages = new ArrayList<>();
-        for (Bitmap bitmap :bitmaps)
-        {
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.PNG,90,outputStream);
-            byte [] bytes = outputStream.toByteArray();
-
-            encodedImages.add(Base64.encodeToString(bytes,Base64.DEFAULT));
+        List<MultipartBody.Part> partList = new ArrayList<>();
+        for (Uri uri:uriList) {
+            MultipartBody.Part part = Common.getMultiPartBody(uri,this);
+            partList.add(part);
         }
-        return encodedImages;
+        return partList;
     }
 
     @Override
     public void onSuccess(UserModel userModel) {
         this.userModel = userModel;
     }
+
+
 }

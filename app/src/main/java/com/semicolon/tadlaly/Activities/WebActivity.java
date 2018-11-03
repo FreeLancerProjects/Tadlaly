@@ -1,5 +1,6 @@
 package com.semicolon.tadlaly.Activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -8,11 +9,22 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 import com.semicolon.tadlaly.R;
+import com.semicolon.tadlaly.language.LanguageHelper;
+
+import java.util.Locale;
+
+import io.paperdb.Paper;
 
 public class WebActivity extends AppCompatActivity {
 
     private WebView webView;
     String url="";
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        Paper.init(newBase);
+
+        super.attachBaseContext(LanguageHelper.onAttach(newBase, Paper.book().read("language",Locale.getDefault().getLanguage())));
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

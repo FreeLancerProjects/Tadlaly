@@ -36,9 +36,14 @@ public class MyAdsModel implements Serializable {
     public class Images implements Serializable
     {
         private String photo_name;
+        private String id_photo;
 
         public String getPhoto_name() {
             return photo_name;
+        }
+
+        public String getId_photo() {
+            return id_photo;
         }
     }
 

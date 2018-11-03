@@ -1,6 +1,7 @@
 package com.semicolon.tadlaly.Activities;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
@@ -24,9 +25,11 @@ import com.semicolon.tadlaly.Services.Preferences;
 import com.semicolon.tadlaly.Services.Services;
 import com.semicolon.tadlaly.Services.Tags;
 import com.semicolon.tadlaly.SingleTone.UserSingleTone;
+import com.semicolon.tadlaly.language.LanguageHelper;
 
 import java.util.Locale;
 
+import io.paperdb.Paper;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -39,12 +42,20 @@ public class LoginActivity extends AppCompatActivity {
     private ProgressDialog progressDialog;
     private UserSingleTone userSingleTone;
     private Preferences preferences;
+    private String lang="";
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        Paper.init(newBase);
+
+        super.attachBaseContext(LanguageHelper.onAttach(newBase, Paper.book().read("language",Locale.getDefault().getLanguage())));
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         /*Calligrapher calligrapher=new Calligrapher(this);
         calligrapher.setFont(this,"OYA-Regular.ttf",true);*/
+       // LanguageHelper.setLocality(lang,this);
         userSingleTone = UserSingleTone.getInstance();
         preferences = new Preferences(this);
         initView();

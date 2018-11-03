@@ -6,12 +6,17 @@
     app:cardCornerRadius="5dp"
     app:contentPadding="1dp"
     android:layout_gravity="center"
+    android:minWidth="130dp"
+    android:layout_marginRight="8dp"
+    android:layout_marginLeft="8dp"
     app:cardBackgroundColor="@color/colorPrimary"
+
     >
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
+        android:layout_gravity="center"
         >
        <!-- <ImageView
             android:id="@+id/subDept_icon"

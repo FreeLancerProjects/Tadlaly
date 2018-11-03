@@ -1,5 +1,6 @@
 package com.semicolon.tadlaly.Activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -10,11 +11,22 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 import com.semicolon.tadlaly.R;
+import com.semicolon.tadlaly.language.LanguageHelper;
+
+import java.util.Locale;
+
+import io.paperdb.Paper;
 
 public class SplashActivity extends AppCompatActivity implements SurfaceHolder.Callback{
     private SurfaceView surfaceView;
     private SurfaceHolder surfaceHolder;
     private MediaPlayer mp;
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        Paper.init(newBase);
+
+        super.attachBaseContext(LanguageHelper.onAttach(newBase, Paper.book().read("language",Locale.getDefault().getLanguage())));
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,22 +68,26 @@ public class SplashActivity extends AppCompatActivity implements SurfaceHolder.C
 
         @Override
         protected Void doInBackground(SurfaceHolder... voids) {
-            String path = "android.resource://"+getPackageName()+"/"+R.raw.splash;
-            mp = MediaPlayer.create(SplashActivity.this, Uri.parse(path));
-            mp.setDisplay(voids[0]);
-            mp.setLooping(false);
-            mp.setVolume(0f,0f);
-            mp.start();
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.stop();
-                    mp.release();
-                    Intent intent = new Intent(SplashActivity.this,LoginActivity.class);
-                    startActivity(intent);
-                    finish();
-                }
-            });
+            try {
+                String path = "android.resource://"+getPackageName()+"/"+R.raw.splash;
+                mp = MediaPlayer.create(SplashActivity.this, Uri.parse(path));
+                mp.setDisplay(voids[0]);
+                mp.setLooping(false);
+                mp.setVolume(0f,0f);
+                mp.start();
+                mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                    @Override
+                    public void onCompletion(MediaPlayer mp) {
+                        mp.stop();
+                        mp.release();
+                        Intent intent = new Intent(SplashActivity.this,LoginActivity.class);
+                        startActivity(intent);
+                        finish();
+                    }
+                });
+            }catch (IllegalStateException e){}
+            catch (Exception e){}
+
             return null;
         }
     }

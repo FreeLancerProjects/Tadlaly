@@ -171,7 +171,7 @@ public class MyCurrentAdsAdapter extends RecyclerView.Adapter <RecyclerView.View
                 Picasso.with(context).load(Uri.parse(Tags.Image_Url+myAdsModel.getAdvertisement_image().get(0).getPhoto_name())).into(img);
                 Log.e("size1",myAdsModel.getAdvertisement_image().size()+"");
             }
-            date.setText("منذ "+myAdsModel.getAdvertisement_date());
+            date.setText("قبل "+myAdsModel.getAdvertisement_date());
 
             if (myAdsModel.getAdvertisement_type().equals(Tags.ad_new))
             {

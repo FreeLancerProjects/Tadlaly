@@ -1,17 +1,20 @@
 package com.semicolon.tadlaly.Activities;
 
+import android.Manifest;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
-import android.util.Base64;
 import android.util.Log;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -26,12 +29,15 @@ import com.semicolon.tadlaly.Services.Preferences;
 import com.semicolon.tadlaly.Services.Services;
 import com.semicolon.tadlaly.Services.Tags;
 import com.semicolon.tadlaly.SingleTone.UserSingleTone;
+import com.semicolon.tadlaly.language.LanguageHelper;
+import com.semicolon.tadlaly.share.Common;
 import com.squareup.picasso.Picasso;
 
-import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
+import java.util.Locale;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import io.paperdb.Paper;
+import okhttp3.MultipartBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -50,6 +56,15 @@ public class ProfileActivity extends AppCompatActivity implements UserSingleTone
     private UserSingleTone userSingleTone;
     private UserModel userModel;
     private Preferences preferences;
+    private final String read_perm = Manifest.permission.READ_EXTERNAL_STORAGE;
+    private final int read_req = 552;
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        Paper.init(newBase);
+
+        super.attachBaseContext(LanguageHelper.onAttach(newBase, Paper.book().read("language",Locale.getDefault().getLanguage())));
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -134,11 +149,46 @@ public class ProfileActivity extends AppCompatActivity implements UserSingleTone
                 }
         );
         container.setOnClickListener(view -> {
-            Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-            intent.setType("image/*");
-            startActivityForResult(intent.createChooser(intent,"select image"),IMG_REQ);
+            CheckPermission();
 
         });
+    }
+
+    private void CheckPermission()
+    {
+        if (ContextCompat.checkSelfPermission(this,read_perm)!= PackageManager.PERMISSION_GRANTED)
+        {
+            String [] perm = {read_perm};
+            ActivityCompat.requestPermissions(this,perm,read_req);
+        }else
+            {
+                SelectImage();
+            }
+    }
+
+    private void SelectImage()
+    {
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("image/*");
+        startActivityForResult(intent.createChooser(intent,"select image"),IMG_REQ);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode==read_req)
+        {
+            if (grantResults.length>0)
+            {
+                if (grantResults[0]==PackageManager.PERMISSION_GRANTED)
+                {
+                    SelectImage();
+                }else
+                    {
+                        Toast.makeText(this,R.string.perm_read_denied, Toast.LENGTH_SHORT).show();
+                    }
+            }
+        }
     }
 
     private void CreateProgressDialog()
@@ -176,22 +226,17 @@ public class ProfileActivity extends AppCompatActivity implements UserSingleTone
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode==IMG_REQ && resultCode == RESULT_OK && data !=null)
         {
-            try {
-                Uri uri = data.getData();
-                bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(uri));
-                user_image.setImageBitmap(bitmap);
-                encodedImage = EncodeImage(bitmap);
-                UploadImage(encodedImage);
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
+            Uri uri = data.getData();
+            UploadImage(uri);
         }
     }
 
-    private void UploadImage(String encodedImage) {
+    private void UploadImage(Uri uri) {
+
+        MultipartBody.Part image_part = Common.getMultiPartBody(uri,this);
         dialog.show();
         Retrofit retrofit = Api.getRetrofit(Tags.Base_Url);
-        Call<UserModel> call = retrofit.create(Services.class).updatePhoto(userModel.getUser_id(), encodedImage);
+        Call<UserModel> call = retrofit.create(Services.class).updatePhoto(userModel.getUser_id(), image_part);
         call.enqueue(new Callback<UserModel>() {
             @Override
             public void onResponse(Call<UserModel> call, Response<UserModel> response) {
@@ -217,13 +262,7 @@ public class ProfileActivity extends AppCompatActivity implements UserSingleTone
 
     }
 
-    private String EncodeImage(Bitmap bitmap)
-    {
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG,100,outputStream);
-        byte [] bytes = outputStream.toByteArray();
-        return Base64.encodeToString(bytes,Base64.DEFAULT);
-    }
+
 
     @Override
     public void onSuccess(UserModel userModel) {

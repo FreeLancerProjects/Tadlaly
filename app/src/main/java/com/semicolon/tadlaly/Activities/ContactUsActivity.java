@@ -2,6 +2,7 @@ package com.semicolon.tadlaly.Activities;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -31,11 +32,15 @@ import com.semicolon.tadlaly.Services.Api;
 import com.semicolon.tadlaly.Services.Services;
 import com.semicolon.tadlaly.Services.Tags;
 import com.semicolon.tadlaly.SingleTone.UserSingleTone;
+import com.semicolon.tadlaly.language.LanguageHelper;
+import com.semicolon.tadlaly.share.Common;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
+import io.paperdb.Paper;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -50,11 +55,20 @@ public class ContactUsActivity extends AppCompatActivity implements UserSingleTo
     private UserModel userModel;
     private ProgressDialog dialog;
     private String user_type = "";
-    private EditText edt_phone;
     private PhoneInputLayout edt_check_phone;
     private LinearLayout ll_call;
     private AlertDialog.Builder serviceBuilder;
+    private ContactsModel contactsModel;
+    private ProgressDialog dialog_getContacts;
+    private TextView tv_site,tv_email,tv_phone;
 
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        Paper.init(newBase);
+
+        super.attachBaseContext(LanguageHelper.onAttach(newBase, Paper.book().read("language",Locale.getDefault().getLanguage())));
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,6 +83,7 @@ public class ContactUsActivity extends AppCompatActivity implements UserSingleTo
             userSingleTone.getUser(this);
         }
         CreateServiceDialog();
+        getContacts();
 
     }
 
@@ -103,17 +118,21 @@ public class ContactUsActivity extends AppCompatActivity implements UserSingleTo
         email_Btn = findViewById(R.id.email_btn);
         name = findViewById(R.id.name);
         email = findViewById(R.id.email);
-        edt_phone = findViewById(R.id.edt_phone);
         edt_check_phone = findViewById(R.id.edt_check_phone);
+        edt_check_phone.setDefaultCountry("sa");
         subject = findViewById(R.id.subject);
         message = findViewById(R.id.message);
+        tv_site = findViewById(R.id.tv_site);
+        tv_email = findViewById(R.id.tv_email);
+        tv_phone = findViewById(R.id.tv_phone);
+
         send_Btn = findViewById(R.id.send_btn);
         ll_call = findViewById(R.id.ll_call);
         back.setOnClickListener(view -> finish());
         ll_call.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String phone = "0550411663";
+                String phone = "+9660550411663";
                 Uri uri = Uri.parse("tel:" + phone);
 
                 Intent intent = new Intent(Intent.ACTION_DIAL, uri);
@@ -133,13 +152,38 @@ public class ContactUsActivity extends AppCompatActivity implements UserSingleTo
         } );
         whatsApp_Btn.setOnClickListener(view ->{
 
-            if (user_type.equals(Tags.app_user))
+            if (isWhatsApp_installed())
             {
-                Send(Tags.sendType_whats);
+                if (contactsModel!=null)
+                {
+                    String whatsphone = contactsModel.getWhatsapp();
+                    if (!whatsphone.startsWith("+"))
+                    {
+                        whatsphone = whatsphone.replace("+","");
+                    }else if (!whatsphone.startsWith("966"))
+                    {
+                        whatsphone = "966"+whatsphone;
+                    }
+                    Log.e("whats","whats"+whatsphone);
+
+                    Intent sendIntent = new Intent(Intent.ACTION_SEND);
+                    sendIntent.setType("text/plain");
+                    sendIntent.putExtra(Intent.EXTRA_TEXT,"السلام عليكم");
+                    sendIntent.putExtra("jid", whatsphone + "@s.whatsapp.net"); //phone number without "+" prefix
+                    sendIntent.setPackage("com.whatsapp");
+                    if (sendIntent.resolveActivity(getPackageManager()) == null) {
+                        Toast.makeText(this, "Error\n" + "", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    startActivity(sendIntent);
+                }else
+                {
+                    Toast.makeText(this, R.string.something, Toast.LENGTH_SHORT).show();
+                }
+
             }else
             {
-                serviceBuilder.show();
-
+                Toast.makeText(this, R.string.wtsnotins, Toast.LENGTH_LONG).show();
             }
 
         } );
@@ -148,7 +192,14 @@ public class ContactUsActivity extends AppCompatActivity implements UserSingleTo
 
             if (user_type.equals(Tags.app_user))
             {
-                Send(Tags.sendType_email);
+                if (contactsModel!=null)
+                {
+                    Send(Tags.sendType_email);
+
+                }else
+                    {
+                        Toast.makeText(this, R.string.something, Toast.LENGTH_SHORT).show();
+                    }
             }else
             {
                 serviceBuilder.show();
@@ -172,41 +223,44 @@ public class ContactUsActivity extends AppCompatActivity implements UserSingleTo
 
         String m_subject = subject.getText().toString();
         String m_message = message.getText().toString();
-        String m_phone = edt_phone.getText().toString();
+        String m_phone = edt_check_phone.getPhoneNumber();
         edt_check_phone.setPhoneNumber(m_phone);
         if (TextUtils.isEmpty(m_phone))
         {
-            edt_phone.setError(getString(R.string.enter_phone));
+            edt_check_phone.getTextInputLayout().getEditText().setError(getString(R.string.enter_phone));
         }else if (!edt_check_phone.isValid())
         {
-            edt_phone.setError(getString(R.string.inv_phone));
+            edt_check_phone.getTextInputLayout().getEditText().setError(getString(R.string.inv_phone));
 
         }
         else if (TextUtils.isEmpty(m_subject))
         {
-            edt_phone.setError(null);
+            edt_check_phone.getTextInputLayout().getEditText().setError(null);
 
             subject.setError(getString(R.string.enter_sub));
         }else if (TextUtils.isEmpty(m_message))
         {
-            edt_phone.setError(null);
+            edt_check_phone.getTextInputLayout().getEditText().setError(null);
 
             subject.setError(null);
             message.setError(getString(R.string.enter_msg));
 
         }else
             {
-                edt_phone.setError(null);
+                edt_check_phone.getTextInputLayout().getEditText().setError(null);
                 subject.setError(null);
                 message.setError(null);
 
-                getContacts(type,m_subject,m_message,m_phone);
+                SendData(contactsModel.getWhatsapp(),contactsModel.getEmail(),type,m_subject,m_message,m_phone);
+                //getContacts(type,m_subject,m_message,m_phone);
             }
 
     }
 
-    private void getContacts(String type, String m_subject, String m_message,String m_phone)
+    private void getContacts()
     {
+        dialog_getContacts = Common.createProgressDialog(this,getString(R.string.wait));
+        dialog_getContacts.show();
         Retrofit retrofit = Api.getRetrofit(Tags.Base_Url);
         Call<ContactsModel> call = retrofit.create(Services.class).getContacts();
         call.enqueue(new Callback<ContactsModel>() {
@@ -214,13 +268,29 @@ public class ContactUsActivity extends AppCompatActivity implements UserSingleTo
             public void onResponse(Call<ContactsModel> call, Response<ContactsModel> response) {
                 if (response.isSuccessful())
                 {
-                    SendData(response.body().getWhatsapp(),response.body().getEmail(),type,m_subject,m_message,m_phone);
+                    dialog_getContacts.dismiss();
+                    contactsModel = response.body();
+
+                    String phone = contactsModel.getPhone();
+                    if (phone.startsWith("966"))
+                    {
+                        phone = "+"+phone;
+                    }else if (!phone.startsWith("+966"))
+                    {
+                        phone = "+966"+phone;
+
+                    }
+                    tv_site.setText(contactsModel.getWebsite());
+                    tv_email.setText(contactsModel.getEmail());
+                    tv_phone.setText(phone);
+                   // SendData(response.body().getWhatsapp(),response.body().getEmail(),type,m_subject,m_message,m_phone);
 
                 }
             }
 
             @Override
             public void onFailure(Call<ContactsModel> call, Throwable t) {
+               // dialog_getContacts.dismiss();
                 Log.e("Error",t.getMessage());
                 Toast.makeText(ContactUsActivity.this,R.string.reg_error, Toast.LENGTH_SHORT).show();
 
@@ -300,16 +370,7 @@ public class ContactUsActivity extends AppCompatActivity implements UserSingleTo
         }else if (type.equals(Tags.sendType_whats))
         {
 
-            if (isWhatsApp_installed())
-            {
-                Uri uri = Uri.parse("smsto:"+whatsapp);
-                Intent intent =new Intent(Intent.ACTION_SENDTO,uri);
-                intent.setPackage("com.whatsapp");
-                startActivity(intent.createChooser(intent,"via whatsapp"));
-            }else
-            {
-                Toast.makeText(this, R.string.wtsnotins, Toast.LENGTH_LONG).show();
-            }
+
 
         }
 
@@ -335,5 +396,8 @@ public class ContactUsActivity extends AppCompatActivity implements UserSingleTo
     private void updateUi(UserModel userModel) {
         name.setText(userModel.getUser_full_name());
         email.setText(userModel.getUser_email());
+        edt_check_phone.setPhoneNumber(userModel.getUser_phone());
     }
+
+
 }

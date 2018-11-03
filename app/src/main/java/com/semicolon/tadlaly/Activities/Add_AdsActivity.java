@@ -1,9 +1,13 @@
 package com.semicolon.tadlaly.Activities;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.ClipData;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentSender;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.PorterDuff;
@@ -11,15 +15,19 @@ import android.graphics.drawable.Drawable;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
-import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -34,12 +42,25 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.github.siyamed.shapeimageview.RoundedImageView;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResult;
+import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.gms.tasks.Task;
 import com.semicolon.tadlaly.Adapters.SpinnerBranchAdapter;
 import com.semicolon.tadlaly.Adapters.SpinnerDeptAdapter;
 import com.semicolon.tadlaly.Models.DepartmentsModel;
+import com.semicolon.tadlaly.Models.LocationModel;
 import com.semicolon.tadlaly.Models.ResponseModel;
 import com.semicolon.tadlaly.Models.Spinner_DeptModel;
 import com.semicolon.tadlaly.Models.Spinner_branchModel;
@@ -50,21 +71,27 @@ import com.semicolon.tadlaly.Services.Services;
 import com.semicolon.tadlaly.Services.Tags;
 import com.semicolon.tadlaly.SingleTone.DepartmentSingletone;
 import com.semicolon.tadlaly.SingleTone.UserSingleTone;
+import com.semicolon.tadlaly.language.LanguageHelper;
+import com.semicolon.tadlaly.share.Common;
 
-import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
+import io.paperdb.Paper;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 
-public class Add_AdsActivity extends AppCompatActivity implements UserSingleTone.OnCompleteListener,DepartmentSingletone.onCompleteListener{
+import static org.greenrobot.eventbus.EventBus.TAG;
+
+public class Add_AdsActivity extends AppCompatActivity implements UserSingleTone.OnCompleteListener,DepartmentSingletone.onCompleteListener,GoogleApiClient.ConnectionCallbacks,GoogleApiClient.OnConnectionFailedListener,LocationListener{
     private ImageView back,uploadImages;
     private RoundedImageView img1,img2,img3,img4,img5,img6;
     private int img_num=0;
@@ -97,12 +124,27 @@ public class Add_AdsActivity extends AppCompatActivity implements UserSingleTone
     private AlertDialog.Builder serviceBuilder;
     private CheckBox checkbox_undefined;
     private String price="";
+    private ImageView delete_img1,delete_img2,delete_img3,delete_img4,delete_img5,delete_img6;
+    private GoogleApiClient googleApiClient;
+    private LocationRequest locationRequest;
+    private LocationManager manager;
+    private final String read_perm = Manifest.permission.READ_EXTERNAL_STORAGE;
+    private final int read_req =  588;
+    private List<Uri> uriList;
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        Paper.init(newBase);
+
+        super.attachBaseContext(LanguageHelper.onAttach(newBase, Paper.book().read("language",Locale.getDefault().getLanguage())));
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add__ads);
+        uriList = new ArrayList<>();
         /*Calligrapher calligrapher=new Calligrapher(this);
         calligrapher.setFont(this,"OYA-Regular.ttf",true);*/
+        manager = (LocationManager) getSystemService(LOCATION_SERVICE);
         CreateProgressDialog2();
         CreateProgressDialog();
         getDataFromIntent();
@@ -116,35 +158,7 @@ public class Add_AdsActivity extends AppCompatActivity implements UserSingleTone
         departmentSingletone.getDepartmentData(this);
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         CreateServiceDialog();
-    }
-
-
-
-    private void CreateServiceDialog()
-    {
-        serviceBuilder = new AlertDialog.Builder(this);
-        serviceBuilder.setMessage(R.string.ser_not_ava);
-        serviceBuilder.setPositiveButton(R.string.ok, (dialogInterface, i) -> {
-            AlertDialog alertDialog=serviceBuilder.create();
-            alertDialog.dismiss();
-            finish();
-
-        } );
-
-        AlertDialog alertDialog=serviceBuilder.create();
-        alertDialog.setCancelable(true);
-        alertDialog.setCanceledOnTouchOutside(false);
-
-    }
-    private void getDataFromIntent() {
-        Intent intent =getIntent();
-        if (intent!=null)
-        {
-            if (intent.hasExtra("user_type"))
-            {
-                user_type = intent.getStringExtra("user_type");
-            }
-        }
+        BuildGoogleApiClient();
     }
 
     private void initView()
@@ -166,6 +180,14 @@ public class Add_AdsActivity extends AppCompatActivity implements UserSingleTone
         img4 = findViewById(R.id.img4);
         img5 = findViewById(R.id.img5);
         img6 = findViewById(R.id.img6);
+
+        delete_img1 = findViewById(R.id.delete_img1);
+        delete_img2 = findViewById(R.id.delete_img2);
+        delete_img3 = findViewById(R.id.delete_img3);
+        delete_img4 = findViewById(R.id.delete_img4);
+        delete_img5 = findViewById(R.id.delete_img5);
+        delete_img6 = findViewById(R.id.delete_img6);
+
         ad_title = findViewById(R.id.ad_title);
         phone = findViewById(R.id.phone);
         location = findViewById(R.id.location);
@@ -189,11 +211,11 @@ public class Add_AdsActivity extends AppCompatActivity implements UserSingleTone
                     cost.setError(null);
                     cost.setEnabled(false);
                 }else
-                    {
-                        price="";
-                        cost.setText(null);
-                        cost.setEnabled(true);
-                    }
+                {
+                    price="";
+                    cost.setText(null);
+                    cost.setEnabled(true);
+                }
             }
         });
         ///////////////////////////
@@ -210,15 +232,15 @@ public class Add_AdsActivity extends AppCompatActivity implements UserSingleTone
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 Log.e("pos",i+"");
-                 Spinner_DeptModel name = deptList.get(i);
-                 if (i!=0&&!TextUtils.isEmpty(name.getId()))
-                 {
-                     m_dept = name.getId();
-                     Log.e("id",name.getId());
-                 }else
-                     {
-                         m_dept="";
-                     }
+                Spinner_DeptModel name = deptList.get(i);
+                if (i!=0&&!TextUtils.isEmpty(name.getId()))
+                {
+                    m_dept = name.getId();
+                    Log.e("id",name.getId());
+                }else
+                {
+                    m_dept="";
+                }
                 UpdateAdapter(name.getId(),i);
 
 
@@ -244,9 +266,9 @@ public class Add_AdsActivity extends AppCompatActivity implements UserSingleTone
                 }
                 else
                 {
-                        m_branch=brnch;
+                    m_branch=brnch;
                 }
-                    Log.e("branch id",brnch);
+                Log.e("branch id",brnch);
             }
 
             @Override
@@ -276,7 +298,7 @@ public class Add_AdsActivity extends AppCompatActivity implements UserSingleTone
             }
         });
         uploadImages.setOnClickListener(view ->
-                selectImages()
+                CheckReadPermission()
         );
         back.setOnClickListener(view ->
                 finish()
@@ -288,9 +310,9 @@ public class Add_AdsActivity extends AppCompatActivity implements UserSingleTone
                         getLocation();
 
                     }else
-                        {
-                            serviceBuilder.show();
-                        }
+                    {
+                        serviceBuilder.show();
+                    }
                 }
         );
         send_btn.setOnClickListener(view ->
@@ -390,9 +412,9 @@ public class Add_AdsActivity extends AppCompatActivity implements UserSingleTone
                             startActivityForResult(intent,add_request);
                         }
                     }else
-                        {
-                            serviceBuilder.show();
-                        }
+                    {
+                        serviceBuilder.show();
+                    }
 
                 }
         );
@@ -408,13 +430,115 @@ public class Add_AdsActivity extends AppCompatActivity implements UserSingleTone
                     isAvailable_phone =Tags.disApearPhone;
                 }
             }else
-                {
-                    serviceBuilder.show();
-                }
+            {
+                serviceBuilder.show();
+            }
 
         });
 
+        delete_img1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                bitmap1=null;
+                delete_img1.setVisibility(View.GONE);
+                img1.setImageResource(R.drawable.imgs_bg);
+                uriList.remove(0);
+            }
+        });
+        delete_img2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                bitmap2=null;
+                delete_img2.setVisibility(View.GONE);
+                img2.setImageResource(R.drawable.imgs_bg);
+                uriList.remove(1);
+
+            }
+        });
+
+        delete_img3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                bitmap3=null;
+                delete_img3.setVisibility(View.GONE);
+                img3.setImageResource(R.drawable.imgs_bg);
+                uriList.remove(2);
+
+            }
+        });
+
+        delete_img4.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                bitmap1=null;
+                delete_img4.setVisibility(View.GONE);
+                img4.setImageResource(R.drawable.imgs_bg);
+                uriList.remove(3);
+
+            }
+        });
+        delete_img5.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                bitmap5=null;
+                delete_img5.setVisibility(View.GONE);
+                img5.setImageResource(R.drawable.imgs_bg);
+                uriList.remove(4);
+
+            }
+        });
+
+        delete_img6.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                bitmap6=null;
+                delete_img6.setVisibility(View.GONE);
+                img6.setImageResource(R.drawable.imgs_bg);
+                uriList.remove(5);
+
+            }
+        });
     }
+
+    private void CreateServiceDialog()
+    {
+        serviceBuilder = new AlertDialog.Builder(this);
+        serviceBuilder.setMessage(R.string.ser_not_ava);
+        serviceBuilder.setPositiveButton(R.string.ok, (dialogInterface, i) -> {
+            AlertDialog alertDialog=serviceBuilder.create();
+            alertDialog.dismiss();
+            finish();
+
+        } );
+
+        AlertDialog alertDialog=serviceBuilder.create();
+        alertDialog.setCancelable(true);
+        alertDialog.setCanceledOnTouchOutside(false);
+
+    }
+    private void getDataFromIntent() {
+        Intent intent =getIntent();
+        if (intent!=null)
+        {
+            if (intent.hasExtra("user_type"))
+            {
+                user_type = intent.getStringExtra("user_type");
+            }
+        }
+    }
+
+    private void CheckReadPermission()
+    {
+        if (ContextCompat.checkSelfPermission(this,read_perm)!=PackageManager.PERMISSION_GRANTED)
+        {
+            String [] perm ={read_perm};
+            ActivityCompat.requestPermissions(this,perm,read_req);
+        }else
+            {
+                selectImages();
+            }
+    }
+
 
     private void UpdateAdapter(String id,int pos) {
         subdepartObjectList.clear();
@@ -567,6 +691,7 @@ public class Add_AdsActivity extends AppCompatActivity implements UserSingleTone
     {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("image/*");
+        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE,true);
         startActivityForResult(intent.createChooser(intent,getString(R.string.sel_image)),IMG_REQ);
     }
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
@@ -586,58 +711,67 @@ public class Add_AdsActivity extends AppCompatActivity implements UserSingleTone
                     {
                         for (int i=0;i<clipData.getItemCount();i++)
                         {
-                            try {
+
                                 img_num++;
-                                ClipData.Item item = clipData.getItemAt(0);
+                                ClipData.Item item = clipData.getItemAt(i);
                                 Uri uri = item.getUri();
-                                if (i==0)
+                                Log.e("uri",uri.toString());
+                                uriList.add(uri);
+
+                                if (bitmap1==null)
                                 {
-                                    bitmap1 = BitmapFactory.decodeStream(getContentResolver().openInputStream(uri));
+                                    bitmap1 = BitmapFactory.decodeFile(Common.getImagePathFromUri(Add_AdsActivity.this,uri));
                                     img1.setImageBitmap(bitmap1);
-                                    bitmapList.add(bitmap1);
+                                    //bitmapList.add(bitmap1);
+                                    delete_img1.setVisibility(View.VISIBLE);
 
-                                }else if (i==1)
+                                }else if (bitmap2==null)
                                 {
-                                    bitmap2 = BitmapFactory.decodeStream(getContentResolver().openInputStream(uri));
+                                    bitmap2 = BitmapFactory.decodeFile(Common.getImagePathFromUri(Add_AdsActivity.this,uri));
                                     img2.setImageBitmap(bitmap2);
-                                    bitmapList.add(bitmap2);
+                                    //bitmapList.add(bitmap2);
+                                    delete_img2.setVisibility(View.VISIBLE);
+
 
                                 }
-                                else if (i==2)
+                                else if (bitmap3==null)
                                 {
-                                    bitmap3 = BitmapFactory.decodeStream(getContentResolver().openInputStream(uri));
+                                    bitmap3 = BitmapFactory.decodeFile(Common.getImagePathFromUri(Add_AdsActivity.this,uri));
                                     img3.setImageBitmap(bitmap3);
-                                    bitmapList.add(bitmap3);
+                                    //bitmapList.add(bitmap3);
+                                    delete_img3.setVisibility(View.VISIBLE);
 
 
                                 }
-                                else if (i==3)
+                                else if (bitmap4==null)
                                 {
-                                    bitmap4 = BitmapFactory.decodeStream(getContentResolver().openInputStream(uri));
+                                    bitmap4 = BitmapFactory.decodeFile(Common.getImagePathFromUri(Add_AdsActivity.this,uri));
                                     img4.setImageBitmap(bitmap4);
-                                    bitmapList.add(bitmap4);
+                                    //bitmapList.add(bitmap4);
+                                    delete_img4.setVisibility(View.VISIBLE);
 
 
                                 }
-                                else if (i==4)
+                                else if (bitmap5==null)
                                 {
-                                    bitmap5 = BitmapFactory.decodeStream(getContentResolver().openInputStream(uri));
+                                    bitmap5 = BitmapFactory.decodeFile(Common.getImagePathFromUri(Add_AdsActivity.this,uri));
                                     img5.setImageBitmap(bitmap5);
-                                    bitmapList.add(bitmap5);
+                                    //bitmapList.add(bitmap5);
+                                    delete_img5.setVisibility(View.VISIBLE);
 
 
                                 }
-                                else if (i==5)
+                                else if (bitmap6==null)
                                 {
-                                    bitmap6 = BitmapFactory.decodeStream(getContentResolver().openInputStream(uri));
+                                    bitmap6 = BitmapFactory.decodeFile(Common.getImagePathFromUri(Add_AdsActivity.this,uri));
                                     img6.setImageBitmap(bitmap6);
-                                    bitmapList.add(bitmap6);
+                                    //bitmapList.add(bitmap6);
+                                    delete_img6.setVisibility(View.VISIBLE);
 
 
                                 }
-                            } catch (FileNotFoundException e) {
-                                e.printStackTrace();
-                            }
+
+
                         }
                     }
 
@@ -653,85 +787,125 @@ public class Add_AdsActivity extends AppCompatActivity implements UserSingleTone
 
                             if (bitmap1==null)
                             {
-                                try {
-                                    bitmap1 = BitmapFactory.decodeStream(getContentResolver().openInputStream(uri));
+                                    bitmap1 = BitmapFactory.decodeFile(Common.getImagePathFromUri(Add_AdsActivity.this,uri));
                                     img1.setImageBitmap(bitmap1);
-                                    bitmapList.add(bitmap1);
-                                } catch (FileNotFoundException e) {
-                                    e.printStackTrace();
-                                }
+                                    uriList.add(uri);
+
+                                    //bitmapList.add(bitmap1);
+                                    delete_img1.setVisibility(View.VISIBLE);
+
+
                             }else if (bitmap2==null)
                             {
-                                try {
-                                    bitmap2 = BitmapFactory.decodeStream(getContentResolver().openInputStream(uri));
+
+                                    bitmap2 = BitmapFactory.decodeFile(Common.getImagePathFromUri(Add_AdsActivity.this,uri));
                                     img2.setImageBitmap(bitmap2);
-                                    bitmapList.add(bitmap2);
+                                    uriList.add(uri);
+
+                                    //bitmapList.add(bitmap2);
+                                    delete_img2.setVisibility(View.VISIBLE);
 
 
-                                } catch (FileNotFoundException e) {
-                                    e.printStackTrace();
-                                }
+
                             }else if (bitmap3==null)
                             {
-                                try {
-                                    bitmap3 = BitmapFactory.decodeStream(getContentResolver().openInputStream(uri));
+
+                                    bitmap3 = BitmapFactory.decodeFile(Common.getImagePathFromUri(Add_AdsActivity.this,uri));
                                     img3.setImageBitmap(bitmap3);
-                                    bitmapList.add(bitmap3);
+                                    uriList.add(uri);
+
+                                    //bitmapList.add(bitmap3);
+                                    delete_img3.setVisibility(View.VISIBLE);
 
 
-                                } catch (FileNotFoundException e) {
-                                    e.printStackTrace();
-                                }
+
                             }
                             else if (bitmap4==null)
                             {
-                                try {
-                                    bitmap4 = BitmapFactory.decodeStream(getContentResolver().openInputStream(uri));
+
+                                    bitmap4 = BitmapFactory.decodeFile(Common.getImagePathFromUri(Add_AdsActivity.this,uri));
                                     img4.setImageBitmap(bitmap4);
-                                    bitmapList.add(bitmap4);
+                                    uriList.add(uri);
+
+                                    //bitmapList.add(bitmap4);
+                                    delete_img4.setVisibility(View.VISIBLE);
 
 
-                                } catch (FileNotFoundException e) {
-                                    e.printStackTrace();
-                                }
+
                             }
                             else if (bitmap5==null)
                             {
-                                try {
-                                    bitmap5 = BitmapFactory.decodeStream(getContentResolver().openInputStream(uri));
+
+                                    bitmap5 = BitmapFactory.decodeFile(Common.getImagePathFromUri(Add_AdsActivity.this,uri));
                                     img5.setImageBitmap(bitmap5);
-                                    bitmapList.add(bitmap5);
+                                    uriList.add(uri);
+
+                                    //bitmapList.add(bitmap5);
+                                    delete_img5.setVisibility(View.VISIBLE);
 
 
-                                } catch (FileNotFoundException e) {
-                                    e.printStackTrace();
-                                }
+
                             }
                             else if (bitmap6==null)
                             {
-                                try {
-                                    bitmap6 = BitmapFactory.decodeStream(getContentResolver().openInputStream(uri));
+
+                                    bitmap6 = BitmapFactory.decodeFile(Common.getImagePathFromUri(Add_AdsActivity.this,uri));
                                     img6.setImageBitmap(bitmap6);
-                                    bitmapList.add(bitmap6);
+                                    uriList.add(uri);
+
+                                    //bitmapList.add(bitmap6);
+                                    delete_img6.setVisibility(View.VISIBLE);
 
 
-                                } catch (FileNotFoundException e) {
-                                    e.printStackTrace();
-                                }
+
                             }
+
                         }
 
                 }
         }else if (requestCode == add_request && resultCode == RESULT_OK )
         {
             AddAds();
+        }else if (requestCode==8)
+        {
+
+            if (resultCode==RESULT_OK)
+            {
+                if (ActivityCompat.checkSelfPermission(Add_AdsActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(Add_AdsActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                }
+                LocationServices.getFusedLocationProviderClient(Add_AdsActivity.this).requestLocationUpdates(locationRequest,new LocationCallback()
+                {
+                    @Override
+                    public void onLocationResult(LocationResult locationResult) {
+                        onLocationChanged(locationResult.getLastLocation());
+                    }
+                }, Looper.myLooper());
+
+            }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode==read_req)
+        {
+            if (grantResults.length>0)
+            {
+                if (grantResults[0]==PackageManager.PERMISSION_GRANTED)
+                {
+                    selectImages();
+                }else
+                    {
+                        Toast.makeText(this,R.string.perm_read_denied, Toast.LENGTH_SHORT).show();
+                    }
+            }
         }
     }
 
     private void AddAds() {
         try {
             dialog.show();
-            encodeImages = EncodeImage(bitmapList);
 
             String m_title = ad_title.getText().toString();
             String m_address = address.getText().toString();
@@ -739,7 +913,7 @@ public class Add_AdsActivity extends AppCompatActivity implements UserSingleTone
             String m_loc = location.getText().toString();
             //String m_cost = cost.getText().toString();
             String m_phone = phone.getText().toString();
-
+            //images[]
             Log.e("1",m_title);
             Log.e("2",m_address);
             Log.e("3",price);
@@ -752,20 +926,36 @@ public class Add_AdsActivity extends AppCompatActivity implements UserSingleTone
             Log.e("10",lng+"");
             Log.e("11",m_phone);
 
-            Map<String,String> map = new HashMap<>();
-            map.put("main_department",m_dept);
-            map.put("sub_department",m_branch);
-            map.put("advertisement_title",m_title);
-            map.put("advertisement_content",m_adsContent);
-            map.put("advertisement_price",price);
-            map.put("advertisement_type",ad_state);
-            map.put("google_lat",String.valueOf(lat));
-            map.put("google_long",String.valueOf(lng));
-            map.put("city",m_address);
-            map.put("phone",m_phone);
-            map.put("show_phone",isAvailable_phone);
-        Retrofit retrofit = Api.getRetrofit(Tags.Base_Url);
-            Call<ResponseModel> call = retrofit.create(Services.class).Add_Ad(userModel.getUser_id(), map, encodeImages);
+            Log.e("size",uriList.size()+"_");
+
+            Map<String, RequestBody> map = new HashMap<>();
+            RequestBody main_dept_part= Common.getRequestBody(m_dept);
+            RequestBody branch_part= Common.getRequestBody(m_branch);
+            RequestBody ad_title_part= Common.getRequestBody(m_title);
+            RequestBody ad_content_part= Common.getRequestBody(m_adsContent);
+            RequestBody ads_price_part= Common.getRequestBody(price);
+            RequestBody ads_type_part= Common.getRequestBody(ad_state);
+            RequestBody lat_part= Common.getRequestBody(String.valueOf(lat));
+            RequestBody lng_part= Common.getRequestBody(String.valueOf(lng));
+            RequestBody city_part= Common.getRequestBody(m_address);
+            RequestBody phone_part= Common.getRequestBody(m_phone);
+            RequestBody show_phone_part= Common.getRequestBody(isAvailable_phone);
+            List<MultipartBody.Part> partImageList = getMultipartBodyList(uriList);
+
+            map.put("main_department",main_dept_part);
+            map.put("sub_department",branch_part);
+            map.put("advertisement_title",ad_title_part);
+            map.put("advertisement_content",ad_content_part);
+            map.put("advertisement_price",ads_price_part);
+            map.put("advertisement_type",ads_type_part);
+            map.put("google_lat",lat_part);
+            map.put("google_long",lng_part);
+            map.put("city",city_part);
+            map.put("phone",phone_part);
+            map.put("show_phone",show_phone_part);
+
+            Retrofit retrofit = Api.getRetrofit(Tags.Base_Url);
+            Call<ResponseModel> call = retrofit.create(Services.class).Add_Ad(userModel.getUser_id(), map, partImageList);
             call.enqueue(new Callback<ResponseModel>() {
                 @Override
                 public void onResponse(Call<ResponseModel> call, Response<ResponseModel> response) {
@@ -793,24 +983,22 @@ public class Add_AdsActivity extends AppCompatActivity implements UserSingleTone
                 }
             });
 
+
+
         }catch (NullPointerException e){}
         catch (Exception e){}
 
     }
 
-    private List<String> EncodeImage(List<Bitmap> bitmaps)
+    private List<MultipartBody.Part> getMultipartBodyList(List<Uri> uriList)
     {
-        List<String> encoded = new ArrayList<>();
-        for (Bitmap bitmap :bitmaps)
+        List<MultipartBody.Part> partList = new ArrayList<>();
+        for (Uri uri:uriList)
         {
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.PNG,90,outputStream);
-            byte[] bytes = outputStream.toByteArray();
-            String img = Base64.encodeToString(bytes,Base64.DEFAULT);
-            Log.e("image",img);
-            encoded.add(img);
+            MultipartBody.Part part = Common.getMultiPartBody(uri,this);
+            partList.add(part);
         }
-        return encoded;
+        return partList;
     }
 
     @Override
@@ -898,6 +1086,122 @@ public class Add_AdsActivity extends AppCompatActivity implements UserSingleTone
 
             }
         });
+
+    }
+
+    protected synchronized void BuildGoogleApiClient() {
+        googleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
+        googleApiClient.connect();
+    }
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+    }
+
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+
+        StartLocationUpdate();
+    }
+
+    private void StartLocationUpdate() {
+
+        initLocationRequest();
+
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
+                .addLocationRequest(locationRequest);
+        builder.setAlwaysShow(true);
+        builder.setNeedBle(true);
+        PendingResult<LocationSettingsResult> result = LocationServices.SettingsApi.checkLocationSettings(googleApiClient,builder.build());
+        result.setResultCallback(new ResultCallback<LocationSettingsResult>() {
+            @Override
+            public void onResult(@NonNull LocationSettingsResult locationSettingsResult) {
+                final Status status = locationSettingsResult.getStatus();
+                switch (status.getStatusCode()) {
+                    case LocationSettingsStatusCodes.SUCCESS:
+                        if (ActivityCompat.checkSelfPermission(Add_AdsActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(Add_AdsActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                        }
+                        LocationServices.getFusedLocationProviderClient(Add_AdsActivity.this).requestLocationUpdates(locationRequest,new LocationCallback()
+                        {
+                            @Override
+                            public void onLocationResult(LocationResult locationResult) {
+                                onLocationChanged(locationResult.getLastLocation());
+                            }
+                        }, Looper.myLooper());
+                        break;
+                    case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+                        try {
+                            // Show the dialog by calling startResolutionForResult(),
+                            // and check the result in onActivityResult().
+                            status.startResolutionForResult(
+                                    Add_AdsActivity.this,
+                                    8);
+                        } catch (IntentSender.SendIntentException e) {
+                            // Ignore the error.
+                        }
+                        Log.i(TAG, "Location settings are not satisfied. Show the user a dialog to upgrade location settings ");
+
+                        break;
+
+                }
+            }
+        });
+
+    }
+
+    private void initLocationRequest()
+    {
+        locationRequest = new LocationRequest();
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        locationRequest.setInterval(1000*60*5);
+        locationRequest.setFastestInterval(1000*60*5);
+    }
+    @Override
+    public void onConnectionSuspended(int i)
+    {
+        if (googleApiClient!=null)
+        {
+            googleApiClient.connect();
+        }
+    }
+
+
+    @Override
+    public void onLocationChanged(Location location) {
+        LocationModel locationModel = new LocationModel(location.getLatitude(),location.getLongitude());
+
+        Add_AdsActivity.this.location.setText(getLocation(location.getLatitude(),locationModel.getLng()));
+    }
+
+
+    public String getLocation(double lat, double lng)
+    {
+        Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+        try {
+            List<Address> addressList = geocoder.getFromLocation(lat,lng,1);
+
+            if (addressList.size()>0)
+            {
+                Address address = addressList.get(0);
+
+                if (address!=null)
+                {
+                    if (address.getLocality()!=null)
+                    {
+                        String city = address.getLocality();
+                        return city;
+                    }
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return "";
 
     }
 

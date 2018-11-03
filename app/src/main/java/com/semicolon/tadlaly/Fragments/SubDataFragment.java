@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -11,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -58,7 +60,7 @@ public class SubDataFragment extends Fragment implements UserSingleTone.OnComple
     private Call<List<MyAdsModel>> call;
     private LatLngSingleTone latLngSingleTone;
     private String user_type;
-
+    public ImageView image_top;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -123,12 +125,13 @@ public class SubDataFragment extends Fragment implements UserSingleTone.OnComple
         order_onNearbyBtn = view.findViewById(R.id.order_onNearbyBtn);
         map = new HashMap<>();
         idsList = new ArrayList<>();
+        image_top = view.findViewById(R.id.image_top);
         no_ads = view.findViewById(R.id.no_ads);
         progressBar =view.findViewById(R.id.progBar);
         recyclerView = view.findViewById(R.id.recView);
         manager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(manager);
-        adapter = new SubDeptAdsAdapter_Visitor(recyclerView,getActivity(),myAdsModelList);
+        adapter = new SubDeptAdsAdapter_Visitor(recyclerView,getActivity(),myAdsModelList,this);
         recyclerView.setAdapter(adapter);
 
         order_onNewBtn.setOnClickListener(view1 -> {
@@ -140,7 +143,11 @@ public class SubDataFragment extends Fragment implements UserSingleTone.OnComple
             distList.clear();
             map.clear();
             order_onNewBtn.setBackgroundResource(R.drawable.btn_selected);
-            order_onNearbyBtn.setBackgroundResource(R.drawable.login_btn);
+            order_onNewBtn.setTextColor(ContextCompat.getColor(getActivity(),R.color.white));
+
+            order_onNearbyBtn.setBackgroundResource(R.drawable.btn_unselected);
+            order_onNearbyBtn.setTextColor(ContextCompat.getColor(getActivity(),R.color.colorPrimary));
+
             getOrderedData(depId,1);
         });
 
@@ -152,14 +159,24 @@ public class SubDataFragment extends Fragment implements UserSingleTone.OnComple
             idsList.clear();
             distList.clear();
             map.clear();
-            order_onNewBtn.setBackgroundResource(R.drawable.login_btn);
+            order_onNewBtn.setBackgroundResource(R.drawable.btn_unselected);
+            order_onNewBtn.setTextColor(ContextCompat.getColor(getActivity(),R.color.colorPrimary));
             order_onNearbyBtn.setBackgroundResource(R.drawable.btn_selected);
+            order_onNearbyBtn.setTextColor(ContextCompat.getColor(getActivity(),R.color.white));
+
 
             getData(depId,1);
             Log.e("id",depId);
         });
 
 
+        image_top.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                recyclerView.smoothScrollToPosition(0);
+                image_top.setVisibility(View.GONE);
+            }
+        });
         getData(depId, 1);
         initLoadMore();
     }

@@ -1,6 +1,7 @@
 package com.semicolon.tadlaly.Activities;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -9,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.Patterns;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -20,10 +22,13 @@ import com.semicolon.tadlaly.R;
 import com.semicolon.tadlaly.Services.Api;
 import com.semicolon.tadlaly.Services.Services;
 import com.semicolon.tadlaly.Services.Tags;
+import com.semicolon.tadlaly.language.LanguageHelper;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
+import io.paperdb.Paper;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -34,6 +39,12 @@ public class ForgetPasswordActivity extends AppCompatActivity {
     private Button resetBtn;
     private ProgressDialog dialog;
     private ImageView back;
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        Paper.init(newBase);
+
+        super.attachBaseContext(LanguageHelper.onAttach(newBase, Paper.book().read("language",Locale.getDefault().getLanguage())));
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,7 +58,12 @@ public class ForgetPasswordActivity extends AppCompatActivity {
         email = findViewById(R.id.user_email);
         resetBtn = findViewById(R.id.reset_btn);
         back = findViewById(R.id.back);
-
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
         resetBtn.setOnClickListener(view -> ResetPassword());
     }
     private void CreateProgress_dialog() {

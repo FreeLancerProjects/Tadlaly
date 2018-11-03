@@ -168,7 +168,7 @@ public class SearchAdsAdapter extends RecyclerView.Adapter <RecyclerView.ViewHol
                 Log.e("size1",myAdsModel.getAdvertisement_image().size()+"");
             }
             //date.setTypeface(typeface);
-            date.setText("منذ "+myAdsModel.getAdvertisement_date());
+            date.setText("قبل "+myAdsModel.getAdvertisement_date());
 
             if (myAdsModel.getAdvertisement_type().equals(Tags.ad_new))
             {

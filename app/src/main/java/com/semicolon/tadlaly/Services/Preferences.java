@@ -2,8 +2,15 @@ package com.semicolon.tadlaly.Services;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.text.TextUtils;
+import android.util.Log;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.semicolon.tadlaly.Models.UserModel;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Preferences {
     Context context;
@@ -95,4 +102,94 @@ public class Preferences {
 
         return userModel;
     }
+
+    public void setIsSelectedLang(boolean isSelectedLang)
+    {
+        SharedPreferences preferences =context.getSharedPreferences("Lang",Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putBoolean("isSelected",isSelectedLang);
+        editor.apply();
+    }
+
+    public boolean isLanguageSelected()
+    {
+        SharedPreferences preferences =context.getSharedPreferences("Lang",Context.MODE_PRIVATE);
+        boolean isSelected = preferences.getBoolean("isSelected",false);
+        return isSelected;
+    }
+
+
+    public void setSuggestions (String suggestion)
+    {
+        SharedPreferences preferences = context.getSharedPreferences("suggestion",Context.MODE_PRIVATE);
+        String s = preferences.getString("suggestion_list","");
+        Gson gson = new Gson();
+
+        if (TextUtils.isEmpty(s))
+        {
+            List<String> stringList = new ArrayList<>();
+            stringList.add(suggestion);
+
+            String gson_data =gson.toJson(stringList);
+
+            SharedPreferences.Editor edit = preferences.edit();
+            edit.putString("suggestion_list",gson_data);
+            edit.apply();
+
+        }else
+            {
+                List<String> suggestion_list = gson.fromJson(s,new TypeToken<List<String>>(){}.getType());
+
+                Log.e("bbb","bb");
+                if (!suggestion_list.contains(suggestion))
+                {
+                    Log.e("ccc","ccc");
+
+                    suggestion_list.add(suggestion);
+
+                    String gson_data =gson.toJson(suggestion_list);
+
+                    SharedPreferences.Editor edit = preferences.edit();
+                    edit.putString("suggestion_list",gson_data);
+                    edit.apply();
+                }
+
+
+
+            }
+
+    }
+
+    public String[] getSuggestionList()
+    {
+        SharedPreferences preferences = context.getSharedPreferences("suggestion",Context.MODE_PRIVATE);
+        String s = preferences.getString("suggestion_list","");
+        Gson gson = new Gson();
+
+        Log.e("data",s+"_____________");
+        String [] sug;
+
+        if (!TextUtils.isEmpty(s))
+        {
+            List<String> stringList = gson.fromJson(s,new TypeToken<List<String>>(){}.getType());
+            if (stringList.size()>0)
+            {
+                sug = stringList.toArray(new String[stringList.size()]);
+
+            }else
+            {
+                sug = new String[]{};
+
+            }
+            Log.e("suuuu",sug[0]);
+        }else
+            {
+                sug = new String[]{};
+
+            }
+
+        return sug;
+
+    }
+
 }

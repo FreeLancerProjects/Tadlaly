@@ -19,7 +19,7 @@
             app:siBorderAlpha="0"
 
             />
-        <com.github.siyamed.shapeimageview.RoundedImageView
+        <!--<com.github.siyamed.shapeimageview.RoundedImageView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="centerCrop"
@@ -28,7 +28,7 @@
             app:siBorderAlpha="0"
             android:background="@drawable/ads_img"
 
-            />
+            />-->
     </FrameLayout>
 
     <LinearLayout
@@ -46,7 +46,7 @@
             android:layout_weight=".7"
             android:layout_height="wrap_content"
             android:singleLine="true"
-            android:textSize="11sp"
+            android:textSize="14sp"
             android:textColor="@color/white"
 
             />
@@ -56,7 +56,7 @@
             android:layout_weight=".3"
             android:layout_height="wrap_content"
             android:singleLine="true"
-            android:textSize="14sp"
+            android:textSize="16sp"
             android:textStyle="bold"
             android:textColor="@color/white"
 

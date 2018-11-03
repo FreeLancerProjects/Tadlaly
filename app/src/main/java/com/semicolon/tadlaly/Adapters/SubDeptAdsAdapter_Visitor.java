@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import com.github.siyamed.shapeimageview.RoundedImageView;
 import com.semicolon.tadlaly.Activities.HomeActivity;
+import com.semicolon.tadlaly.Fragments.SubDataFragment;
 import com.semicolon.tadlaly.Models.MyAdsModel;
 import com.semicolon.tadlaly.R;
 import com.semicolon.tadlaly.Services.Tags;
@@ -35,11 +36,12 @@ public class SubDeptAdsAdapter_Visitor extends RecyclerView.Adapter <RecyclerVie
     private OnLoadListener onLoadListener;
     private boolean loading;
     private LinearLayoutManager mLinearLayoutManager;
-
-    public SubDeptAdsAdapter_Visitor(RecyclerView recView, Context context, List<MyAdsModel> myAdsModelList) {
+    private SubDataFragment fragment;
+    public SubDeptAdsAdapter_Visitor(RecyclerView recView, Context context, List<MyAdsModel> myAdsModelList,SubDataFragment fragment) {
         this.context = context;
         this.myAdsModelList = myAdsModelList;
         this.homeActivity = (HomeActivity) context;
+        this.fragment =  fragment;
 
 
         if (recView.getLayoutManager() instanceof LinearLayoutManager)
@@ -51,8 +53,14 @@ public class SubDeptAdsAdapter_Visitor extends RecyclerView.Adapter <RecyclerVie
                     super.onScrolled(recyclerView, dx, dy);
                     if (dy>0)
                     {
+                        Log.e("fc2",mLinearLayoutManager.findFirstVisibleItemPosition()+"___");
+
                         totalItemCount = mLinearLayoutManager.getItemCount();
                         lastVisibleItem = mLinearLayoutManager.findLastVisibleItemPosition();
+
+                        fragment.image_top.setVisibility(View.VISIBLE);
+
+
                         if (!loading&&totalItemCount<=(lastVisibleItem+Threshold))
                         {
                             if (onLoadListener !=null)
@@ -65,7 +73,11 @@ public class SubDeptAdsAdapter_Visitor extends RecyclerView.Adapter <RecyclerVie
                         }
 
 
-                    }
+                    }else
+                        {
+                            fragment.image_top.setVisibility(View.GONE);
+
+                        }
 
 
                 }
@@ -104,7 +116,7 @@ public class SubDeptAdsAdapter_Visitor extends RecyclerView.Adapter <RecyclerVie
             itemHolder.BindData(myAdsModel);
             //setAnimation(holder.itemView);
 
-                itemHolder.itemView.setOnClickListener(view -> homeActivity.SetMyadsData(myAdsModel));
+            itemHolder.itemView.setOnClickListener(view -> homeActivity.SetMyadsData(myAdsModel));
             Animation animation = AnimationUtils.loadAnimation(context,R.anim.right_to_left);
             itemHolder.itemView.startAnimation(animation);
 
@@ -163,7 +175,7 @@ public class SubDeptAdsAdapter_Visitor extends RecyclerView.Adapter <RecyclerVie
                 Log.e("size1",myAdsModel.getAdvertisement_image().size()+"");
             }
             //date.setTypeface(typeface);
-            date.setText("منذ "+myAdsModel.getAdvertisement_date());
+            date.setText("قبل "+myAdsModel.getAdvertisement_date());
 
             if (myAdsModel.getAdvertisement_type().equals(Tags.ad_new))
             {
