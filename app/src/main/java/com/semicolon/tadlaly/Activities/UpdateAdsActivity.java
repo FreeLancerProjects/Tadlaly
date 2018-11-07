@@ -1,6 +1,7 @@
 package com.semicolon.tadlaly.Activities;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -983,6 +984,7 @@ public class UpdateAdsActivity extends AppCompatActivity implements DepartmentSi
         for (Integer key : map.keySet())
         {
             uriList.add(map.get(key));
+            Log.e("url",map.get(key)+"");
         }
         String[] split = m_price.split(" ");
         Log.e("cost",split[0]);
@@ -1025,6 +1027,9 @@ public class UpdateAdsActivity extends AppCompatActivity implements DepartmentSi
                     {
                         dialog.dismiss();
                         Toast.makeText(UpdateAdsActivity.this, R.string.ad_upd_succ, Toast.LENGTH_SHORT).show();
+                        Intent intent = getIntent();
+                        intent.putExtra("d","d");
+                        setResult(Activity.RESULT_OK,intent);
                         finish();
                     }
                     else if (response.body().getSuccess()==0)
@@ -1050,6 +1055,7 @@ public class UpdateAdsActivity extends AppCompatActivity implements DepartmentSi
     {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("image/*");
+        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE,true);
         startActivityForResult(intent.createChooser(intent,getString(R.string.sel_image)),req);
     }
 

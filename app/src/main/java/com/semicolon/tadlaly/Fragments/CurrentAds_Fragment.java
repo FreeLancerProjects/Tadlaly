@@ -172,8 +172,9 @@ public class CurrentAds_Fragment extends Fragment implements View.OnLongClickLis
                 .setView(view)
                 .create();
     }
-    private void getData(int page_index) {
+    public void getData(int page_index) {
 
+        Log.e("1255555","11111");
 
         try {
             Log.e("id",userModel.getUser_id());
@@ -452,9 +453,7 @@ public class CurrentAds_Fragment extends Fragment implements View.OnLongClickLis
 
                 }else if (type.equals(Tags.upd))
                 {
-                    Intent intent = new Intent(getActivity(), UpdateAdsActivity.class);
-                    intent.putExtra("ad_details",myAdsModel);
-                    getActivity().startActivity(intent);
+                    ((MyAdsActivity)getActivity()).UpdateAds(myAdsModel);
                     inNormalMode=true;
                     myCurrentAdsAdapter.notifyDataSetChanged();
                     ClearUi();

@@ -194,6 +194,7 @@ public class AdsDetailsActivity extends AppCompatActivity implements UserSingleT
         });
 
         whats_btn.setOnClickListener(view -> {
+
             String phone_number = myAdsModel.getPhone();
             phone_number = phone_number.replace("+","");
             Intent sendIntent = new Intent(Intent.ACTION_SEND);

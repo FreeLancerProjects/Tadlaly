@@ -8,6 +8,110 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:937967699473:android:82ae1bd68e6d5a65",
+        "android_client_info": {
+          "package_name": "com.SemiColon.Hmt.elengaz"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "937967699473-gpl233jkaig8bge5iecul9583f39meal.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.SemiColon.Hmt.elengaz",
+            "certificate_hash": "6616577a7e310a6aae058246a826c73910eff6d4"
+          }
+        },
+        {
+          "client_id": "937967699473-166trlhhveot8qs7be6jc3i4cg35nhjt.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDBVlu8LhDsRWCKY4A9XMlbHDYKCzmH8nA"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "937967699473-166trlhhveot8qs7be6jc3i4cg35nhjt.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "937967699473-ksftetd4rt6u5oi4sbi6hancblredjug.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.apptech.HalanApp",
+                "app_store_id": "1364446659"
+              }
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:937967699473:android:fcd31a5346a93945",
+        "android_client_info": {
+          "package_name": "com.semicolon.Halan"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "937967699473-m2fe8esi76c4b6tu2qludssb41psuo74.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.semicolon.Halan",
+            "certificate_hash": "6616577a7e310a6aae058246a826c73910eff6d4"
+          }
+        },
+        {
+          "client_id": "937967699473-166trlhhveot8qs7be6jc3i4cg35nhjt.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDBVlu8LhDsRWCKY4A9XMlbHDYKCzmH8nA"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "937967699473-166trlhhveot8qs7be6jc3i4cg35nhjt.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "937967699473-ksftetd4rt6u5oi4sbi6hancblredjug.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.apptech.HalanApp",
+                "app_store_id": "1364446659"
+              }
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:937967699473:android:6f8d90ec39bcd78f",
         "android_client_info": {
           "package_name": "com.semicolon.criuse"
@@ -42,6 +146,14 @@
             {
               "client_id": "937967699473-166trlhhveot8qs7be6jc3i4cg35nhjt.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "937967699473-ksftetd4rt6u5oi4sbi6hancblredjug.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.apptech.HalanApp",
+                "app_store_id": "1364446659"
+              }
             }
           ]
         },
@@ -86,6 +198,14 @@
             {
               "client_id": "937967699473-166trlhhveot8qs7be6jc3i4cg35nhjt.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "937967699473-ksftetd4rt6u5oi4sbi6hancblredjug.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.apptech.HalanApp",
+                "app_store_id": "1364446659"
+              }
             }
           ]
         },
@@ -130,6 +250,14 @@
             {
               "client_id": "937967699473-166trlhhveot8qs7be6jc3i4cg35nhjt.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "937967699473-ksftetd4rt6u5oi4sbi6hancblredjug.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.apptech.HalanApp",
+                "app_store_id": "1364446659"
+              }
             }
           ]
         },
@@ -174,6 +302,14 @@
             {
               "client_id": "937967699473-166trlhhveot8qs7be6jc3i4cg35nhjt.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "937967699473-ksftetd4rt6u5oi4sbi6hancblredjug.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.apptech.HalanApp",
+                "app_store_id": "1364446659"
+              }
             }
           ]
         },
@@ -218,6 +354,66 @@
             {
               "client_id": "937967699473-166trlhhveot8qs7be6jc3i4cg35nhjt.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "937967699473-ksftetd4rt6u5oi4sbi6hancblredjug.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.apptech.HalanApp",
+                "app_store_id": "1364446659"
+              }
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:937967699473:android:d4069cf53d31c15b",
+        "android_client_info": {
+          "package_name": "com.semicolon.salonat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "937967699473-l7v11mb97nettb6jn1hl3162uah1e005.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.semicolon.salonat",
+            "certificate_hash": "6616577a7e310a6aae058246a826c73910eff6d4"
+          }
+        },
+        {
+          "client_id": "937967699473-166trlhhveot8qs7be6jc3i4cg35nhjt.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDBVlu8LhDsRWCKY4A9XMlbHDYKCzmH8nA"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "937967699473-166trlhhveot8qs7be6jc3i4cg35nhjt.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "937967699473-ksftetd4rt6u5oi4sbi6hancblredjug.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.apptech.HalanApp",
+                "app_store_id": "1364446659"
+              }
             }
           ]
         },
@@ -262,6 +458,14 @@
             {
               "client_id": "937967699473-166trlhhveot8qs7be6jc3i4cg35nhjt.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "937967699473-ksftetd4rt6u5oi4sbi6hancblredjug.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.apptech.HalanApp",
+                "app_store_id": "1364446659"
+              }
             }
           ]
         },

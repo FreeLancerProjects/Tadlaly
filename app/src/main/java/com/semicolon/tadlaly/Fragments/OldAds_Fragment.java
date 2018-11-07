@@ -128,7 +128,7 @@ public class OldAds_Fragment extends Fragment implements UserSingleTone.OnComple
                 .setView(view)
                 .create();
     }*/
-    private void getData(int page_index) {
+    public void getData(int page_index) {
         //myAdsModelList.clear();
 
 

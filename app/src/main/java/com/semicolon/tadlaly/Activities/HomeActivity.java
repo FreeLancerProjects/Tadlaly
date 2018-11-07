@@ -617,7 +617,7 @@ public class HomeActivity extends AppCompatActivity
             Intent intent = new Intent(Intent.ACTION_SEND);
             intent.setType("*/*");
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-            intent.putExtra(Intent.EXTRA_TEXT,"تطبيق تدللي\n"+"\n"+"IOS URL:   https://itunes.apple.com/us/app/tadlly-%D8%AA%D8%AF%D9%84%D9%84%D9%8A/id1422871307?ls=1&mt=8"+"\n WEB URL : http://tdlly.com/");
+            intent.putExtra(Intent.EXTRA_TEXT,"تطبيق تدللي\n"+"\n"+"Android URL : https://play.google.com/store/apps/details?id=com.semicolon.tadlaly"+"IOS URL:   https://itunes.apple.com/us/app/tadlly-%D8%AA%D8%AF%D9%84%D9%84%D9%8A/id1422871307?ls=1&mt=8"+"\n WEB URL : http://tdlly.com/");
             startActivityForResult(intent,10);
 
 
