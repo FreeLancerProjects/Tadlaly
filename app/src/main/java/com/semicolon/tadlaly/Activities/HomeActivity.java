@@ -13,7 +13,6 @@ import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -56,6 +55,7 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
 import com.semicolon.tadlaly.Fragments.AllAppAdsFragment;
 import com.semicolon.tadlaly.Fragments.Home_Fragment;
+import com.semicolon.tadlaly.Models.Cong_Model;
 import com.semicolon.tadlaly.Models.LocationModel;
 import com.semicolon.tadlaly.Models.MyAdsModel;
 import com.semicolon.tadlaly.Models.ResponseModel;
@@ -69,6 +69,10 @@ import com.semicolon.tadlaly.SingleTone.LatLngSingleTone;
 import com.semicolon.tadlaly.SingleTone.UserSingleTone;
 import com.semicolon.tadlaly.language.LanguageHelper;
 import com.squareup.picasso.Picasso;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.Locale;
 
@@ -237,6 +241,10 @@ public class HomeActivity extends AppCompatActivity
 
                 if (user_type.equals(Tags.app_user)){
                     preferences = new Preferences(this);
+                    if (!EventBus.getDefault().isRegistered(this))
+                    {
+                        EventBus.getDefault().register(this);
+                    }
                 }else
                 {
                     latLngSingleTone = LatLngSingleTone.getInstance();
@@ -613,12 +621,23 @@ public class HomeActivity extends AppCompatActivity
     private void Share()
     {
         try {
+
             //Uri uri = Uri.parse(MediaStore.Images.Media.insertImage(getContentResolver(), BitmapFactory.decodeResource(getResources(),R.drawable.share_image),null,null));
             Intent intent = new Intent(Intent.ACTION_SEND);
             intent.setType("*/*");
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-            intent.putExtra(Intent.EXTRA_TEXT,"تطبيق تدللي\n"+"\n"+"Android URL : https://play.google.com/store/apps/details?id=com.semicolon.tadlaly"+"IOS URL:   https://itunes.apple.com/us/app/tadlly-%D8%AA%D8%AF%D9%84%D9%84%D9%8A/id1422871307?ls=1&mt=8"+"\n WEB URL : http://tdlly.com/");
-            startActivityForResult(intent,10);
+
+            if (user_type.equals(Tags.app_user))
+            {
+                String user_id = userModel.getUser_id();
+                intent.putExtra(Intent.EXTRA_TEXT, "\nتطبيق تدللي\n"+"http://tdlly.com/Api/AppShare/"+user_id+"/android");
+
+            }else if (user_type.equals(Tags.app_visitor))
+            {
+                intent.putExtra(Intent.EXTRA_TEXT,"تطبيق تدللي\n"+"\n"+"Android URL : https://play.google.com/store/apps/details?id=com.semicolon.tadlaly"+"IOS URL:   https://itunes.apple.com/us/app/tadlly-%D8%AA%D8%AF%D9%84%D9%84%D9%8A/id1422871307?ls=1&mt=8"+"\n WEB URL : http://tdlly.com/");
+
+            }
+            startActivity(intent);
 
 
         }catch (NullPointerException e)
@@ -729,6 +748,10 @@ public class HomeActivity extends AppCompatActivity
     protected void onDestroy()
     {
         super.onDestroy();
+        if (EventBus.getDefault().isRegistered(this))
+        {
+            EventBus.getDefault().unregister(this);
+        }
 
 
     }
@@ -863,16 +886,6 @@ public class HomeActivity extends AppCompatActivity
                 }, Looper.myLooper());
 
             }
-        }else if (requestCode==10)
-        {
-            new Handler()
-                    .postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            createCongDialog();
-
-                        }
-                    },200);
         }
     }
 
@@ -894,5 +907,10 @@ public class HomeActivity extends AppCompatActivity
         alertDialog.show();
 
 
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void UpdateCongratulation(Cong_Model cong_model)
+    {
+        createCongDialog();
     }
 }

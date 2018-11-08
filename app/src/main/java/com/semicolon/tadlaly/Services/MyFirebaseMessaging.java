@@ -21,10 +21,13 @@ import android.util.Log;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.semicolon.tadlaly.Activities.SendMsgActivity;
+import com.semicolon.tadlaly.Models.Cong_Model;
 import com.semicolon.tadlaly.Models.UserModel;
 import com.semicolon.tadlaly.R;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.Map;
 
@@ -45,8 +48,11 @@ public class MyFirebaseMessaging extends FirebaseMessagingService {
         {
             String to_id = map.get("to_id");
             String curr_id = getUserData().getUser_id();
+            String not_type = map.get("notification_type");
             if (to_id.equals(curr_id))
             {
+
+
                 final NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
                 final NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
 
@@ -54,7 +60,15 @@ public class MyFirebaseMessaging extends FirebaseMessagingService {
                         .postDelayed(new Runnable() {
                             @Override
                             public void run() {
-                                UpdateUi(getUserData(),map,manager,builder);
+
+                                if (not_type.equals(Tags.not_messaging))
+                                {
+                                    createMessage_Notification(getUserData(),map,manager,builder);
+
+                                }else if (not_type.equals(Tags.not_lottery))
+                                {
+                                    createCongratulation_notification(map);
+                                }
 
                             }
                         },100);
@@ -63,7 +77,92 @@ public class MyFirebaseMessaging extends FirebaseMessagingService {
         }
     }
 
-    private void UpdateUi(UserModel userData, Map<String, String> map,NotificationManager manager,NotificationCompat.Builder builder) {
+    private void createCongratulation_notification(Map<String, String> map) {
+        if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.O)
+        {
+            String sound_path = "android.resource://"+getPackageName()+"/"+R.raw.not;
+            final int NOTIFICATION_ID =1;
+            final String CHANNEL_ID = "my_channel_01";
+            final CharSequence CHANNEL_NAME="my_channel_name";
+            final int IMPORTANCE=NotificationManager.IMPORTANCE_HIGH;
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID,CHANNEL_NAME,IMPORTANCE);
+            channel.setSound(Uri.parse(sound_path),new AudioAttributes.Builder()
+            .setLegacyStreamType(AudioManager.STREAM_NOTIFICATION)
+                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                    .setUsage(AudioAttributes.USAGE_NOTIFICATION_EVENT)
+                    .build()
+            );
+            channel.setShowBadge(true);
+
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
+            builder.setChannelId(CHANNEL_ID);
+            builder.setSmallIcon(R.mipmap.ic_launcher);
+            builder.setContentTitle(map.get("title_notification"));
+            builder.setContentText(map.get("message_content"));
+
+            NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            manager.createNotificationChannel(channel);
+
+            Target target = new Target() {
+                @Override
+                public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                    builder.setLargeIcon(bitmap);
+                    manager.notify(NOTIFICATION_ID,builder.build());
+                    EventBus.getDefault().post(new Cong_Model());
+                }
+
+                @Override
+                public void onBitmapFailed(Drawable errorDrawable) {
+
+                }
+
+                @Override
+                public void onPrepareLoad(Drawable placeHolderDrawable) {
+
+                }
+            };
+
+            Picasso.with(this).load(R.drawable.logo).into(target);
+
+
+        }else
+            {
+                String sound_path = "android.resource://"+getPackageName()+"/"+R.raw.not;
+                NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
+
+
+                Target target = new Target() {
+                    @Override
+                    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                        builder.setLargeIcon(bitmap);
+                        builder.setSmallIcon(R.mipmap.ic_launcher);
+                        builder.setContentTitle(map.get("title_notification"));
+                        builder.setSound(Uri.parse(sound_path));
+                        builder.setContentText(map.get("message_content"));
+                        manager.notify(1,builder.build());
+                        EventBus.getDefault().post(new Cong_Model());
+
+
+                    }
+
+                    @Override
+                    public void onBitmapFailed(Drawable errorDrawable) {
+
+                    }
+
+                    @Override
+                    public void onPrepareLoad(Drawable placeHolderDrawable) {
+
+                    }
+                };
+
+                Picasso.with(this).load(R.drawable.logo).into(target);
+
+            }
+    }
+
+    private void createMessage_Notification(UserModel userData, Map<String, String> map, NotificationManager manager, NotificationCompat.Builder builder) {
 
 
         if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.O)

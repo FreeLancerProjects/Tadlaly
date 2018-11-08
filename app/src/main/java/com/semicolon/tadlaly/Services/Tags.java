@@ -37,6 +37,8 @@ public class Tags {
     public static final String undefined_price= "غير محدد";
     public static final String register_user="1";
     public static final String unregister_user="0";
+    public static final String not_messaging="message";
+    public static final String not_lottery="lottery";
 
 
 
