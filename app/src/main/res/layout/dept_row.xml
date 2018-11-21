@@ -6,9 +6,10 @@
     app:cardCornerRadius="5dp"
     app:contentPadding="1dp"
     android:layout_gravity="center"
-    android:minWidth="130dp"
-    android:layout_marginRight="8dp"
-    android:layout_marginLeft="8dp"
+    android:minWidth="105dp"
+    android:maxWidth="105dp"
+    android:layout_marginRight="3dp"
+    android:layout_marginLeft="3dp"
     app:cardBackgroundColor="@color/colorPrimary"
 
     >

@@ -98,8 +98,8 @@ public class Add_AdsActivity extends AppCompatActivity implements UserSingleTone
     private final int IMG_REQ=2;
     private Bitmap bitmap1,bitmap2,bitmap3,bitmap4,bitmap5,bitmap6;
     private Button send_btn;
-    private EditText address,ads_content,ad_title;
-    private TextView phone,location,cost;
+    private EditText address,ads_content,ad_title,cost;
+    private TextView phone,location;
     private ProgressDialog dialog,dialog2;
     private Spinner depart_spinner,branche_spinner,ad_type;
     private CheckBox checkbox_phone_state;
@@ -120,7 +120,7 @@ public class Add_AdsActivity extends AppCompatActivity implements UserSingleTone
     private List<Spinner_branchModel> branchList;
     private String user_type="";
     private AlertDialog.Builder serviceBuilder;
-    private CheckBox checkbox_undefined;
+    //private CheckBox checkbox_undefined;
     private String price="";
     private ImageView delete_img1,delete_img2,delete_img3,delete_img4,delete_img5,delete_img6;
     private GoogleApiClient googleApiClient;
@@ -189,7 +189,7 @@ public class Add_AdsActivity extends AppCompatActivity implements UserSingleTone
         location = findViewById(R.id.location);
         address = findViewById(R.id.address);
         cost = findViewById(R.id.cost);
-        checkbox_undefined = findViewById(R.id.checkbox_undefined);
+        //checkbox_undefined = findViewById(R.id.checkbox_undefined);
         ads_content = findViewById(R.id.ads_content);
         depart_spinner = findViewById(R.id.depart_spinner);
         branche_spinner = findViewById(R.id.branche_spinner);
@@ -197,7 +197,7 @@ public class Add_AdsActivity extends AppCompatActivity implements UserSingleTone
         checkbox_phone_state = findViewById(R.id.checkbox_phone_state);
 
         ///////////////////////////
-        checkbox_undefined.setOnClickListener(new View.OnClickListener() {
+        /*checkbox_undefined.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (checkbox_undefined.isChecked())
@@ -213,7 +213,7 @@ public class Add_AdsActivity extends AppCompatActivity implements UserSingleTone
                     cost.setEnabled(true);
                 }
             }
-        });
+        });*/
         ///////////////////////////
         String [] ad_types = getResources().getStringArray(R.array.ad_state);
         ad_type.setAdapter(new ArrayAdapter<>(this,R.layout.spinner_item,ad_types));
@@ -285,6 +285,9 @@ public class Add_AdsActivity extends AppCompatActivity implements UserSingleTone
                 }else if (i==2)
                 {
                     ad_state=Tags.ad_old;
+                }else if (i==3)
+                {
+                    ad_state = Tags.ad_without;
                 }
             }
 
@@ -319,11 +322,17 @@ public class Add_AdsActivity extends AppCompatActivity implements UserSingleTone
                         String m_address = address.getText().toString();
                         String m_adsContent = ads_content.getText().toString();
                         String m_loc = location.getText().toString();
+                        String m_price = cost.getText().toString();
                         //price = cost.getText().toString();
-                        if (cost.isEnabled())
+                        if (!TextUtils.isEmpty(m_price))
                         {
                             price = cost.getText().toString();
-                        }
+                            cost.setError(null);
+
+                        }else
+                            {
+                                cost.setError(getString(R.string.pr_req));
+                            }
                         if (TextUtils.isEmpty(m_title))
                         {
                             ad_title.setError(getString(R.string.enter_ad_name));
@@ -683,7 +692,20 @@ public class Add_AdsActivity extends AppCompatActivity implements UserSingleTone
     }
     private void selectImages()
     {
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        Intent intent;
+        if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.KITKAT)
+        {
+            intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+            intent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
+
+        }else
+            {
+                intent = new Intent(Intent.ACTION_GET_CONTENT);
+
+            }
+
+        intent.putExtra(Intent.EXTRA_LOCAL_ONLY,true);
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         intent.setType("image/*");
         intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE,true);
         startActivityForResult(intent.createChooser(intent,getString(R.string.sel_image)),IMG_REQ);
@@ -907,6 +929,7 @@ public class Add_AdsActivity extends AppCompatActivity implements UserSingleTone
             String m_loc = location.getText().toString();
             //String m_cost = cost.getText().toString();
             String m_phone = phone.getText().toString();
+            String m_price = cost.getText().toString();
             Log.e("1",m_title);
             Log.e("2",m_address);
             Log.e("3",price);
@@ -926,7 +949,7 @@ public class Add_AdsActivity extends AppCompatActivity implements UserSingleTone
             RequestBody branch_part= Common.getRequestBody(m_branch);
             RequestBody ad_title_part= Common.getRequestBody(m_title);
             RequestBody ad_content_part= Common.getRequestBody(m_adsContent);
-            RequestBody ads_price_part= Common.getRequestBody(price);
+            RequestBody ads_price_part= Common.getRequestBody(m_price);
             RequestBody ads_type_part= Common.getRequestBody(ad_state);
             RequestBody lat_part= Common.getRequestBody(String.valueOf(lat));
             RequestBody lng_part= Common.getRequestBody(String.valueOf(lng));

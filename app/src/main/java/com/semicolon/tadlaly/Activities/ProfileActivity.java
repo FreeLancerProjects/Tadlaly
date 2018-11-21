@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -168,7 +169,20 @@ public class ProfileActivity extends AppCompatActivity implements UserSingleTone
 
     private void SelectImage()
     {
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        Intent intent;
+        if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.KITKAT)
+        {
+            intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+            intent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
+
+        }else
+        {
+            intent = new Intent(Intent.ACTION_GET_CONTENT);
+
+        }
+
+        intent.putExtra(Intent.EXTRA_LOCAL_ONLY,true);
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         intent.setType("image/*");
         startActivityForResult(intent.createChooser(intent,"select image"),IMG_REQ);
     }

@@ -73,7 +73,7 @@
                 android:layout_marginBottom="10dp"
                 android:singleLine="true"
                 android:scrollHorizontally="true"
-                android:textSize="13sp"
+                android:textSize="15sp"
                 android:textStyle="bold"
                 android:background="@drawable/et_bg_trans"
                 />
@@ -90,7 +90,7 @@
                 android:layout_marginBottom="10dp"
                 android:singleLine="true"
                 android:scrollHorizontally="true"
-                android:textSize="13sp"
+                android:textSize="15sp"
                 android:textStyle="bold"
                 android:background="@drawable/et_bg_trans"
                 />
@@ -108,7 +108,7 @@
                 android:layout_marginBottom="10dp"
                 android:singleLine="true"
                 android:scrollHorizontally="true"
-                android:textSize="13sp"
+                android:textSize="15sp"
                 android:textStyle="bold"
                 android:gravity="center_vertical"
                 android:background="@drawable/et_bg_trans"
@@ -149,7 +149,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 >
-                <CheckBox
+                <!--<CheckBox
                     android:id="@+id/checkbox_undefined"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -158,7 +158,7 @@
                     android:layout_marginRight="20dp"
                     android:textColor="@color/black"
                     android:textStyle="bold"
-                    />
+                    />-->
                 <EditText
                     android:id="@+id/cost"
                     android:layout_width="match_parent"
@@ -172,7 +172,7 @@
                     android:layout_marginBottom="10dp"
                     android:singleLine="true"
                     android:scrollHorizontally="true"
-                    android:textSize="13sp"
+                    android:textSize="15sp"
                     android:textStyle="bold"
                     android:background="@drawable/et_bg_trans"
                     android:inputType="numberDecimal"
@@ -202,7 +202,7 @@
                 android:layout_marginBottom="10dp"
                 android:singleLine="true"
                 android:scrollHorizontally="true"
-                android:textSize="13sp"
+                android:textSize="15sp"
                 android:textStyle="bold"
                 android:background="@drawable/et_bg_trans"
                 android:gravity="center_vertical"
@@ -234,7 +234,7 @@
                 android:hint="@string/ads_content"
                 android:textColorHint="@color/gray2"
                 android:layout_marginBottom="10dp"
-                android:textSize="13sp"
+                android:textSize="17sp"
                 android:textStyle="bold"
                 android:background="@drawable/et_bg_trans"
                 android:gravity="start"

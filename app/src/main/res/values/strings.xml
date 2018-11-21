@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Tadlaly</string>
+    <string name="app_name">TDLLY</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="Api_key">AIzaSyDZDfDu-npZxpvUkfx4hbPwCHC5dctS7Q0</string>
@@ -195,9 +195,15 @@
     <string name="sar">SAR</string>
     <string name="nearby">Nearby</string>
     <string name="recent">Recent</string>
+    <string name="pr_req">Price is required</string>
+    <string name="bank_accounts">Bank Accounts</string>
+    <string name="choose_bank">Choose bank</string>
+    <string name="lodng_bnks">Loading bank accounts...</string>
     <string-array name="ad_state">
         <item>Ad type</item>
         <item>New</item>
         <item>Used</item>
+        <item>Without</item>
+
     </string-array>
 </resources>

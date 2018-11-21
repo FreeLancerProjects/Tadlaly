@@ -2,6 +2,7 @@ package com.semicolon.tadlaly.share;
 
 import android.annotation.TargetApi;
 import android.app.ProgressDialog;
+import android.content.ContentUris;
 import android.content.Context;
 import android.content.CursorLoader;
 import android.database.Cursor;
@@ -9,6 +10,7 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.support.v4.content.ContextCompat;
@@ -45,62 +47,168 @@ public class Common {
         return dialog;
 
     }
+
     @TargetApi(Build.VERSION_CODES.KITKAT)
-    public static String getImagePathFromUri(Context context , Uri uri)
+    public static String getImagePathFromUri(Context context,Uri uri)
     {
-        int current_version ;
-        try {
-            current_version = android.os.Build.VERSION.SDK_INT;
-        }catch (NumberFormatException e)
+        int currentApiVersion;
+        try
         {
-            current_version = 3;
+            currentApiVersion = android.os.Build.VERSION.SDK_INT;
         }
-
-        if (current_version>= Build.VERSION_CODES.KITKAT)
+        catch(NumberFormatException e)
         {
-            String image_path="";
-            String ID = DocumentsContract.getDocumentId(uri);
-            ID = ID.split(":")[1];
-            String selection = MediaStore.Images.Media._ID+"=?";
-            String [] projection = {MediaStore.Images.Media.DATA};
-
-            Cursor cursor = context.getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,projection,selection,new String[]{ID},null);
-            if (cursor!=null&&cursor.moveToFirst()){
-
-                image_path = cursor.getString(cursor.getColumnIndexOrThrow(projection[0]));
-                cursor.close();
-
-            }
-            return image_path;
-
-        }else if (current_version<=Build.VERSION_CODES.HONEYCOMB_MR2&&current_version>=Build.VERSION_CODES.HONEYCOMB)
+            //API 3 will crash if SDK_INT is called
+            currentApiVersion = 3;
+        }
+        if (currentApiVersion >= Build.VERSION_CODES.KITKAT)
         {
-            String image_path = "";
-            String [] projection = {MediaStore.Images.Media.DATA};
-            CursorLoader cursorLoader = new CursorLoader(context,uri,projection,null,null,null);
-            Cursor cursor = cursorLoader.loadInBackground();
-            if (cursor!=null&& cursor.moveToFirst())
+           /* String filePath = "";
+            String wholeID = DocumentsContract.getDocumentId(uri);
+
+            // Split at colon, use second item in the array
+
+            Log.e("wholeID",wholeID);
+
+            String id = wholeID.split(":")[1];
+
+            String[] column = {MediaStore.Images.Media.DATA};
+
+            // where id is equal to
+            String sel = MediaStore.Images.Media._ID + "=?";
+
+            Cursor cursor = context.getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                    column, sel, new String[]{id}, null);
+
+            int columnIndex = cursor.getColumnIndex(column[0]);
+
+            if (cursor.moveToFirst())
             {
-                image_path = cursor.getString(cursor.getColumnIndexOrThrow(projection[0]));
-                cursor.close();
+                filePath = cursor.getString(columnIndex);
             }
-            return image_path;
-        }else
-            {
-                String image_path = "";
-                String [] projection ={MediaStore.Images.Media.DATA};
-                Cursor cursor = context.getContentResolver().query(uri,projection,null,null,null);
-                if (cursor!=null && cursor.moveToFirst())
-                {
-                    image_path = cursor.getString(cursor.getColumnIndexOrThrow(projection[0]));
-                    cursor.close();
+            cursor.close();
+            return filePath;*/
+
+            if ( DocumentsContract.isDocumentUri(context, uri)) {
+                if (isExternalStorageDocument(uri)) {
+                    final String docId = DocumentsContract.getDocumentId(uri);
+                    final String[] split = docId.split(":");
+                    final String type = split[0];
+
+                    if ("primary".equalsIgnoreCase(type)) {
+                        return Environment.getExternalStorageDirectory() + "/"
+                                + split[1];
+                    }
                 }
-                return image_path;
+                else if (isDownloadsDocument(uri)) {
+
+                    final String id = DocumentsContract.getDocumentId(uri);
+                    final Uri contentUri = ContentUris.withAppendedId(
+                            Uri.parse("content://downloads/public_downloads"),
+                            Long.valueOf(id));
+
+                    return getDataColumn(context, contentUri, null, null);
+                }
+                else if (isMediaDocument(uri)) {
+                    final String docId = DocumentsContract.getDocumentId(uri);
+                    final String[] split = docId.split(":");
+                    final String type = split[0];
+
+                    Uri contentUri = null;
+                    if ("image".equals(type)) {
+                        contentUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+                    } else if ("video".equals(type)) {
+                        contentUri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
+                    } else if ("audio".equals(type)) {
+                        contentUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+                    }
+
+                    final String selection = "_id=?";
+                    final String[] selectionArgs = new String[] { split[1] };
+
+                    return getDataColumn(context, contentUri, selection,
+                            selectionArgs);
+                }
             }
+            else if ("content".equalsIgnoreCase(uri.getScheme())) {
+                if (isGooglePhotosUri(uri))
+                    return uri.getLastPathSegment();
+
+                return getDataColumn(context, uri, null, null);
+            }
+            else if ("file".equalsIgnoreCase(uri.getScheme())) {
+                return uri.getPath();
+            }
+
+            return null;
+        }
+        else if (currentApiVersion <= Build.VERSION_CODES.HONEYCOMB_MR2 && currentApiVersion >= Build.VERSION_CODES.HONEYCOMB)
+
+        {
+            String[] proj = {MediaStore.Images.Media.DATA};
+            String result = null;
+
+            CursorLoader cursorLoader = new CursorLoader(
+                    context,
+                    uri, proj, null, null, null);
+            Cursor cursor = cursorLoader.loadInBackground();
+
+            if (cursor != null)
+            {
+                int column_index =
+                        cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+                cursor.moveToFirst();
+                result = cursor.getString(column_index);
+            }
+            return result;
+        }
+        else
+        {
+
+            String[] proj = {MediaStore.Images.Media.DATA};
+            Cursor cursor = context.getContentResolver().query(uri, proj, null, null, null);
+            int column_index
+                    = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+            cursor.moveToFirst();
+            return cursor.getString(column_index);
+        }
     }
+    private static String getDataColumn(Context context, Uri uri,String selection, String[] selectionArgs) {
 
+        Cursor cursor = null;
+        final String column = "_data";
+        final String[] projection = { column };
 
-    public static File getFileFromPath(String path)
+        try {
+            cursor = context.getContentResolver().query(uri, projection,
+                    selection, selectionArgs, null);
+            if (cursor != null && cursor.moveToFirst()) {
+                final int index = cursor.getColumnIndexOrThrow(column);
+                return cursor.getString(index);
+            }
+        } finally {
+            if (cursor != null)
+                cursor.close();
+        }
+        return null;
+    }
+    private static boolean isExternalStorageDocument(Uri uri) {
+        return "com.android.externalstorage.documents".equals(uri
+                .getAuthority());
+    }
+    private static boolean isDownloadsDocument(Uri uri) {
+        return "com.android.providers.downloads.documents".equals(uri
+                .getAuthority());
+    }
+    private static boolean isMediaDocument(Uri uri) {
+        return "com.android.providers.media.documents".equals(uri
+                .getAuthority());
+    }
+    private static boolean isGooglePhotosUri(Uri uri) {
+        return "com.google.android.apps.photos.content".equals(uri
+                .getAuthority());
+    }
+    private static File getFileFromPath(String path)
     {
         File file = new File(path);
         return file;

@@ -73,7 +73,7 @@ public class SplashActivity extends AppCompatActivity implements SurfaceHolder.C
                 mp = MediaPlayer.create(SplashActivity.this, Uri.parse(path));
                 mp.setDisplay(voids[0]);
                 mp.setLooping(false);
-                mp.setVolume(0f,0f);
+                //mp.setVolume(0f,0f);
                 mp.start();
                 mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                     @Override

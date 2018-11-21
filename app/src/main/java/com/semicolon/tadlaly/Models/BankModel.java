@@ -8,14 +8,7 @@ public class BankModel implements Serializable {
     private String account_IBAN;
     private String account_bank_name;
     private String account_number;
-
-    public BankModel(String account_id, String account_name, String account_IBAN, String account_bank_name, String account_number) {
-        this.account_id = account_id;
-        this.account_name = account_name;
-        this.account_IBAN = account_IBAN;
-        this.account_bank_name = account_bank_name;
-        this.account_number = account_number;
-    }
+    private String account_image;
 
     public String getAccount_id() {
         return account_id;
@@ -35,5 +28,9 @@ public class BankModel implements Serializable {
 
     public String getAccount_number() {
         return account_number;
+    }
+
+    public String getAccount_image() {
+        return account_image;
     }
 }

@@ -3,9 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:showIn="navigation_view">
 
-    <item
-        android:id="@+id/change_language"
-        android:title="@string/change_language" />
+
     <item
         android:id="@+id/addAds"
         android:title="@string/add_ads" />
@@ -43,6 +41,9 @@
     <item
         android:id="@+id/rules"
         android:title="@string/rules" />
+    <item
+        android:id="@+id/change_language"
+        android:title="@string/change_language" />
 
     <item
         android:id="@+id/logout"

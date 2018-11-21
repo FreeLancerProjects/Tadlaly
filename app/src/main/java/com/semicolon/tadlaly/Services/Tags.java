@@ -19,6 +19,8 @@ public class Tags {
     public static final String sendType_normal="2";
     public static final String ad_new="1";
     public static final String ad_old="2";
+    public static final String ad_without="3";
+
     public static final String show_phone="1";
     public static final String disApearPhone="2";
     public static final String me_visit="1";

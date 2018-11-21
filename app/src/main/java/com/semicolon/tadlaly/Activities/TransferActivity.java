@@ -10,24 +10,26 @@ import android.graphics.BitmapFactory;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.github.siyamed.shapeimageview.RoundedImageView;
-import com.semicolon.tadlaly.Adapters.SpinnerBankAdapter;
+import com.semicolon.tadlaly.Adapters.BankAdapter;
 import com.semicolon.tadlaly.Models.BankModel;
 import com.semicolon.tadlaly.Models.ResponseModel;
 import com.semicolon.tadlaly.Models.UserModel;
@@ -37,6 +39,7 @@ import com.semicolon.tadlaly.Services.Services;
 import com.semicolon.tadlaly.Services.Tags;
 import com.semicolon.tadlaly.SingleTone.UserSingleTone;
 import com.semicolon.tadlaly.language.LanguageHelper;
+import com.semicolon.tadlaly.share.Common;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
@@ -56,7 +59,7 @@ import retrofit2.Retrofit;
 public class TransferActivity extends AppCompatActivity implements UserSingleTone.OnCompleteListener{
 
     private EditText money,ads_id;
-    private TextView user_name,user_phone,date;
+    private TextView user_name,user_phone,date,tv_bank;
     private Button sendBtn;
     private ProgressDialog dialog;
     private ImageView back,upload;
@@ -66,12 +69,11 @@ public class TransferActivity extends AppCompatActivity implements UserSingleTon
     private final int img_req = 12221;
     private UserModel userModel;
     private UserSingleTone userSingleTone;
-    private Spinner spinner_bank;
-    private SpinnerBankAdapter spinnerBankAdapter;
     private List<BankModel> bankModelList;
     private String bank="";
     private String user_type="";
     private AlertDialog.Builder serviceBuilder;
+    private AlertDialog bank_dialog;
 
 
     @Override
@@ -95,7 +97,6 @@ public class TransferActivity extends AppCompatActivity implements UserSingleTon
             userSingleTone.getUser(this);
         }
        CreateServiceDialog();
-        getBanksAccount();
     }
 
     private void getDataFromIntent() {
@@ -111,6 +112,8 @@ public class TransferActivity extends AppCompatActivity implements UserSingleTon
 
     private void getBanksAccount() {
 
+        ProgressDialog dialog = Common.createProgressDialog(this,getString(R.string.lodng_bnks));
+        dialog.show();
         Retrofit retrofit = Api.getRetrofit(Tags.Base_Url);
         Call<List<BankModel>> call = retrofit.create(Services.class).getBanks();
         call.enqueue(new Callback<List<BankModel>>() {
@@ -118,16 +121,21 @@ public class TransferActivity extends AppCompatActivity implements UserSingleTon
             public void onResponse(Call<List<BankModel>> call, Response<List<BankModel>> response) {
                 if (response.isSuccessful())
                 {
+                    dialog.dismiss();
+
                     if (response.body().size()>0)
                     {
+                        bankModelList.clear();
                         bankModelList.addAll(response.body());
-                        spinnerBankAdapter.notifyDataSetChanged();
+                        CreateBankAlertDialog(response.body());
                     }
                 }
             }
 
             @Override
             public void onFailure(Call<List<BankModel>> call, Throwable t) {
+                dialog.dismiss();
+
                 Log.e("Error",t.getMessage());
 
             }
@@ -153,17 +161,14 @@ public class TransferActivity extends AppCompatActivity implements UserSingleTon
         user_name = findViewById(R.id.user_name);
         user_phone= findViewById(R.id.user_phone);
         date = findViewById(R.id.date);
+        tv_bank = findViewById(R.id.tv_bank);
+
         money = findViewById(R.id.mony);
         back = findViewById(R.id.back);
-        spinner_bank = findViewById(R.id.spinner_bank);
         ads_id = findViewById(R.id.ads_id);
         upload = findViewById(R.id.upload);
         img = findViewById(R.id.img);
         sendBtn = findViewById(R.id.send_btn);
-        spinnerBankAdapter = new SpinnerBankAdapter(this,R.layout.spinner_item,bankModelList);
-        BankModel bankModel = new BankModel("","","",getString(R.string.bank),"");
-        bankModelList.add(bankModel);
-        spinner_bank.setAdapter(spinnerBankAdapter);
         upload.setOnClickListener(view -> SelectImage());
         back.setOnClickListener(view ->
         finish()
@@ -187,23 +192,20 @@ public class TransferActivity extends AppCompatActivity implements UserSingleTon
                 CreateDateDialog()
         );
 
-        spinner_bank.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        tv_bank.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                if (i!=0)
+            public void onClick(View v) {
+                if (bankModelList.size()>0)
                 {
-                    bank = bankModelList.get(i).getAccount_bank_name();
-                    Log.e("banks",bankModelList.get(i).getAccount_bank_name());
-                    Log.e("banks",bankModelList.get(i).getAccount_id());
+                    CreateBankAlertDialog(bankModelList);
+                }else
+                    {
+                        getBanksAccount();
 
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
+                    }
             }
         });
+
         CreateProgressDialog();
     }
 
@@ -250,14 +252,20 @@ public class TransferActivity extends AppCompatActivity implements UserSingleTon
         {
             user_name.setError(null);
             money.setError(getString(R.string.enter_money));
-        }else if (TextUtils.isEmpty(m_date))
+        }else if (TextUtils.isEmpty(bank))
         {
+            tv_bank.setError(getString(R.string.choose_bank));
+        }
+        else if (TextUtils.isEmpty(m_date))
+        {
+            tv_bank.setError(null);
             user_name.setError(null);
             money.setError(null);
             date.setError(getString(R.string.ch_date));
         }
         else if (TextUtils.isEmpty(m_phone))
         {
+            tv_bank.setError(null);
             user_name.setError(null);
             money.setError(null);
             date.setError(null);
@@ -267,6 +275,7 @@ public class TransferActivity extends AppCompatActivity implements UserSingleTon
 
         else if (TextUtils.isEmpty(m_ads_id))
         {
+            tv_bank.setError(null);
             ads_id.setError(getString(R.string.enter_adsnum));
             user_phone.setError(null);
             user_name.setError(null);
@@ -275,6 +284,7 @@ public class TransferActivity extends AppCompatActivity implements UserSingleTon
 
         }else
             {
+                tv_bank.setError(null);
                 user_phone.setError(null);
                 user_name.setError(null);
                 money.setError(null);
@@ -327,7 +337,19 @@ public class TransferActivity extends AppCompatActivity implements UserSingleTon
 
     private void SelectImage()
     {
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        Intent intent;
+        if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.KITKAT)
+        {
+            intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+            intent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
+
+        }else
+        {
+            intent = new Intent(Intent.ACTION_GET_CONTENT);
+
+        }
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        intent.putExtra(Intent.EXTRA_LOCAL_ONLY,true);
         intent.setType("image/*");
         startActivityForResult(intent.createChooser(intent,getString(R.string.sel_image)),img_req);
     }
@@ -365,4 +387,32 @@ public class TransferActivity extends AppCompatActivity implements UserSingleTon
         user_name.setText(userModel.getUser_full_name());
         user_phone.setText(userModel.getUser_phone());
     }
+
+    private   void CreateBankAlertDialog(List<BankModel> bankModelList)
+    {
+        bank_dialog = new AlertDialog.Builder(this)
+                .setCancelable(true)
+                .create();
+
+        View view = LayoutInflater.from(this).inflate(R.layout.banks_dialog,null);
+
+        RecyclerView recView = view.findViewById(R.id.recView);
+        RecyclerView.LayoutManager manager = new LinearLayoutManager(this);
+        recView.setLayoutManager(manager);
+        RecyclerView.Adapter adapter = new BankAdapter(this,bankModelList);
+        recView.setAdapter(adapter);
+        bank_dialog.getWindow().getAttributes().windowAnimations=R.style.dialog;
+        bank_dialog.setCanceledOnTouchOutside(false);
+        bank_dialog.setView(view);
+        bank_dialog.show();
+    }
+
+
+    public void setBankItem(BankModel bankModel)
+    {
+        bank_dialog.dismiss();
+        bank = bankModel.getAccount_bank_name();
+        tv_bank.setText(bankModel.getAccount_bank_name());
+    }
+
 }

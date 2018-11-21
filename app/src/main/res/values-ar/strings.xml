@@ -38,7 +38,7 @@
     <string name="day">اليوم</string>
     <string name="ads_num">رقم الاعلان</string>
     <string name="new_ads">جديد</string>
-    <string name="update">تعديل</string>
+    <string name="update">تحديث</string>
     <string name="home">الصفحة الرئيسية</string>
     <string name="sold">تم بيع السلعة</string>
     <string name="undo_ads">التراجع عن الاعلان</string>
@@ -195,6 +195,10 @@
     <string name="sar">ريال</string>
     <string name="nearby">الاقرب</string>
     <string name="recent">الاحدث</string>
+    <string name="pr_req">السعر مطلوب</string>
+    <string name="bank_accounts">حسابات بنكية</string>
+    <string name="choose_bank">إختر البنك</string>
+    <string name="lodng_bnks">جار تحميل الحسابات البنكية</string>
 
     <string-array name="depart_array">
         <item>القسم</item>
@@ -210,6 +214,6 @@
         <item>نوع الاعلان</item>
         <item>جديد</item>
         <item>مستعمل</item>
-
+        <item>بدون</item>
     </string-array>
 </resources>

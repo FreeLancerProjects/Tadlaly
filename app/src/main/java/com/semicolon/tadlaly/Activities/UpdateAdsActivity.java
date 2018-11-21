@@ -12,6 +12,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -1053,7 +1054,20 @@ public class UpdateAdsActivity extends AppCompatActivity implements DepartmentSi
 
     private void SelectImage(int req)
     {
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        Intent intent;
+        if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.KITKAT)
+        {
+            intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+            intent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
+
+        }else
+        {
+            intent = new Intent(Intent.ACTION_GET_CONTENT);
+
+        }
+
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        intent.putExtra(Intent.EXTRA_LOCAL_ONLY,true);
         intent.setType("image/*");
         intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE,true);
         startActivityForResult(intent.createChooser(intent,getString(R.string.sel_image)),req);
