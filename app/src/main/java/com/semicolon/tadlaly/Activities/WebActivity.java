@@ -9,9 +9,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 import com.semicolon.tadlaly.R;
-import com.semicolon.tadlaly.language.LanguageHelper;
-
-import java.util.Locale;
+import com.semicolon.tadlaly.language.LocalManager;
 
 import io.paperdb.Paper;
 
@@ -23,7 +21,7 @@ public class WebActivity extends AppCompatActivity {
     protected void attachBaseContext(Context newBase) {
         Paper.init(newBase);
 
-        super.attachBaseContext(LanguageHelper.onAttach(newBase, Paper.book().read("language",Locale.getDefault().getLanguage())));
+        super.attachBaseContext(LocalManager.updateResources(newBase,LocalManager.getLanguage(newBase)));
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -17,9 +17,7 @@ import com.semicolon.tadlaly.R;
 import com.semicolon.tadlaly.Services.Api;
 import com.semicolon.tadlaly.Services.Services;
 import com.semicolon.tadlaly.Services.Tags;
-import com.semicolon.tadlaly.language.LanguageHelper;
-
-import java.util.Locale;
+import com.semicolon.tadlaly.language.LocalManager;
 
 import io.paperdb.Paper;
 import retrofit2.Call;
@@ -36,16 +34,16 @@ public class AboutAppActivity extends AppCompatActivity {
     @Override
     protected void attachBaseContext(Context newBase) {
         Paper.init(newBase);
-        super.attachBaseContext(LanguageHelper.onAttach(newBase,Paper.book().read("language",Locale.getDefault().getLanguage())));
+        super.attachBaseContext(LocalManager.updateResources(newBase,LocalManager.getLanguage(newBase)));
+
     }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_about_app);
-        //LanguageHelper.onAttach(this,Paper.book().read("language",Locale.getDefault().getLanguage()));
-        /*Calligrapher calligrapher=new Calligrapher(this);
-        calligrapher.setFont(this,"OYA-Regular.ttf",true);*/
+
         initView();
         getData();
 

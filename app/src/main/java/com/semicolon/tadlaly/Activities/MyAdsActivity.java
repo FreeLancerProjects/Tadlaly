@@ -17,10 +17,9 @@ import com.semicolon.tadlaly.Fragments.CurrentAds_Fragment;
 import com.semicolon.tadlaly.Fragments.OldAds_Fragment;
 import com.semicolon.tadlaly.Models.MyAdsModel;
 import com.semicolon.tadlaly.R;
-import com.semicolon.tadlaly.language.LanguageHelper;
+import com.semicolon.tadlaly.language.LocalManager;
 
 import java.util.List;
-import java.util.Locale;
 
 import io.paperdb.Paper;
 
@@ -36,7 +35,7 @@ public class MyAdsActivity extends AppCompatActivity {
     protected void attachBaseContext(Context newBase) {
         Paper.init(newBase);
 
-        super.attachBaseContext(LanguageHelper.onAttach(newBase, Paper.book().read("language",Locale.getDefault().getLanguage())));
+        super.attachBaseContext(LocalManager.updateResources(newBase,LocalManager.getLanguage(newBase)));
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {

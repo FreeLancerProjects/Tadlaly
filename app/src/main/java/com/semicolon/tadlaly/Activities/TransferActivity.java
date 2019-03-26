@@ -1,17 +1,19 @@
 package com.semicolon.tadlaly.Activities;
 
+import android.Manifest;
 import android.app.AlertDialog;
-import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -38,15 +40,14 @@ import com.semicolon.tadlaly.Services.Api;
 import com.semicolon.tadlaly.Services.Services;
 import com.semicolon.tadlaly.Services.Tags;
 import com.semicolon.tadlaly.SingleTone.UserSingleTone;
-import com.semicolon.tadlaly.language.LanguageHelper;
+import com.semicolon.tadlaly.language.LocalManager;
 import com.semicolon.tadlaly.share.Common;
+import com.squareup.picasso.Picasso;
+import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 
 import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -56,13 +57,13 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 
-public class TransferActivity extends AppCompatActivity implements UserSingleTone.OnCompleteListener{
+public class TransferActivity extends AppCompatActivity implements UserSingleTone.OnCompleteListener, DatePickerDialog.OnDateSetListener {
 
-    private EditText money,ads_id;
-    private TextView user_name,user_phone,date,tv_bank;
+    private EditText money, ads_id;
+    private TextView user_name, user_phone, date, tv_bank;
     private Button sendBtn;
     private ProgressDialog dialog;
-    private ImageView back,upload;
+    private ImageView back, upload;
     private RoundedImageView img;
     private String encodedImage;
     private Bitmap bitmap;
@@ -70,41 +71,41 @@ public class TransferActivity extends AppCompatActivity implements UserSingleTon
     private UserModel userModel;
     private UserSingleTone userSingleTone;
     private List<BankModel> bankModelList;
-    private String bank="";
-    private String user_type="";
+    private String bank = "";
+    private String user_type = "";
     private AlertDialog.Builder serviceBuilder;
     private AlertDialog bank_dialog;
-
+    private DatePickerDialog datePickerDialog;
+    private String current_language;
+    private String m_date="";
+    private final String read_permission = Manifest.permission.READ_EXTERNAL_STORAGE;
+    private final int read_req = 12;
+    private Uri uri=null;
 
     @Override
     protected void attachBaseContext(Context newBase) {
         Paper.init(newBase);
-
-        super.attachBaseContext(LanguageHelper.onAttach(newBase, Paper.book().read("language",Locale.getDefault().getLanguage())));
+        super.attachBaseContext(LocalManager.updateResources(newBase,LocalManager.getLanguage(newBase)));
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_transfer);
-        /*Calligrapher calligrapher=new Calligrapher(this);
-        calligrapher.setFont(this,"OYA-Regular.ttf",true);
-  */      initView();
+        current_language = Paper.book().read("language", Locale.getDefault().getLanguage());
+        initView();
         getDataFromIntent();
-        if (user_type.equals(Tags.app_user))
-        {
+        if (user_type.equals(Tags.app_user)) {
             userSingleTone = UserSingleTone.getInstance();
             userSingleTone.getUser(this);
         }
-       CreateServiceDialog();
+        CreateServiceDialog();
     }
 
     private void getDataFromIntent() {
         Intent intent = getIntent();
-        if (intent!=null)
-        {
-            if (intent.hasExtra("user_type"))
-            {
+        if (intent != null) {
+            if (intent.hasExtra("user_type")) {
                 user_type = intent.getStringExtra("user_type");
             }
         }
@@ -112,19 +113,17 @@ public class TransferActivity extends AppCompatActivity implements UserSingleTon
 
     private void getBanksAccount() {
 
-        ProgressDialog dialog = Common.createProgressDialog(this,getString(R.string.lodng_bnks));
+        ProgressDialog dialog = Common.createProgressDialog(this, getString(R.string.lodng_bnks));
         dialog.show();
         Retrofit retrofit = Api.getRetrofit(Tags.Base_Url);
         Call<List<BankModel>> call = retrofit.create(Services.class).getBanks();
         call.enqueue(new Callback<List<BankModel>>() {
             @Override
             public void onResponse(Call<List<BankModel>> call, Response<List<BankModel>> response) {
-                if (response.isSuccessful())
-                {
+                if (response.isSuccessful()) {
                     dialog.dismiss();
 
-                    if (response.body().size()>0)
-                    {
+                    if (response.body().size() > 0) {
                         bankModelList.clear();
                         bankModelList.addAll(response.body());
                         CreateBankAlertDialog(response.body());
@@ -136,30 +135,31 @@ public class TransferActivity extends AppCompatActivity implements UserSingleTon
             public void onFailure(Call<List<BankModel>> call, Throwable t) {
                 dialog.dismiss();
 
-                Log.e("Error",t.getMessage());
+                Log.e("Error", t.getMessage());
 
             }
         });
     }
-    private void CreateServiceDialog()
-    {
+
+    private void CreateServiceDialog() {
         serviceBuilder = new AlertDialog.Builder(this);
         serviceBuilder.setMessage(R.string.ser_not_ava);
         serviceBuilder.setPositiveButton(R.string.ok, (dialogInterface, i) -> {
-            AlertDialog alertDialog=serviceBuilder.create();
+            AlertDialog alertDialog = serviceBuilder.create();
             alertDialog.dismiss();
             finish();
-        } );
+        });
 
-        AlertDialog alertDialog=serviceBuilder.create();
+        AlertDialog alertDialog = serviceBuilder.create();
         alertDialog.setCancelable(true);
         alertDialog.setCanceledOnTouchOutside(false);
 
     }
+
     private void initView() {
         bankModelList = new ArrayList<>();
         user_name = findViewById(R.id.user_name);
-        user_phone= findViewById(R.id.user_phone);
+        user_phone = findViewById(R.id.user_phone);
         date = findViewById(R.id.date);
         tv_bank = findViewById(R.id.tv_bank);
 
@@ -169,22 +169,20 @@ public class TransferActivity extends AppCompatActivity implements UserSingleTon
         upload = findViewById(R.id.upload);
         img = findViewById(R.id.img);
         sendBtn = findViewById(R.id.send_btn);
-        upload.setOnClickListener(view -> SelectImage());
+        upload.setOnClickListener(view -> checkPermission());
         back.setOnClickListener(view ->
-        finish()
+                finish()
         );
 
 
         sendBtn.setOnClickListener(view ->
                 {
-                    if (user_type.equals(Tags.app_user))
-                    {
-                        Send();
+                    if (user_type.equals(Tags.app_user)) {
+                        CheckData();
 
-                    }else
-                        {
-                            serviceBuilder.show();
-                        }
+                    } else {
+                        serviceBuilder.show();
+                    }
 
                 }
         );
@@ -195,14 +193,12 @@ public class TransferActivity extends AppCompatActivity implements UserSingleTon
         tv_bank.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (bankModelList.size()>0)
-                {
+                if (bankModelList.size() > 0) {
                     CreateBankAlertDialog(bankModelList);
-                }else
-                    {
-                        getBanksAccount();
+                } else {
+                    getBanksAccount();
 
-                    }
+                }
             }
         });
 
@@ -210,124 +206,131 @@ public class TransferActivity extends AppCompatActivity implements UserSingleTon
     }
 
 
-
     private void CreateDateDialog() {
-        final Calendar calendar = Calendar.getInstance();
-        final SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
-        DatePickerDialog datePickerDialog = new DatePickerDialog(TransferActivity.this, (view, year, monthOfYear, dayOfMonth) -> {
-            Calendar newDate = Calendar.getInstance();
-            newDate.set(year, monthOfYear, dayOfMonth);
-            String sDate = dateFormatter.format(newDate.getTime());
 
-            Date dateSpecified = newDate.getTime();
-            Date c = Calendar.getInstance().getTime();
-            if (dateSpecified.before(c)) {
-
-                Toast.makeText(this, R.string.ch_new_date, Toast.LENGTH_SHORT).show();
-                CreateDateDialog();
-                //dateall.setText("Choose date");
-
-            } else {
-                date.setText(sDate+"");
-                //   dateall.setText(date);
-
-            }
-
-        }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
-        datePickerDialog.show();
-
+        Calendar calendar = Calendar.getInstance(new Locale(current_language));
+        datePickerDialog = DatePickerDialog.newInstance(this, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH),calendar.get(Calendar.DAY_OF_MONTH));
+        datePickerDialog.setVersion(DatePickerDialog.Version.VERSION_2);
+        datePickerDialog.setLocale(new Locale(current_language));
+        datePickerDialog.setOkText(R.string.select);
+        datePickerDialog.setOkColor(ContextCompat.getColor(this, R.color.colorPrimary));
+        datePickerDialog.setCancelText(R.string.cancel3);
+        datePickerDialog.setCancelColor(ContextCompat.getColor(this, R.color.gray6));
+        datePickerDialog.setAccentColor(ContextCompat.getColor(this, R.color.colorPrimary));
+        datePickerDialog.show(getFragmentManager(), "Date");
     }
 
-    private void Send() {
-        String m_name = user_name.getText().toString();
-        String m_phone= user_phone.getText().toString();
-        String m_date = date.getText().toString();
-        String m_money = money.getText().toString();
-        String m_ads_id= ads_id.getText().toString();
-
-        if (TextUtils.isEmpty(m_name))
-        {
-            user_name.setError(getString(R.string.name));
-        }else if (TextUtils.isEmpty(m_money))
-        {
-            user_name.setError(null);
-            money.setError(getString(R.string.enter_money));
-        }else if (TextUtils.isEmpty(bank))
-        {
-            tv_bank.setError(getString(R.string.choose_bank));
-        }
-        else if (TextUtils.isEmpty(m_date))
-        {
-            tv_bank.setError(null);
-            user_name.setError(null);
-            money.setError(null);
-            date.setError(getString(R.string.ch_date));
-        }
-        else if (TextUtils.isEmpty(m_phone))
-        {
-            tv_bank.setError(null);
-            user_name.setError(null);
-            money.setError(null);
-            date.setError(null);
-            user_phone.setError(getString(R.string.enter_phone));
-        }
+    private void CheckData() {
+        String m_name = user_name.getText().toString().trim();
+        String m_phone = user_phone.getText().toString().trim();
+        String m_money = money.getText().toString().trim();
+        String m_ads_id = ads_id.getText().toString().trim();
 
 
-        else if (TextUtils.isEmpty(m_ads_id))
+        if (!TextUtils.isEmpty(m_name)&&
+                !TextUtils.isEmpty(m_phone)&&
+                m_phone.length()>=6&&
+                m_phone.length()<13&&
+                !TextUtils.isEmpty(m_money)&&
+                !TextUtils.isEmpty(m_ads_id)&&
+                !TextUtils.isEmpty(m_date)&&
+                !TextUtils.isEmpty(bank))
         {
             tv_bank.setError(null);
-            ads_id.setError(getString(R.string.enter_adsnum));
             user_phone.setError(null);
             user_name.setError(null);
             money.setError(null);
             date.setError(null);
+            ads_id.setError(null);
 
+            Send(m_name,m_phone,m_money,m_ads_id,m_date,back);
         }else
             {
-                tv_bank.setError(null);
-                user_phone.setError(null);
-                user_name.setError(null);
-                money.setError(null);
-                date.setError(null);
-                ads_id.setError(null);
-                dialog.show();
-
-                encodedImage = EncodeImage(bitmap);
-                Retrofit retrofit = Api.getRetrofit(Tags.Base_Url);
-                Call<ResponseModel> call = retrofit.create(Services.class).transMoney(userModel.getUser_id(), m_name, m_money, bank, m_date, m_name, encodedImage, m_ads_id);
-                call.enqueue(new Callback<ResponseModel>() {
-                    @Override
-                    public void onResponse(Call<ResponseModel> call, Response<ResponseModel> response) {
-                        if (response.isSuccessful())
-                        {
-                            if (response.body().getSuccess()==1)
-                            {
-                                dialog.dismiss();
-                                Toast.makeText(TransferActivity.this, R.string.trans_success, Toast.LENGTH_LONG).show();
-                                finish();
-                            }else if (response.body().getSuccess()==0)
-                            {
-                                dialog.dismiss();
-                                Toast.makeText(TransferActivity.this,R.string.error, Toast.LENGTH_LONG).show();
-                            }
-                        }
+                if (TextUtils.isEmpty(m_name)) {
+                    user_name.setError(getString(R.string.field_req));
+                }else
+                    {
+                        user_name.setError(null);
                     }
 
-                    @Override
-                    public void onFailure(Call<ResponseModel> call, Throwable t) {
-                        dialog.dismiss();
-                        Log.e("Error",t.getMessage());
-                        Toast.makeText(TransferActivity.this,R.string.something, Toast.LENGTH_LONG).show();
+                if (TextUtils.isEmpty(m_money)) {
+                    money.setError(getString(R.string.field_req));
+                }else
+                    {
+                        money.setError(null);
                     }
-                });
 
+                if (TextUtils.isEmpty(bank)) {
+                    tv_bank.setError(getString(R.string.field_req));
+                }else
+                    {
+                        tv_bank.setError(null);
+                    }
+
+
+                if (TextUtils.isEmpty(m_date)) {
+
+                    date.setError(getString(R.string.field_req));
+                }else
+                    {
+                        date.setError(null);
+                    }
+
+                if (TextUtils.isEmpty(m_phone))
+                {
+                    user_phone.setError(getString(R.string.field_req));
+                }else
+                    {
+                        user_phone.setError(null);
+                    }
+
+
+                if (TextUtils.isEmpty(m_ads_id)) {
+                    ads_id.setError(getString(R.string.field_req));
+
+                } else {
+                    ads_id.setError(null);
+
+                }
             }
+
+
     }
-    private void CreateProgressDialog()
-    {
+
+    private void Send(String m_name, String m_phone, String m_money, String m_ads_id, String m_date, ImageView back) {
+        dialog.show();
+        encodedImage = EncodeImage(bitmap);
+        Retrofit retrofit = Api.getRetrofit(Tags.Base_Url);
+        Call<ResponseModel> call = retrofit.create(Services.class).transMoney(userModel.getUser_id(), m_name, m_money, bank, m_date, m_name, encodedImage, m_ads_id);
+        call.enqueue(new Callback<ResponseModel>() {
+            @Override
+            public void onResponse(Call<ResponseModel> call, Response<ResponseModel> response) {
+                if (response.isSuccessful()) {
+                    if (response.body().getSuccess() == 1) {
+                        dialog.dismiss();
+                        Toast.makeText(TransferActivity.this, R.string.trans_success, Toast.LENGTH_LONG).show();
+                        finish();
+                    } else if (response.body().getSuccess() == 0) {
+                        dialog.dismiss();
+                        Toast.makeText(TransferActivity.this, R.string.error, Toast.LENGTH_LONG).show();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseModel> call, Throwable t) {
+                dialog.dismiss();
+                Log.e("Error", t.getMessage());
+                Toast.makeText(TransferActivity.this, R.string.something, Toast.LENGTH_LONG).show();
+            }
+        });
+
+    }
+
+    private void CreateProgressDialog() {
         ProgressBar bar = new ProgressBar(this);
         Drawable drawable = bar.getIndeterminateDrawable().mutate();
-        drawable.setColorFilter(ContextCompat.getColor(this,R.color.colorPrimary), PorterDuff.Mode.SRC_IN);
+        drawable.setColorFilter(ContextCompat.getColor(this, R.color.colorPrimary), PorterDuff.Mode.SRC_IN);
         dialog = new ProgressDialog(this);
         dialog.setMessage(getString(R.string.transfering_comm));
         dialog.setCanceledOnTouchOutside(false);
@@ -335,46 +338,50 @@ public class TransferActivity extends AppCompatActivity implements UserSingleTon
         dialog.setIndeterminateDrawable(drawable);
     }
 
-    private void SelectImage()
+
+    private void checkPermission()
     {
-        Intent intent;
-        if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.KITKAT)
+        if (ActivityCompat.checkSelfPermission(this,read_permission)!= PackageManager.PERMISSION_GRANTED)
         {
+            String [] perm = {read_permission};
+            ActivityCompat.requestPermissions(this,perm,read_req);
+        }else
+            {
+                SelectImage();
+            }
+    }
+
+
+    private void SelectImage() {
+        Intent intent;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
             intent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
 
-        }else
-        {
+        } else {
             intent = new Intent(Intent.ACTION_GET_CONTENT);
 
         }
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        intent.putExtra(Intent.EXTRA_LOCAL_ONLY,true);
+        intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
         intent.setType("image/*");
-        startActivityForResult(intent.createChooser(intent,getString(R.string.sel_image)),img_req);
+        startActivityForResult(intent.createChooser(intent, getString(R.string.sel_image)), img_req);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == img_req && resultCode == RESULT_OK && data != null)
-        {
-            try {
-                Uri uri = data.getData();
-                bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(uri));
-                img.setImageBitmap(bitmap);
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
+        if (requestCode == img_req && resultCode == RESULT_OK && data != null) {
+            uri = data.getData();
+            Picasso.with(this).load(Common.getFileFromPath(Common.getImagePath(this,uri))).into(img);
         }
     }
 
-    private String EncodeImage(Bitmap bitmap)
-    {
+    private String EncodeImage(Bitmap bitmap) {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG,90,outputStream);
-        byte [] bytes = outputStream.toByteArray();
-        return Base64.encodeToString(bytes,Base64.DEFAULT);
+        bitmap.compress(Bitmap.CompressFormat.PNG, 90, outputStream);
+        byte[] bytes = outputStream.toByteArray();
+        return Base64.encodeToString(bytes, Base64.DEFAULT);
     }
 
     @Override
@@ -388,31 +395,59 @@ public class TransferActivity extends AppCompatActivity implements UserSingleTon
         user_phone.setText(userModel.getUser_phone());
     }
 
-    private   void CreateBankAlertDialog(List<BankModel> bankModelList)
-    {
+    private void CreateBankAlertDialog(List<BankModel> bankModelList) {
         bank_dialog = new AlertDialog.Builder(this)
                 .setCancelable(true)
                 .create();
 
-        View view = LayoutInflater.from(this).inflate(R.layout.banks_dialog,null);
+        View view = LayoutInflater.from(this).inflate(R.layout.banks_dialog, null);
 
         RecyclerView recView = view.findViewById(R.id.recView);
         RecyclerView.LayoutManager manager = new LinearLayoutManager(this);
         recView.setLayoutManager(manager);
-        RecyclerView.Adapter adapter = new BankAdapter(this,bankModelList);
+        RecyclerView.Adapter adapter = new BankAdapter(this, bankModelList);
         recView.setAdapter(adapter);
-        bank_dialog.getWindow().getAttributes().windowAnimations=R.style.dialog;
+        bank_dialog.getWindow().getAttributes().windowAnimations = R.style.dialog;
         bank_dialog.setCanceledOnTouchOutside(false);
         bank_dialog.setView(view);
         bank_dialog.show();
     }
 
 
-    public void setBankItem(BankModel bankModel)
-    {
+    public void setBankItem(BankModel bankModel) {
         bank_dialog.dismiss();
         bank = bankModel.getAccount_bank_name();
         tv_bank.setText(bankModel.getAccount_bank_name());
     }
 
+    @Override
+    public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
+
+        m_date = dayOfMonth+"-"+(monthOfYear+1)+"-"+year;
+        if (current_language.equals("ar"))
+        {
+            date.setText(year+"-"+(monthOfYear+1)+"-"+dayOfMonth);
+
+        }else
+            {
+                date.setText(dayOfMonth+"-"+(monthOfYear+1)+"-"+year);
+
+            }
+    }
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == read_req)
+        {
+            if (grantResults.length>0&&grantResults[0]==PackageManager.PERMISSION_GRANTED)
+            {
+                SelectImage();
+            }else
+                {
+                    Toast.makeText(this, R.string.access_img_perm_denied, Toast.LENGTH_SHORT).show();
+                }
+        }
+    }
 }

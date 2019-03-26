@@ -12,9 +12,7 @@ import com.semicolon.tadlaly.Fragments.UpdatePassword_Fragment;
 import com.semicolon.tadlaly.Fragments.UpdateProfileItems_Fragment;
 import com.semicolon.tadlaly.R;
 import com.semicolon.tadlaly.Services.Tags;
-import com.semicolon.tadlaly.language.LanguageHelper;
-
-import java.util.Locale;
+import com.semicolon.tadlaly.language.LocalManager;
 
 import io.paperdb.Paper;
 
@@ -26,7 +24,7 @@ public class UpdateProfileActivity extends AppCompatActivity {
     protected void attachBaseContext(Context newBase) {
         Paper.init(newBase);
 
-        super.attachBaseContext(LanguageHelper.onAttach(newBase, Paper.book().read("language",Locale.getDefault().getLanguage())));
+        super.attachBaseContext(LocalManager.updateResources(newBase,LocalManager.getLanguage(newBase)));
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {

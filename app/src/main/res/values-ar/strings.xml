@@ -137,7 +137,7 @@
     <string name="phone_succ_update">تم تعديل رقم الجوال بنجاح</string>
     <string name="city_updated">تم تعديل المدينة بنجاح</string>
     <string name="un_updated">تم تعديل اسم المستخدم بنجاح</string>
-    <string name="upd_ad">تعديل اعلان</string>
+    <string name="upd_ad">تحديث اعلان</string>
     <string name="press_long">قم بالضغط مطولا لحذف صورة</string>
     <string name="loc_deter">تم تحديد موقعك</string>
     <string name="Ad_type">نوع الاعلان</string>
@@ -199,21 +199,20 @@
     <string name="bank_accounts">حسابات بنكية</string>
     <string name="choose_bank">إختر البنك</string>
     <string name="lodng_bnks">جار تحميل الحسابات البنكية</string>
+    <string name="select">حسنا!</string>
+    <string name="cancel3">تراجع</string>
+    <string name="access_img_perm_denied">الوصول للصور غير مسموح</string>
+    <string name="field_req">هذا الحقل مطلوب</string>
+    <string name="nearme">حسب الاقرب</string>
+    <string name="newest">حسب الاحدث</string>
+    <string name="mobile_number">رقم الجوال</string>
 
-    <string-array name="depart_array">
-        <item>القسم</item>
-        <item>الماركات</item>
-        <item>الاسر المنتجة</item>
-        <item>مجانا</item>
-        <item>مهن منزلية</item>
-        <item>إهتماماتي</item>
 
-    </string-array>
 
     <string-array name="ad_state">
         <item>نوع الاعلان</item>
         <item>جديد</item>
         <item>مستعمل</item>
-        <item>بدون</item>
+        <item>خدمة</item>
     </string-array>
 </resources>

@@ -1,6 +1,7 @@
 package com.semicolon.tadlaly.Adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -16,6 +17,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.github.siyamed.shapeimageview.RoundedImageView;
+import com.semicolon.tadlaly.Activities.AdsDetailsActivity;
 import com.semicolon.tadlaly.Fragments.Fragment_AllAds_Recent;
 import com.semicolon.tadlaly.Models.MyAdsModel;
 import com.semicolon.tadlaly.R;
@@ -114,6 +116,17 @@ public class FragmentAllAds_RecentAdapter extends RecyclerView.Adapter <Recycler
 
             Animation animation = AnimationUtils.loadAnimation(context,R.anim.right_to_left);
             holder.itemView.startAnimation(animation);
+
+            itemHolder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    MyAdsModel myAdsModel =myAdsModelList.get(holder.getAdapterPosition());
+                    fragment_allAds_recent.setItemData(myAdsModel);
+
+
+
+                }
+            });
 
 
         }else if (holder instanceof myProgressHolder)

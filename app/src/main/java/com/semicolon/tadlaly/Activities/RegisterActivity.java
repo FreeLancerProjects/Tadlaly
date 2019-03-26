@@ -63,7 +63,7 @@ import com.semicolon.tadlaly.Services.Preferences;
 import com.semicolon.tadlaly.Services.Services;
 import com.semicolon.tadlaly.Services.Tags;
 import com.semicolon.tadlaly.SingleTone.UserSingleTone;
-import com.semicolon.tadlaly.language.LanguageHelper;
+import com.semicolon.tadlaly.language.LocalManager;
 import com.semicolon.tadlaly.share.Common;
 
 import org.greenrobot.eventbus.EventBus;
@@ -126,7 +126,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     protected void attachBaseContext(Context newBase) {
         Paper.init(newBase);
 
-        super.attachBaseContext(LanguageHelper.onAttach(newBase, Paper.book().read("language",Locale.getDefault().getLanguage())));
+        super.attachBaseContext(LocalManager.updateResources(newBase,LocalManager.getLanguage(newBase)));
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -678,7 +678,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == IMG_REQ && resultCode == RESULT_OK && data != null) {
             uri = data.getData();
-            bitmap = BitmapFactory.decodeFile(Common.getImagePathFromUri(this,uri));
+            bitmap = BitmapFactory.decodeFile(Common.getImagePath(this,uri));
             userImage.setImageBitmap(bitmap);
         }
         else if (requestCode==8)

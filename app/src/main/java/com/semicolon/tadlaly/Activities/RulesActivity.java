@@ -17,9 +17,7 @@ import com.semicolon.tadlaly.R;
 import com.semicolon.tadlaly.Services.Api;
 import com.semicolon.tadlaly.Services.Services;
 import com.semicolon.tadlaly.Services.Tags;
-import com.semicolon.tadlaly.language.LanguageHelper;
-
-import java.util.Locale;
+import com.semicolon.tadlaly.language.LocalManager;
 
 import io.paperdb.Paper;
 import retrofit2.Call;
@@ -35,7 +33,7 @@ public class RulesActivity extends AppCompatActivity {
     protected void attachBaseContext(Context newBase) {
         Paper.init(newBase);
 
-        super.attachBaseContext(LanguageHelper.onAttach(newBase, Paper.book().read("language",Locale.getDefault().getLanguage())));
+        super.attachBaseContext(LocalManager.updateResources(newBase,LocalManager.getLanguage(newBase)));
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {

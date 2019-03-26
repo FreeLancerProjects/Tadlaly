@@ -44,7 +44,7 @@
             android:id="@+id/image_top"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:layout_gravity="bottom|right"
+            android:layout_gravity="center|bottom"
             android:layout_margin="15dp"
             android:background="@color/gray5"
             android:src="@drawable/top"
@@ -64,30 +64,32 @@
         android:layout_marginBottom="5dp"
         >
         <Button
-            android:id="@+id/order_onNewBtn"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="40dp"
-            android:textColor="@color/colorPrimary"
-            android:textSize="15sp"
-            android:background="@drawable/btn_unselected"
-            android:layout_marginRight="2dp"
-            android:text="حسب الاحدث"
-
-
-            />
-        <Button
             android:id="@+id/order_onNearbyBtn"
 
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="42dp"
-            android:textColor="@color/white"
+            android:textColor="@color/colorPrimary"
             android:textSize="15sp"
-            android:background="@drawable/btn_selected"
-            android:text="حسب الاقرب"
+            android:text="@string/nearme"
             android:layout_marginLeft="2dp"
+            android:background="@drawable/btn_unselected"
 
             />
+        <Button
+            android:id="@+id/order_onNewBtn"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="40dp"
+            android:textColor="@color/white"
+            android:textSize="15sp"
+            android:layout_marginRight="2dp"
+            android:text="@string/newest"
+            android:background="@drawable/btn_selected"
+
+
+
+            />
+
     </LinearLayout>
 </RelativeLayout>

@@ -35,12 +35,11 @@ import com.semicolon.tadlaly.Services.Tags;
 import com.semicolon.tadlaly.SingleTone.DepartmentSingletone;
 import com.semicolon.tadlaly.SingleTone.LatLngSingleTone;
 import com.semicolon.tadlaly.SingleTone.UserSingleTone;
-import com.semicolon.tadlaly.language.LanguageHelper;
+import com.semicolon.tadlaly.language.LocalManager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import io.paperdb.Paper;
@@ -83,7 +82,7 @@ public class GeneralSearchActivity extends AppCompatActivity implements Departme
     protected void attachBaseContext(Context newBase) {
         Paper.init(newBase);
 
-        super.attachBaseContext(LanguageHelper.onAttach(newBase, Paper.book().read("language",Locale.getDefault().getLanguage())));
+        super.attachBaseContext(LocalManager.updateResources(newBase,LocalManager.getLanguage(newBase)));
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -36,12 +36,11 @@ import com.semicolon.tadlaly.Services.Api;
 import com.semicolon.tadlaly.Services.Services;
 import com.semicolon.tadlaly.Services.Tags;
 import com.semicolon.tadlaly.SingleTone.UserSingleTone;
-import com.semicolon.tadlaly.language.LanguageHelper;
+import com.semicolon.tadlaly.language.LocalManager;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import io.paperdb.Paper;
@@ -74,7 +73,7 @@ public class SendMsgActivity extends AppCompatActivity implements UserSingleTone
     protected void attachBaseContext(Context newBase) {
         Paper.init(newBase);
 
-        super.attachBaseContext(LanguageHelper.onAttach(newBase, Paper.book().read("language",Locale.getDefault().getLanguage())));
+        super.attachBaseContext(LocalManager.updateResources(newBase,LocalManager.getLanguage(newBase)));
     }
 
     @Override

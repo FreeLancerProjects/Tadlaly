@@ -41,11 +41,11 @@
             android:id="@+id/image_top"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:layout_gravity="bottom|right"
+            android:layout_gravity="bottom|center"
             android:layout_margin="15dp"
             android:background="@color/gray5"
             android:src="@drawable/top"
-            android:padding="15dp"
+            android:padding="16dp"
             android:visibility="gone"
             />
     </FrameLayout>

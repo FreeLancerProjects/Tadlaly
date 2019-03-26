@@ -67,7 +67,7 @@ import com.semicolon.tadlaly.Services.Services;
 import com.semicolon.tadlaly.Services.Tags;
 import com.semicolon.tadlaly.SingleTone.LatLngSingleTone;
 import com.semicolon.tadlaly.SingleTone.UserSingleTone;
-import com.semicolon.tadlaly.language.LanguageHelper;
+import com.semicolon.tadlaly.language.LocalManager;
 import com.squareup.picasso.Picasso;
 
 import org.greenrobot.eventbus.EventBus;
@@ -116,14 +116,12 @@ public class HomeActivity extends AppCompatActivity
     protected void attachBaseContext(Context newBase) {
         Paper.init(newBase);
 
-        super.attachBaseContext(LanguageHelper.onAttach(newBase,Paper.book().read("language",Locale.getDefault().getLanguage())));
+        super.attachBaseContext(LocalManager.updateResources(newBase,LocalManager.getLanguage(newBase)));
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-        /*Calligrapher calligrapher = new Calligrapher(this);
-        calligrapher.setFont(this, "OYA-Regular.ttf", true);*/
         getDataFromIntent();
         initView();
         CreateProgress_dialog();
@@ -314,7 +312,6 @@ public class HomeActivity extends AppCompatActivity
         try {
             Picasso.with(this).load(Uri.parse(Tags.Image_Url+userModel.getUser_photo())).into(user_image);
             user_name.setText(userModel.getUser_full_name());
-            Log.e("ssss","Update Ui");
 
         }catch (NullPointerException e)
         {
@@ -485,7 +482,7 @@ public class HomeActivity extends AppCompatActivity
                 if (!Paper.book().read("language",Locale.getDefault().getLanguage()).equals("ar"))
                 {
                     Paper.book().write("language","ar");
-                    LanguageHelper.setLocality("ar",HomeActivity.this);
+                    LocalManager.updateResources(HomeActivity.this,"ar");
                     refreshLayout();
                 }
 
@@ -498,7 +495,7 @@ public class HomeActivity extends AppCompatActivity
                 if (!Paper.book().read("language",Locale.getDefault().getLanguage()).equals("en"))
                 {
                     Paper.book().write("language","en");
-                    LanguageHelper.setLocality("en",HomeActivity.this);
+                    LocalManager.updateResources(HomeActivity.this,"en");
                     refreshLayout();
                 }
 
@@ -630,11 +627,11 @@ public class HomeActivity extends AppCompatActivity
             if (user_type.equals(Tags.app_user))
             {
                 String user_id = userModel.getUser_id();
-                intent.putExtra(Intent.EXTRA_TEXT, "\nتطبيق تدللي\n"+"http://tdlly.com/Api/AppShare/"+user_id+"/android");
+                intent.putExtra(Intent.EXTRA_TEXT, "\nتطبيق تدللي"+"\n"+"https://goo.gl/TTNBA7"+"\n"+"http://tdlly.com/Api/AppShare/"+user_id+"/android");
 
             }else if (user_type.equals(Tags.app_visitor))
             {
-                intent.putExtra(Intent.EXTRA_TEXT,"تطبيق تدللي\n"+"\n"+"Android URL : https://play.google.com/store/apps/details?id=com.semicolon.tadlaly"+"IOS URL:   https://itunes.apple.com/us/app/tadlly-%D8%AA%D8%AF%D9%84%D9%84%D9%8A/id1422871307?ls=1&mt=8"+"\n WEB URL : http://tdlly.com/");
+                intent.putExtra(Intent.EXTRA_TEXT,"تطبيق تدللي\n"+"\n"+"https://goo.gl/TTNBA7"+"\n"+"Android URL : https://play.google.com/store/apps/details?id=com.semicolon.tadlaly"+"IOS URL:   https://itunes.apple.com/us/app/tadlly-%D8%AA%D8%AF%D9%84%D9%84%D9%8A/id1422871307?ls=1&mt=8"+"\n WEB URL : http://tdlly.com/");
 
             }
             startActivity(intent);

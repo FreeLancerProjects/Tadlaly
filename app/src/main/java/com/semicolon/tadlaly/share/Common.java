@@ -49,12 +49,12 @@ public class Common {
     }
 
     @TargetApi(Build.VERSION_CODES.KITKAT)
-    public static String getImagePathFromUri(Context context,Uri uri)
+    public static String getImagePath(Context context,Uri uri)
     {
         int currentApiVersion;
         try
         {
-            currentApiVersion = android.os.Build.VERSION.SDK_INT;
+            currentApiVersion = Build.VERSION.SDK_INT;
         }
         catch(NumberFormatException e)
         {
@@ -63,33 +63,10 @@ public class Common {
         }
         if (currentApiVersion >= Build.VERSION_CODES.KITKAT)
         {
-           /* String filePath = "";
-            String wholeID = DocumentsContract.getDocumentId(uri);
 
-            // Split at colon, use second item in the array
-
-            Log.e("wholeID",wholeID);
-
-            String id = wholeID.split(":")[1];
-
-            String[] column = {MediaStore.Images.Media.DATA};
-
-            // where id is equal to
-            String sel = MediaStore.Images.Media._ID + "=?";
-
-            Cursor cursor = context.getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                    column, sel, new String[]{id}, null);
-
-            int columnIndex = cursor.getColumnIndex(column[0]);
-
-            if (cursor.moveToFirst())
-            {
-                filePath = cursor.getString(columnIndex);
-            }
-            cursor.close();
-            return filePath;*/
 
             if ( DocumentsContract.isDocumentUri(context, uri)) {
+
                 if (isExternalStorageDocument(uri)) {
                     final String docId = DocumentsContract.getDocumentId(uri);
                     final String[] split = docId.split(":");
@@ -109,6 +86,7 @@ public class Common {
 
                     return getDataColumn(context, contentUri, null, null);
                 }
+                // MediaProvider
                 else if (isMediaDocument(uri)) {
                     final String docId = DocumentsContract.getDocumentId(uri);
                     final String[] split = docId.split(":");
@@ -130,12 +108,16 @@ public class Common {
                             selectionArgs);
                 }
             }
+            // MediaStore (and general)
             else if ("content".equalsIgnoreCase(uri.getScheme())) {
+
+                // Return the remote address
                 if (isGooglePhotosUri(uri))
                     return uri.getLastPathSegment();
 
                 return getDataColumn(context, uri, null, null);
             }
+            // File
             else if ("file".equalsIgnoreCase(uri.getScheme())) {
                 return uri.getPath();
             }
@@ -173,7 +155,9 @@ public class Common {
             return cursor.getString(column_index);
         }
     }
-    private static String getDataColumn(Context context, Uri uri,String selection, String[] selectionArgs) {
+
+    public static String getDataColumn(Context context, Uri uri,
+                                       String selection, String[] selectionArgs) {
 
         Cursor cursor = null;
         final String column = "_data";
@@ -192,23 +176,25 @@ public class Common {
         }
         return null;
     }
-    private static boolean isExternalStorageDocument(Uri uri) {
+    public static boolean isExternalStorageDocument(Uri uri) {
         return "com.android.externalstorage.documents".equals(uri
                 .getAuthority());
     }
-    private static boolean isDownloadsDocument(Uri uri) {
+    public static boolean isDownloadsDocument(Uri uri) {
         return "com.android.providers.downloads.documents".equals(uri
                 .getAuthority());
     }
-    private static boolean isMediaDocument(Uri uri) {
+
+    public static boolean isMediaDocument(Uri uri) {
         return "com.android.providers.media.documents".equals(uri
                 .getAuthority());
     }
-    private static boolean isGooglePhotosUri(Uri uri) {
+    public static boolean isGooglePhotosUri(Uri uri) {
         return "com.google.android.apps.photos.content".equals(uri
                 .getAuthority());
     }
-    private static File getFileFromPath(String path)
+
+    public static File getFileFromPath(String path)
     {
         File file = new File(path);
         return file;
@@ -216,7 +202,7 @@ public class Common {
 
     public static MultipartBody.Part getMultiPartBody(Uri uri, Context context)
     {
-        String path = getImagePathFromUri(context,uri);
+        String path = getImagePath(context,uri);
         File file = getFileFromPath(path);
         RequestBody requestBody = RequestBody.create(MediaType.parse("image/*"),file);
         MultipartBody.Part part = MultipartBody.Part.createFormData("user_photo",file.getName(),requestBody);
@@ -225,7 +211,7 @@ public class Common {
 
     public static MultipartBody.Part getListMultiPartBody(Uri uri, Context context)
     {
-        String path = getImagePathFromUri(context,uri);
+        String path = getImagePath(context,uri);
         File file = getFileFromPath(path);
         RequestBody requestBody = RequestBody.create(MediaType.parse("image/*"),file);
         MultipartBody.Part part = MultipartBody.Part.createFormData("images[]",file.getName(),requestBody);

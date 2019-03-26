@@ -30,9 +30,7 @@ import com.google.android.gms.location.LocationSettingsResult;
 import com.google.android.gms.location.LocationSettingsStates;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.semicolon.tadlaly.R;
-import com.semicolon.tadlaly.language.LanguageHelper;
-
-import java.util.Locale;
+import com.semicolon.tadlaly.language.LocalManager;
 
 import io.paperdb.Paper;
 
@@ -47,7 +45,7 @@ public class GpsActivity extends AppCompatActivity implements GoogleApiClient.On
     protected void attachBaseContext(Context newBase) {
         Paper.init(newBase);
 
-        super.attachBaseContext(LanguageHelper.onAttach(newBase, Paper.book().read("language",Locale.getDefault().getLanguage())));
+        super.attachBaseContext(LocalManager.updateResources(newBase,LocalManager.getLanguage(newBase)));
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {

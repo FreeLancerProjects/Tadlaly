@@ -51,14 +51,13 @@ import com.semicolon.tadlaly.Services.Services;
 import com.semicolon.tadlaly.Services.Tags;
 import com.semicolon.tadlaly.SingleTone.DepartmentSingletone;
 import com.semicolon.tadlaly.SingleTone.UserSingleTone;
-import com.semicolon.tadlaly.language.LanguageHelper;
+import com.semicolon.tadlaly.language.LocalManager;
 import com.semicolon.tadlaly.share.Common;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import io.paperdb.Paper;
@@ -119,7 +118,7 @@ public class UpdateAdsActivity extends AppCompatActivity implements DepartmentSi
     protected void attachBaseContext(Context newBase) {
         Paper.init(newBase);
 
-        super.attachBaseContext(LanguageHelper.onAttach(newBase, Paper.book().read("language",Locale.getDefault().getLanguage())));
+        super.attachBaseContext(LocalManager.updateResources(newBase,LocalManager.getLanguage(newBase)));
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -1081,7 +1080,7 @@ public class UpdateAdsActivity extends AppCompatActivity implements DepartmentSi
 
             Uri uri = data.getData();
             //uriList.add(uri);
-            bitmap1 = BitmapFactory.decodeFile(Common.getImagePathFromUri(this,uri));
+            bitmap1 = BitmapFactory.decodeFile(Common.getImagePath(this,uri));
             img1.setImageBitmap(bitmap1);
             map.put(1,uri);
             image1_delete_from_gallery.setVisibility(View.VISIBLE);
@@ -1090,7 +1089,7 @@ public class UpdateAdsActivity extends AppCompatActivity implements DepartmentSi
         {
             Uri uri = data.getData();
             //uriList.add(uri);
-            bitmap2 = BitmapFactory.decodeFile(Common.getImagePathFromUri(this,uri));
+            bitmap2 = BitmapFactory.decodeFile(Common.getImagePath(this,uri));
             img2.setImageBitmap(bitmap2);
             map.put(2,uri);
             image2_delete_from_gallery.setVisibility(View.VISIBLE);
@@ -1101,7 +1100,7 @@ public class UpdateAdsActivity extends AppCompatActivity implements DepartmentSi
         {
             Uri uri = data.getData();
             //uriList.add(uri);
-            bitmap3 = BitmapFactory.decodeFile(Common.getImagePathFromUri(this,uri));
+            bitmap3 = BitmapFactory.decodeFile(Common.getImagePath(this,uri));
             img3.setImageBitmap(bitmap3);
             map.put(3,uri);
             image3_delete_from_gallery.setVisibility(View.VISIBLE);
@@ -1112,7 +1111,7 @@ public class UpdateAdsActivity extends AppCompatActivity implements DepartmentSi
         {
             Uri uri = data.getData();
             //uriList.add(uri);
-            bitmap4 = BitmapFactory.decodeFile(Common.getImagePathFromUri(this,uri));
+            bitmap4 = BitmapFactory.decodeFile(Common.getImagePath(this,uri));
             img4.setImageBitmap(bitmap4);
             map.put(4,uri);
             image4_delete_from_gallery.setVisibility(View.VISIBLE);
@@ -1122,7 +1121,7 @@ public class UpdateAdsActivity extends AppCompatActivity implements DepartmentSi
         {
             Uri uri = data.getData();
             //uriList.add(4,uri);
-            bitmap5 = BitmapFactory.decodeFile(Common.getImagePathFromUri(this,uri));
+            bitmap5 = BitmapFactory.decodeFile(Common.getImagePath(this,uri));
             img5.setImageBitmap(bitmap5);
             map.put(5,uri);
             image5_delete_from_gallery.setVisibility(View.VISIBLE);
@@ -1132,7 +1131,7 @@ public class UpdateAdsActivity extends AppCompatActivity implements DepartmentSi
         {
             Uri uri = data.getData();
             //uriList.add(uri);
-            bitmap6 = BitmapFactory.decodeFile(Common.getImagePathFromUri(this,uri));
+            bitmap6 = BitmapFactory.decodeFile(Common.getImagePath(this,uri));
             img6.setImageBitmap(bitmap6);
             map.put(6,uri);
             image6_delete_from_gallery.setVisibility(View.VISIBLE);

@@ -69,11 +69,11 @@ public class AllAppAdsFragment extends Fragment implements UserSingleTone.OnComp
     private void UpdateUI(String user_type) {
 
         adapter = new MyAdsPagerAdapter(getChildFragmentManager());
-        adapter.AddFragments(Fragment_AllAds_Nearby.getInstance(user_type));
         adapter.AddFragments(Fragment_AllAds_Recent.getInstance(user_type));
+        adapter.AddFragments(Fragment_AllAds_Nearby.getInstance(user_type));
 
-        adapter.AddTitle(getString(R.string.nearby));
-        adapter.AddTitle(getString(R.string.recent));
+        adapter.AddTitle(getString(R.string.newest));
+        adapter.AddTitle(getString(R.string.nearme));
 
         pager.setAdapter(adapter);
 

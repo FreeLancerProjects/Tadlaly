@@ -197,11 +197,11 @@ public class SubDataFragment extends Fragment implements UserSingleTone.OnComple
         Retrofit retrofit = Api.getRetrofit(Tags.Base_Url);
         if (user_id.equals("0"))
         {
-            call = retrofit.create(Services.class).visitor_getSubDeptAds(Tags.display_nearby, supDept_id,page_index,String.valueOf(mylat),String.valueOf(myLng));
+            call = retrofit.create(Services.class).visitor_getSubDeptAds(Tags.display_new, supDept_id,page_index,String.valueOf(mylat),String.valueOf(myLng));
 
         }else if (!user_id.equals("0"))
             {
-                call = retrofit.create(Services.class).getSubDept_Ads(Tags.display_nearby, user_id, supDept_id, page_index);
+                call = retrofit.create(Services.class).getSubDept_Ads(Tags.display_new, user_id, supDept_id, page_index);
 
             }
                 call.enqueue(new Callback<List<MyAdsModel>>() {

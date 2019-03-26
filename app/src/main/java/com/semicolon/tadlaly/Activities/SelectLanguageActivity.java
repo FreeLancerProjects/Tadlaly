@@ -11,7 +11,7 @@ import android.widget.Button;
 
 import com.semicolon.tadlaly.R;
 import com.semicolon.tadlaly.Services.Preferences;
-import com.semicolon.tadlaly.language.LanguageHelper;
+import com.semicolon.tadlaly.language.LocalManager;
 
 import io.paperdb.Paper;
 
@@ -22,7 +22,7 @@ public class SelectLanguageActivity extends AppCompatActivity {
     @Override
     protected void attachBaseContext(Context newBase) {
         Paper.init(newBase);
-        super.attachBaseContext(LanguageHelper.onAttach(newBase,Paper.book().read("language")));
+        super.attachBaseContext(LocalManager.updateResources(newBase,LocalManager.getLanguage(newBase)));
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -504,6 +504,7 @@
                     />
 
                 <LinearLayout
+                    android:id="@+id/ll_charity"
                     android:layout_width="0dp"
                     android:layout_weight="1.2"
                     android:layout_height="wrap_content"
@@ -517,12 +518,16 @@
                         android:textColor="#1aa21a"
                         android:textStyle="bold"
                         android:text="للجمعية الخيريةلرعاية الايتام إخاء"
+                        android:clickable="false"
+                        android:longClickable="false"
                         />
                     <View
                         android:layout_width="160dp"
                         android:layout_height="1.5px"
                         android:background="#1aa21a"
                         android:layout_gravity="right|center_vertical"
+                        android:clickable="false"
+                        android:longClickable="false"
                         />
                 </LinearLayout>
 

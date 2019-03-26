@@ -42,12 +42,11 @@ import com.semicolon.tadlaly.Services.Preferences;
 import com.semicolon.tadlaly.Services.Services;
 import com.semicolon.tadlaly.Services.Tags;
 import com.semicolon.tadlaly.SingleTone.UserSingleTone;
-import com.semicolon.tadlaly.language.LanguageHelper;
+import com.semicolon.tadlaly.language.LocalManager;
 import com.semicolon.tadlaly.share.Common;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import io.paperdb.Paper;
 import retrofit2.Call;
@@ -81,7 +80,7 @@ public class SearchActivity extends AppCompatActivity implements GoogleApiClient
     protected void attachBaseContext(Context newBase) {
         Paper.init(newBase);
 
-        super.attachBaseContext(LanguageHelper.onAttach(newBase, Paper.book().read("language",Locale.getDefault().getLanguage())));
+        super.attachBaseContext(LocalManager.updateResources(newBase,LocalManager.getLanguage(newBase)));
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {

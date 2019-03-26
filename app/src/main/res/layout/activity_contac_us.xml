@@ -61,8 +61,8 @@
             android:paddingBottom="20dp"
 
             >
-            <TextView
-                android:id="@+id/name"
+            <EditText
+                android:id="@+id/edt_name"
                 android:layout_width="match_parent"
                 android:layout_height="45dp"
                 android:drawableRight="@drawable/dark_username_icon"
@@ -79,8 +79,8 @@
                 android:gravity="center_vertical"
                 android:background="@drawable/et_bg_trans"
                 />
-            <TextView
-                android:id="@+id/email"
+            <EditText
+                android:id="@+id/edt_email"
                 android:layout_width="match_parent"
                 android:layout_height="45dp"
                 android:drawableRight="@drawable/dark_useremail_icon"
@@ -98,41 +98,30 @@
                 android:background="@drawable/et_bg_trans"
 
                 />
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                >
-                <com.lamudi.phonefield.PhoneInputLayout
-                    android:id="@+id/edt_check_phone"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:visibility="visible"
-                    ></com.lamudi.phonefield.PhoneInputLayout>
-               <!-- <EditText
-                    android:id="@+id/edt_phone"
-                    android:layout_width="match_parent"
-                    android:layout_height="45dp"
-                    android:drawableRight="@drawable/black_cal_icon"
-                    android:paddingLeft="5dp"
-                    android:drawablePadding="5dp"
-                    android:textColor="@color/black"
-                    android:hint="@string/phone"
-                    android:textColorHint="@color/black"
-                    android:layout_marginBottom="10dp"
-                    android:singleLine="true"
-                    android:scrollHorizontally="true"
-                    android:textSize="13sp"
-                    android:gravity="center_vertical"
-                    android:background="@drawable/et_bg_trans"
-                    android:inputType="phone"
 
-                    />-->
-            </FrameLayout>
+            <EditText
+                android:id="@+id/edt_phone"
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:drawableRight="@drawable/ic_phone"
+                android:paddingLeft="5dp"
+                android:drawablePadding="5dp"
+                android:textColor="@color/black"
+                android:hint="@string/mobile_number"
+                android:textColorHint="@color/black"
+                android:layout_marginBottom="10dp"
+                android:singleLine="true"
+                android:scrollHorizontally="true"
+                android:inputType="phone"
+                android:textSize="13sp"
+                android:gravity="center_vertical"
+                android:background="@drawable/et_bg_trans"
+
+                />
 
 
             <EditText
-                android:id="@+id/subject"
+                android:id="@+id/edt_subject"
                 android:layout_width="match_parent"
                 android:layout_height="45dp"
                 android:drawableRight="@drawable/dark_edit_icon"
@@ -160,12 +149,13 @@
                 android:gravity="center_vertical"
                 android:textColor="@color/black"
                 android:textSize="13sp"
-                />
+                tools:ignore="RtlHardcoded" />
             <EditText
-                android:id="@+id/message"
+                android:id="@+id/edt_message"
                 android:layout_width="match_parent"
                 android:layout_height="120dp"
                 android:paddingLeft="5dp"
+                android:paddingRight="5dp"
                 android:drawablePadding="5dp"
                 android:textColor="@color/black"
                 android:textColorHint="@color/gray3"
@@ -174,6 +164,7 @@
                 android:gravity="top"
                 android:padding="10dp"
                 android:hint="@string/msg_txt"
+                android:inputType="textMultiLine"
 
                 />
             <Button

@@ -11,9 +11,7 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 import com.semicolon.tadlaly.R;
-import com.semicolon.tadlaly.language.LanguageHelper;
-
-import java.util.Locale;
+import com.semicolon.tadlaly.language.LocalManager;
 
 import io.paperdb.Paper;
 
@@ -25,7 +23,7 @@ public class SplashActivity extends AppCompatActivity implements SurfaceHolder.C
     protected void attachBaseContext(Context newBase) {
         Paper.init(newBase);
 
-        super.attachBaseContext(LanguageHelper.onAttach(newBase, Paper.book().read("language",Locale.getDefault().getLanguage())));
+        super.attachBaseContext(LocalManager.updateResources(newBase,LocalManager.getLanguage(newBase)));
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {

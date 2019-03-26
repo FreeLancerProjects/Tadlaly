@@ -114,6 +114,14 @@ public class FragmentAllAds_NearbyAdapter extends RecyclerView.Adapter <Recycler
 
             Animation animation = AnimationUtils.loadAnimation(context,R.anim.right_to_left);
             holder.itemView.startAnimation(animation);
+            itemHolder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    MyAdsModel myAdsModel =myAdsModelList.get(holder.getAdapterPosition());
+
+                    fragment_allAds_nearby.setItemData(myAdsModel);
+                }
+            });
 
 
         }else if (holder instanceof myProgressHolder)

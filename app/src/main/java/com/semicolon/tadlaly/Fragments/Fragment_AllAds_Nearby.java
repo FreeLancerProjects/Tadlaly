@@ -1,5 +1,6 @@
 package com.semicolon.tadlaly.Fragments;
 
+import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -17,6 +18,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.semicolon.tadlaly.Activities.AdsDetailsActivity;
 import com.semicolon.tadlaly.Adapters.FragmentAllAds_NearbyAdapter;
 import com.semicolon.tadlaly.Models.MyAdsModel;
 import com.semicolon.tadlaly.Models.UserModel;
@@ -218,5 +220,24 @@ public class Fragment_AllAds_Nearby extends Fragment implements UserSingleTone.O
     public void onSuccess(double lat, double lng) {
         this.myLat = lat;
         this.myLng = lng;
+    }
+
+    public void setItemData(MyAdsModel myAdsModel) {
+        if (user_type.equals(Tags.app_user))
+        {
+            Intent intent = new Intent(getActivity(), AdsDetailsActivity.class);
+            intent.putExtra("ad_details",myAdsModel);
+            intent.putExtra("whoVisit",Tags.visitor);
+            intent.putExtra("user_id",userModel.getUser_id());
+            startActivity(intent);
+        }else if (user_type.equals(Tags.app_visitor))
+        {
+            Intent intent = new Intent(getActivity(),AdsDetailsActivity.class);
+            intent.putExtra("ad_details",myAdsModel);
+            intent.putExtra("whoVisit",Tags.visitor);
+            intent.putExtra("user_id","0");
+
+            startActivity(intent);
+        }
     }
 }

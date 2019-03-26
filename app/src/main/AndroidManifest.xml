@@ -23,7 +23,7 @@
         android:theme="@style/AppTheme"
 
 
-        >
+        tools:ignore="GoogleAppIndexingWarning">
         <service android:name=".Services.UpdateLatLng" />
         <service android:name=".Services.MyFirebaseMessaging">
             <intent-filter>

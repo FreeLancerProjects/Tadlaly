@@ -337,9 +337,6 @@ public class Home_Fragment extends Fragment {
 
         if (departmentsModel.getSubdepartObjectList().size()>0)
         {
-           /* subdepartObjectList.addAll(departmentsModel.getSubdepartObjectList());
-            branchAdapter.notifyDataSetChanged();
-            no_branch.setVisibility(View.GONE);*/
            SubDeptDataFragment subDeptDataFragment = new SubDeptDataFragment();
            Bundle bundle = new Bundle();
            bundle.putString("user_id",user_id);

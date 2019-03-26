@@ -2,19 +2,19 @@ package com.semicolon.tadlaly.Activities;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.semicolon.tadlaly.R;
-import com.semicolon.tadlaly.language.LanguageHelper;
-
-import java.util.Locale;
+import com.semicolon.tadlaly.language.LocalManager;
 
 import io.paperdb.Paper;
 
@@ -25,6 +25,7 @@ public class PromiseActivity extends AppCompatActivity implements View.OnClickLi
     private boolean brand2=false;
     private boolean brand3=false;
     private TextView txt_quran;
+    private LinearLayout ll_charity;
     /*private View root;
     private TextView tv_title,tv_content;
     private ProgressBar progBar;
@@ -37,7 +38,7 @@ public class PromiseActivity extends AppCompatActivity implements View.OnClickLi
     protected void attachBaseContext(Context newBase) {
         Paper.init(newBase);
 
-        super.attachBaseContext(LanguageHelper.onAttach(newBase, Paper.book().read("language",Locale.getDefault().getLanguage())));
+        super.attachBaseContext(LocalManager.updateResources(newBase,LocalManager.getLanguage(newBase)));
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +64,7 @@ public class PromiseActivity extends AppCompatActivity implements View.OnClickLi
         disagreeBtn1 = findViewById(R.id.disagreeBtn1);
         disagreeBtn2 = findViewById(R.id.disagreeBtn2);
         disagreeBtn3 = findViewById(R.id.disagreeBtn3);
+        ll_charity = findViewById(R.id.ll_charity);
 
        /* tv_title = findViewById(R.id.tv_title);
         tv_content = findViewById(R.id.tv_content);
@@ -80,6 +82,14 @@ public class PromiseActivity extends AppCompatActivity implements View.OnClickLi
        // agree_btn.setOnClickListener(this);
         img_ekhaa.setOnClickListener(this);
         send_btn.setOnClickListener(this);
+
+        ll_charity.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.ekhaa.org.sa/?fbclid=IwAR0wxz74dgO4e8zHBwdh6pTTWkJi7kFwCK1B_QUe-i3KpYJuNnnORguWtIg"));
+                startActivity(intent);
+            }
+        });
 
 /*
         behavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {

@@ -22,10 +22,9 @@ import com.semicolon.tadlaly.R;
 import com.semicolon.tadlaly.Services.Api;
 import com.semicolon.tadlaly.Services.Services;
 import com.semicolon.tadlaly.Services.Tags;
-import com.semicolon.tadlaly.language.LanguageHelper;
+import com.semicolon.tadlaly.language.LocalManager;
 
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
 import io.paperdb.Paper;
@@ -42,8 +41,7 @@ public class ForgetPasswordActivity extends AppCompatActivity {
     @Override
     protected void attachBaseContext(Context newBase) {
         Paper.init(newBase);
-
-        super.attachBaseContext(LanguageHelper.onAttach(newBase, Paper.book().read("language",Locale.getDefault().getLanguage())));
+        super.attachBaseContext(LocalManager.updateResources(newBase,LocalManager.getLanguage(newBase)));
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {

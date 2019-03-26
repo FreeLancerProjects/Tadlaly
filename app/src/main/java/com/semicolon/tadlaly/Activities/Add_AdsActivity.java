@@ -71,7 +71,7 @@ import com.semicolon.tadlaly.Services.Services;
 import com.semicolon.tadlaly.Services.Tags;
 import com.semicolon.tadlaly.SingleTone.DepartmentSingletone;
 import com.semicolon.tadlaly.SingleTone.UserSingleTone;
-import com.semicolon.tadlaly.language.LanguageHelper;
+import com.semicolon.tadlaly.language.LocalManager;
 import com.semicolon.tadlaly.share.Common;
 
 import java.io.IOException;
@@ -132,16 +132,14 @@ public class Add_AdsActivity extends AppCompatActivity implements UserSingleTone
     @Override
     protected void attachBaseContext(Context newBase) {
         Paper.init(newBase);
+        super.attachBaseContext(LocalManager.updateResources(newBase,LocalManager.getLanguage(newBase)));
 
-        super.attachBaseContext(LanguageHelper.onAttach(newBase, Paper.book().read("language",Locale.getDefault().getLanguage())));
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add__ads);
         uriList = new ArrayList<>();
-        /*Calligrapher calligrapher=new Calligrapher(this);
-        calligrapher.setFont(this,"OYA-Regular.ttf",true);*/
         manager = (LocationManager) getSystemService(LOCATION_SERVICE);
         CreateProgressDialog2();
         CreateProgressDialog();
@@ -736,14 +734,14 @@ public class Add_AdsActivity extends AppCompatActivity implements UserSingleTone
 
                                 if (bitmap1==null)
                                 {
-                                    bitmap1 = BitmapFactory.decodeFile(Common.getImagePathFromUri(Add_AdsActivity.this,uri));
+                                    bitmap1 = BitmapFactory.decodeFile(Common.getImagePath(Add_AdsActivity.this,uri));
                                     img1.setImageBitmap(bitmap1);
                                     //bitmapList.add(bitmap1);
                                     delete_img1.setVisibility(View.VISIBLE);
 
                                 }else if (bitmap2==null)
                                 {
-                                    bitmap2 = BitmapFactory.decodeFile(Common.getImagePathFromUri(Add_AdsActivity.this,uri));
+                                    bitmap2 = BitmapFactory.decodeFile(Common.getImagePath(Add_AdsActivity.this,uri));
                                     img2.setImageBitmap(bitmap2);
                                     //bitmapList.add(bitmap2);
                                     delete_img2.setVisibility(View.VISIBLE);
@@ -752,7 +750,7 @@ public class Add_AdsActivity extends AppCompatActivity implements UserSingleTone
                                 }
                                 else if (bitmap3==null)
                                 {
-                                    bitmap3 = BitmapFactory.decodeFile(Common.getImagePathFromUri(Add_AdsActivity.this,uri));
+                                    bitmap3 = BitmapFactory.decodeFile(Common.getImagePath(Add_AdsActivity.this,uri));
                                     img3.setImageBitmap(bitmap3);
                                     //bitmapList.add(bitmap3);
                                     delete_img3.setVisibility(View.VISIBLE);
@@ -761,7 +759,7 @@ public class Add_AdsActivity extends AppCompatActivity implements UserSingleTone
                                 }
                                 else if (bitmap4==null)
                                 {
-                                    bitmap4 = BitmapFactory.decodeFile(Common.getImagePathFromUri(Add_AdsActivity.this,uri));
+                                    bitmap4 = BitmapFactory.decodeFile(Common.getImagePath(Add_AdsActivity.this,uri));
                                     img4.setImageBitmap(bitmap4);
                                     //bitmapList.add(bitmap4);
                                     delete_img4.setVisibility(View.VISIBLE);
@@ -770,7 +768,7 @@ public class Add_AdsActivity extends AppCompatActivity implements UserSingleTone
                                 }
                                 else if (bitmap5==null)
                                 {
-                                    bitmap5 = BitmapFactory.decodeFile(Common.getImagePathFromUri(Add_AdsActivity.this,uri));
+                                    bitmap5 = BitmapFactory.decodeFile(Common.getImagePath(Add_AdsActivity.this,uri));
                                     img5.setImageBitmap(bitmap5);
                                     //bitmapList.add(bitmap5);
                                     delete_img5.setVisibility(View.VISIBLE);
@@ -779,7 +777,7 @@ public class Add_AdsActivity extends AppCompatActivity implements UserSingleTone
                                 }
                                 else if (bitmap6==null)
                                 {
-                                    bitmap6 = BitmapFactory.decodeFile(Common.getImagePathFromUri(Add_AdsActivity.this,uri));
+                                    bitmap6 = BitmapFactory.decodeFile(Common.getImagePath(Add_AdsActivity.this,uri));
                                     img6.setImageBitmap(bitmap6);
                                     //bitmapList.add(bitmap6);
                                     delete_img6.setVisibility(View.VISIBLE);
@@ -803,7 +801,7 @@ public class Add_AdsActivity extends AppCompatActivity implements UserSingleTone
 
                             if (bitmap1==null)
                             {
-                                    bitmap1 = BitmapFactory.decodeFile(Common.getImagePathFromUri(Add_AdsActivity.this,uri));
+                                    bitmap1 = BitmapFactory.decodeFile(Common.getImagePath(Add_AdsActivity.this,uri));
                                     img1.setImageBitmap(bitmap1);
                                     uriList.add(uri);
 
@@ -814,7 +812,7 @@ public class Add_AdsActivity extends AppCompatActivity implements UserSingleTone
                             }else if (bitmap2==null)
                             {
 
-                                    bitmap2 = BitmapFactory.decodeFile(Common.getImagePathFromUri(Add_AdsActivity.this,uri));
+                                    bitmap2 = BitmapFactory.decodeFile(Common.getImagePath(Add_AdsActivity.this,uri));
                                     img2.setImageBitmap(bitmap2);
                                     uriList.add(uri);
 
@@ -826,7 +824,7 @@ public class Add_AdsActivity extends AppCompatActivity implements UserSingleTone
                             }else if (bitmap3==null)
                             {
 
-                                    bitmap3 = BitmapFactory.decodeFile(Common.getImagePathFromUri(Add_AdsActivity.this,uri));
+                                    bitmap3 = BitmapFactory.decodeFile(Common.getImagePath(Add_AdsActivity.this,uri));
                                     img3.setImageBitmap(bitmap3);
                                     uriList.add(uri);
 
@@ -839,7 +837,7 @@ public class Add_AdsActivity extends AppCompatActivity implements UserSingleTone
                             else if (bitmap4==null)
                             {
 
-                                    bitmap4 = BitmapFactory.decodeFile(Common.getImagePathFromUri(Add_AdsActivity.this,uri));
+                                    bitmap4 = BitmapFactory.decodeFile(Common.getImagePath(Add_AdsActivity.this,uri));
                                     img4.setImageBitmap(bitmap4);
                                     uriList.add(uri);
 
@@ -852,7 +850,7 @@ public class Add_AdsActivity extends AppCompatActivity implements UserSingleTone
                             else if (bitmap5==null)
                             {
 
-                                    bitmap5 = BitmapFactory.decodeFile(Common.getImagePathFromUri(Add_AdsActivity.this,uri));
+                                    bitmap5 = BitmapFactory.decodeFile(Common.getImagePath(Add_AdsActivity.this,uri));
                                     img5.setImageBitmap(bitmap5);
                                     uriList.add(uri);
 
@@ -865,7 +863,7 @@ public class Add_AdsActivity extends AppCompatActivity implements UserSingleTone
                             else if (bitmap6==null)
                             {
 
-                                    bitmap6 = BitmapFactory.decodeFile(Common.getImagePathFromUri(Add_AdsActivity.this,uri));
+                                    bitmap6 = BitmapFactory.decodeFile(Common.getImagePath(Add_AdsActivity.this,uri));
                                     img6.setImageBitmap(bitmap6);
                                     uriList.add(uri);
 

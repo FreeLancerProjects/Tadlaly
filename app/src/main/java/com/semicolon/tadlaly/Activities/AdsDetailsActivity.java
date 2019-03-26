@@ -26,12 +26,11 @@ import com.semicolon.tadlaly.Services.Api;
 import com.semicolon.tadlaly.Services.Services;
 import com.semicolon.tadlaly.Services.Tags;
 import com.semicolon.tadlaly.SingleTone.UserSingleTone;
-import com.semicolon.tadlaly.language.LanguageHelper;
+import com.semicolon.tadlaly.language.LocalManager;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -64,8 +63,7 @@ public class AdsDetailsActivity extends AppCompatActivity implements UserSingleT
     @Override
     protected void attachBaseContext(Context newBase) {
         Paper.init(newBase);
-
-        super.attachBaseContext(LanguageHelper.onAttach(newBase, Paper.book().read("language",Locale.getDefault().getLanguage())));
+        super.attachBaseContext(LocalManager.updateResources(newBase,LocalManager.getLanguage(newBase)));
     }
 
     @Override
@@ -157,14 +155,6 @@ public class AdsDetailsActivity extends AppCompatActivity implements UserSingleT
         back.setOnClickListener(view -> finish());
 
 
-        if (checkWhatsAppFounded())
-        {
-            whats_btn.setVisibility(View.VISIBLE);
-        }else
-            {
-                whats_btn.setVisibility(View.INVISIBLE);
-
-            }
 
         call_btn.setOnClickListener(view -> {
             Log.e("phone",myAdsModel.getPhone());
@@ -172,9 +162,6 @@ public class AdsDetailsActivity extends AppCompatActivity implements UserSingleT
             startActivity(intent);
         });
         email_btn.setOnClickListener(view -> {
-
-
-
 
             if (user_id.equals("0"))
             {
@@ -194,14 +181,10 @@ public class AdsDetailsActivity extends AppCompatActivity implements UserSingleT
         });
 
         whats_btn.setOnClickListener(view -> {
-
             String phone_number = myAdsModel.getPhone();
-            phone_number = phone_number.replace("+","");
-            Intent sendIntent = new Intent(Intent.ACTION_SEND);
-            sendIntent.setType("text/plain");
-            sendIntent.putExtra(Intent.EXTRA_TEXT, "السلام عليكم بخصوص اعلانك في تطبيق تدللي "+myAdsModel.getAdvertisement_title()+"\n"+"الكود"+myAdsModel.getAdvertisement_code());
-            sendIntent.putExtra("jid", phone_number + "@s.whatsapp.net"); //phone number without "+" prefix
-            sendIntent.setPackage("com.whatsapp");
+            String text = "السلام عليكم بخصوص اعلانك في تطبيق تدللي "+myAdsModel.getAdvertisement_title()+"\n"+"الكود"+myAdsModel.getAdvertisement_code();
+            String uri = "whatsapp://send?phone="+phone_number+"&text="+text;
+            Intent sendIntent = new Intent(Intent.ACTION_VIEW,Uri.parse(uri));
             if (sendIntent.resolveActivity(getPackageManager()) == null) {
                 Toast.makeText(this, "Error/n" + "", Toast.LENGTH_SHORT).show();
                 return;
