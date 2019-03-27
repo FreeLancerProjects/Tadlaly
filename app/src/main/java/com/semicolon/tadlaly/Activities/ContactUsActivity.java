@@ -37,6 +37,7 @@ import com.semicolon.tadlaly.share.Common;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import io.paperdb.Paper;
@@ -59,7 +60,7 @@ public class ContactUsActivity extends AppCompatActivity implements UserSingleTo
     private ContactsModel contactsModel;
     private ProgressDialog dialog_getContacts;
     private TextView tv_site, tv_email, tv_phone;
-
+    private String current_language;
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -110,7 +111,13 @@ public class ContactUsActivity extends AppCompatActivity implements UserSingleTo
     }
 
     private void initView() {
+        current_language = Paper.book().read("language", Locale.getDefault().getLanguage());
         back = findViewById(R.id.back);
+
+        if (current_language.equals("ar"))
+        {
+            back.setRotation(180f);
+        }
         whatsApp_Btn = findViewById(R.id.whatsapp_btn);
         email_Btn = findViewById(R.id.email_btn);
         edt_name = findViewById(R.id.edt_name);
@@ -196,7 +203,7 @@ public class ContactUsActivity extends AppCompatActivity implements UserSingleTo
         if (!TextUtils.isEmpty(m_name) &&
                 !TextUtils.isEmpty(m_email)&&
                 Patterns.EMAIL_ADDRESS.matcher(m_email).matches()&&
-                !TextUtils.isEmpty(m_phone)&&m_phone.length()>=6&&m_phone.length()<13&&
+                Patterns.PHONE.matcher(m_phone).matches()&&!TextUtils.isEmpty(m_phone)&&m_phone.length()>=6&&m_phone.length()<13&&
                 !TextUtils.isEmpty(m_subject)&&
                 !TextUtils.isEmpty(m_message)
 
@@ -234,7 +241,7 @@ public class ContactUsActivity extends AppCompatActivity implements UserSingleTo
                 if (TextUtils.isEmpty(m_phone)) {
 
                     edt_phone.setError(getString(R.string.field_req));
-                }else if (m_phone.length()<6 ||m_phone.length()>=13)
+                }else if (!Patterns.PHONE.matcher(m_phone).matches()&&m_phone.length()<6 ||m_phone.length()>=13)
                 {
                     edt_phone.setError(getString(R.string.inv_phone));
                 }else

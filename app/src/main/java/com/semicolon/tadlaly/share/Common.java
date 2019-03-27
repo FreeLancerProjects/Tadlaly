@@ -200,12 +200,12 @@ public class Common {
         return file;
     }
 
-    public static MultipartBody.Part getMultiPartBody(Uri uri, Context context)
+    public static MultipartBody.Part getMultiPartBody(Uri uri, Context context,String part_name)
     {
         String path = getImagePath(context,uri);
         File file = getFileFromPath(path);
         RequestBody requestBody = RequestBody.create(MediaType.parse("image/*"),file);
-        MultipartBody.Part part = MultipartBody.Part.createFormData("user_photo",file.getName(),requestBody);
+        MultipartBody.Part part = MultipartBody.Part.createFormData(part_name,file.getName(),requestBody);
         return part;
     }
 

@@ -25,6 +25,7 @@ import com.semicolon.tadlaly.Services.Tags;
 import com.semicolon.tadlaly.language.LocalManager;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import io.paperdb.Paper;
@@ -38,6 +39,7 @@ public class ForgetPasswordActivity extends AppCompatActivity {
     private Button resetBtn;
     private ProgressDialog dialog;
     private ImageView back;
+    private String current_language;
     @Override
     protected void attachBaseContext(Context newBase) {
         Paper.init(newBase);
@@ -52,10 +54,16 @@ public class ForgetPasswordActivity extends AppCompatActivity {
     }
 
     private void initView() {
+        current_language = Paper.book().read("language", Locale.getDefault().getLanguage());
+        back = findViewById(R.id.back);
+
+        if (current_language.equals("ar"))
+        {
+            back.setRotation(180f);
+        }
         user_name = findViewById(R.id.user_name);
         email = findViewById(R.id.user_email);
         resetBtn = findViewById(R.id.reset_btn);
-        back = findViewById(R.id.back);
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

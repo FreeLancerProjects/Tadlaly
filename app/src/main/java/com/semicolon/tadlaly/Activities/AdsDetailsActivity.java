@@ -31,6 +31,7 @@ import com.semicolon.tadlaly.language.LocalManager;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -58,6 +59,7 @@ public class AdsDetailsActivity extends AppCompatActivity implements UserSingleT
     private UserModel userModel;
     private String user_id;
     private AlertDialog alertDialog;
+    private String current_language;
 
 
     @Override
@@ -84,9 +86,8 @@ public class AdsDetailsActivity extends AppCompatActivity implements UserSingleT
             myAdsModel = (MyAdsModel) intent.getSerializableExtra("ad_details");
             whoVisit = intent.getStringExtra("whoVisit");
             user_id = intent.getStringExtra("user_id");
-            Log.e("USERType_ADS_Det_Ac",whoVisit);
+            Log.e("USERType_ADS_Det_Ac",user_id);
             UpdateUi(myAdsModel, whoVisit);
-            Log.e("ads_id",myAdsModel.getId_advertisement());
             if (whoVisit.equals(Tags.visitor))
             {
                 UpdateViewers(myAdsModel.getId_advertisement());
@@ -123,10 +124,18 @@ public class AdsDetailsActivity extends AppCompatActivity implements UserSingleT
     }
     private void initView() {
 
+        current_language = Paper.book().read("language", Locale.getDefault().getLanguage());
+
+        back             = findViewById(R.id.back);
+
+        if (current_language.equals("ar"))
+        {
+            back.setRotation(180f);
+        }
+
         images           = new ArrayList<>();
         pager            = findViewById(R.id.pager);
         tab              = findViewById(R.id.tab);
-        back             = findViewById(R.id.back);
         shareBtn         = findViewById(R.id.shareBtn);
         viewerBtn        = findViewById(R.id.viewerBtn);
         no_ads           = findViewById(R.id.no_ads);
@@ -282,6 +291,8 @@ public class AdsDetailsActivity extends AppCompatActivity implements UserSingleT
     private void  UpdateUi(MyAdsModel myAdsModel ,String whoVisit)
     {
         //Typeface typeface = Typeface.createFromAsset(getAssets(),"OYA-Regular.ttf");
+
+
         if (whoVisit.equals(Tags.me_visit))
         {
             distContainer.setVisibility(View.GONE);
@@ -298,11 +309,16 @@ public class AdsDetailsActivity extends AppCompatActivity implements UserSingleT
                 {
                     userSingleTone = UserSingleTone.getInstance();
                     userSingleTone.getUser(this);
-                    Log.e("Register","register_user");
+                    contactContainer.setVisibility(View.VISIBLE);
+
                 }else if (user_id.equals("0"))
                     {
-                        Log.e("UnRegister","unregister_user");
 
+                        contactContainer.setVisibility(View.GONE);
+
+                    }else if (user_id.equals("all"))
+                    {
+                        contactContainer.setVisibility(View.GONE);
 
                     }
                 shareBtn.setEnabled(true);
@@ -313,7 +329,6 @@ public class AdsDetailsActivity extends AppCompatActivity implements UserSingleT
                 city2.setText(myAdsModel.getCity());
                 //city2.setTypeface(typeface);
                 ad_distance.setText(myAdsModel.getDistance()+" "+getString(R.string.km));
-                contactContainer.setVisibility(View.VISIBLE);
                 city.setVisibility(View.VISIBLE);
 
 

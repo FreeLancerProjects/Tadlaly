@@ -1,5 +1,6 @@
 package com.semicolon.tadlaly.Fragments;
 
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -128,6 +129,7 @@ public class SubDataFragment extends Fragment implements UserSingleTone.OnComple
         image_top = view.findViewById(R.id.image_top);
         no_ads = view.findViewById(R.id.no_ads);
         progressBar =view.findViewById(R.id.progBar);
+        progressBar.getIndeterminateDrawable().setColorFilter(ContextCompat.getColor(getActivity(),R.color.colorPrimary), PorterDuff.Mode.SRC_IN);
         recyclerView = view.findViewById(R.id.recView);
         manager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(manager);

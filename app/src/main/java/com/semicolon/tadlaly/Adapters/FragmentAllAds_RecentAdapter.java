@@ -1,7 +1,6 @@
 package com.semicolon.tadlaly.Adapters;
 
 import android.content.Context;
-import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -17,7 +16,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.github.siyamed.shapeimageview.RoundedImageView;
-import com.semicolon.tadlaly.Activities.AdsDetailsActivity;
 import com.semicolon.tadlaly.Fragments.Fragment_AllAds_Recent;
 import com.semicolon.tadlaly.Models.MyAdsModel;
 import com.semicolon.tadlaly.R;
@@ -148,7 +146,7 @@ public class FragmentAllAds_RecentAdapter extends RecyclerView.Adapter <Recycler
     }
 
     public class myItemHolder extends RecyclerView.ViewHolder {
-        private TextView date,state_new,state_old,name,cost,city;
+        private TextView date,state_new,state_old,state_service,name,cost,city;
         private RoundedImageView img;
 
         public myItemHolder(View itemView) {
@@ -157,6 +155,8 @@ public class FragmentAllAds_RecentAdapter extends RecyclerView.Adapter <Recycler
             date = itemView.findViewById(R.id.date);
             state_new= itemView.findViewById(R.id.state_new);
             state_old= itemView.findViewById(R.id.state_old);
+            state_service= itemView.findViewById(R.id.state_service);
+
             name = itemView.findViewById(R.id.name);
             cost = itemView.findViewById(R.id.cost);
             city = itemView.findViewById(R.id.city);
@@ -183,11 +183,20 @@ public class FragmentAllAds_RecentAdapter extends RecyclerView.Adapter <Recycler
             {
                 state_new.setVisibility(View.VISIBLE);
                 state_old.setVisibility(View.GONE);
-            } else
-                {
-                    state_new.setVisibility(View.GONE);
-                    state_old.setVisibility(View.VISIBLE);
-                }
+                state_service.setVisibility(View.GONE);
+
+            } else if (myAdsModel.getAdvertisement_type().equals(Tags.ad_old))
+            {
+                state_new.setVisibility(View.GONE);
+                state_old.setVisibility(View.VISIBLE);
+                state_service.setVisibility(View.GONE);
+
+            }else if (myAdsModel.getAdvertisement_type().equals(Tags.service))
+            {
+                state_new.setVisibility(View.GONE);
+                state_old.setVisibility(View.GONE);
+                state_service.setVisibility(View.VISIBLE);
+            }
             //name.setTypeface(typeface);
             name.setText(myAdsModel.getAdvertisement_title());
             //cost.setTypeface(typeface);

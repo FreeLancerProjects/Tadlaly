@@ -21,6 +21,7 @@ import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
+import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -52,6 +53,8 @@ import java.util.List;
 import java.util.Locale;
 
 import io.paperdb.Paper;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -230,11 +233,11 @@ public class TransferActivity extends AppCompatActivity implements UserSingleTon
         if (!TextUtils.isEmpty(m_name)&&
                 !TextUtils.isEmpty(m_phone)&&
                 m_phone.length()>=6&&
-                m_phone.length()<13&&
+                m_phone.length()<13&& Patterns.PHONE.matcher(m_phone).matches()&&
                 !TextUtils.isEmpty(m_money)&&
                 !TextUtils.isEmpty(m_ads_id)&&
                 !TextUtils.isEmpty(m_date)&&
-                !TextUtils.isEmpty(bank))
+                !TextUtils.isEmpty(bank)&&uri!=null)
         {
             tv_bank.setError(null);
             user_phone.setError(null);
@@ -243,7 +246,7 @@ public class TransferActivity extends AppCompatActivity implements UserSingleTon
             date.setError(null);
             ads_id.setError(null);
 
-            Send(m_name,m_phone,m_money,m_ads_id,m_date,back);
+            Send(m_name,m_phone,m_money,m_ads_id,m_date,bank);
         }else
             {
                 if (TextUtils.isEmpty(m_name)) {
@@ -279,10 +282,14 @@ public class TransferActivity extends AppCompatActivity implements UserSingleTon
                 if (TextUtils.isEmpty(m_phone))
                 {
                     user_phone.setError(getString(R.string.field_req));
-                }else
+                }else if (!Patterns.PHONE.matcher(m_phone).matches()||m_phone.length()<6||m_phone.length()>=13)
                     {
-                        user_phone.setError(null);
-                    }
+                        user_phone.setError(getString(R.string.inv_phone));
+                    }else
+                        {
+                            user_phone.setError(null);
+
+                        }
 
 
                 if (TextUtils.isEmpty(m_ads_id)) {
@@ -292,16 +299,32 @@ public class TransferActivity extends AppCompatActivity implements UserSingleTon
                     ads_id.setError(null);
 
                 }
+
+                if (uri==null)
+                {
+                    Toast.makeText(this, R.string.ch_trans_img, Toast.LENGTH_SHORT).show();
+                }
             }
 
 
     }
 
-    private void Send(String m_name, String m_phone, String m_money, String m_ads_id, String m_date, ImageView back) {
+    private void Send(String m_name, String m_phone, String m_money, String m_ads_id, String m_date, String  bank) {
         dialog.show();
         encodedImage = EncodeImage(bitmap);
+
+        //transform_image
+        RequestBody name_part = Common.getRequestBody(m_name);
+        RequestBody phone_part = Common.getRequestBody(m_phone);
+        RequestBody money_part = Common.getRequestBody(m_money);
+        RequestBody ad_id_part = Common.getRequestBody(m_ads_id);
+        RequestBody date_part = Common.getRequestBody(m_date);
+        RequestBody bank_part = Common.getRequestBody(bank);
+
+        MultipartBody.Part image_part = Common.getMultiPartBody(uri,this,"transform_image");
+
         Retrofit retrofit = Api.getRetrofit(Tags.Base_Url);
-        Call<ResponseModel> call = retrofit.create(Services.class).transMoney(userModel.getUser_id(), m_name, m_money, bank, m_date, m_name, encodedImage, m_ads_id);
+        Call<ResponseModel> call = retrofit.create(Services.class).transMoney(userModel.getUser_id(),name_part,money_part,bank_part,date_part,name_part,image_part,ad_id_part);
         call.enqueue(new Callback<ResponseModel>() {
             @Override
             public void onResponse(Call<ResponseModel> call, Response<ResponseModel> response) {

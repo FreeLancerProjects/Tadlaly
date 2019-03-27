@@ -206,7 +206,12 @@
     <string name="nearme">حسب الاقرب</string>
     <string name="newest">حسب الاحدث</string>
     <string name="mobile_number">رقم الجوال</string>
-
+    <string name="allow">السماح</string>
+    <string name="deny">رفض</string>
+    <string name="allow_tdlly_to_access_gps">السماح لتدللي للوصول الى gps</string>
+    <string name="fetching_your_location">جار تحديد موقعك...</string>
+    <string name="ch_trans_img">إختر صورة التحويل</string>
+    <string name="service">خدمة</string>
 
 
     <string-array name="ad_state">

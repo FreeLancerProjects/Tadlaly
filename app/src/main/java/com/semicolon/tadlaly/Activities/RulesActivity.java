@@ -39,9 +39,6 @@ public class RulesActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rules);
-       /* Calligrapher calligrapher=new Calligrapher(this);
-        calligrapher.setFont(this,"OYA-Regular.ttf",true);
-*/
         initView();
         getRules();
     }

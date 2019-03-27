@@ -11,6 +11,7 @@ import android.content.pm.PackageManager;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Looper;
@@ -74,6 +75,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.util.List;
 import java.util.Locale;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -87,7 +89,7 @@ import retrofit2.Retrofit;
 import static org.greenrobot.eventbus.EventBus.TAG;
 
 public class HomeActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener,UserSingleTone.OnCompleteListener,View.OnClickListener ,LatLngSingleTone.onLatLngSuccess,GoogleApiClient.ConnectionCallbacks,GoogleApiClient.OnConnectionFailedListener,LocationListener{
+        implements NavigationView.OnNavigationItemSelectedListener,UserSingleTone.OnCompleteListener,View.OnClickListener ,LatLngSingleTone.onLatLngSuccess,GoogleApiClient.ConnectionCallbacks,GoogleApiClient.OnConnectionFailedListener, LocationListener {
     private DrawerLayout drawer;
     private ActionBarDrawerToggle toggle;
     private NavigationView navigationView;
@@ -110,8 +112,10 @@ public class HomeActivity extends AppCompatActivity
     private AllAppAdsFragment allAppAdsFragment;
     private GoogleApiClient googleApiClient;
     private LocationRequest locationRequest;
+
     private final String fineLoc = Manifest.permission.ACCESS_FINE_LOCATION;
-    private final int loc_req = 1255;
+    private final int loc_req = 1;
+
     @Override
     protected void attachBaseContext(Context newBase) {
         Paper.init(newBase);
@@ -127,7 +131,7 @@ public class HomeActivity extends AppCompatActivity
         CreateProgress_dialog();
         CreateServiceDialog();
         notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        CheckPermissionLocation();
+        CheckPermission();
     }
     private void initView()
     {
@@ -248,22 +252,36 @@ public class HomeActivity extends AppCompatActivity
                     latLngSingleTone = LatLngSingleTone.getInstance();
 
                 }
-                Log.e("Homeuser_type",user_type);
             }
         }
     }
-    private void CheckPermissionLocation()
-    {
-        if (ContextCompat.checkSelfPermission(this,fineLoc)!=PackageManager.PERMISSION_GRANTED)
-        {
-            String [] perm = {fineLoc};
-            ActivityCompat.requestPermissions(this,perm,loc_req);
-        }else
-            {
-                BuildGoogleApiClient();
 
-            }
+    private void CheckPermission()
+    {
+        if (ActivityCompat.checkSelfPermission(this, fineLoc) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{fineLoc}, loc_req);
+        } else {
+
+           BuildGoogleApiClient();
+        }
     }
+
+    private boolean isGpsOpen()
+    {
+        boolean isOpened = false;
+        LocationManager manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        if (manager != null) {
+            if (manager.isProviderEnabled(LocationManager.GPS_PROVIDER)||manager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+                isOpened = true;
+            }
+        }
+
+        return isOpened;
+    }
+
+
+
+
     @Override
     protected void onStart()
     {
@@ -276,19 +294,29 @@ public class HomeActivity extends AppCompatActivity
 
     }
 
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode==loc_req)
-        {
-            if (grantResults.length>0)
-            {
-                if (grantResults[0]==PackageManager.PERMISSION_GRANTED)
-                {
-                    BuildGoogleApiClient();
-                }
-            }
+        List<Fragment> fragmentList = getSupportFragmentManager().getFragments();
+        for (Fragment fragment : fragmentList) {
+            fragment.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
+        if (requestCode == loc_req && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+            BuildGoogleApiClient();
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        List<Fragment> fragmentList = getSupportFragmentManager().getFragments();
+        for (Fragment fragment : fragmentList) {
+            fragment.onActivityResult(requestCode, resultCode, data);
+        }
+
+
     }
 
     private void CreateServiceDialog()
@@ -482,7 +510,8 @@ public class HomeActivity extends AppCompatActivity
                 if (!Paper.book().read("language",Locale.getDefault().getLanguage()).equals("ar"))
                 {
                     Paper.book().write("language","ar");
-                    LocalManager.updateResources(HomeActivity.this,"ar");
+                    LocalManager.setNewLocale(HomeActivity.this,"ar");
+                    dialog.dismiss();
                     refreshLayout();
                 }
 
@@ -495,7 +524,8 @@ public class HomeActivity extends AppCompatActivity
                 if (!Paper.book().read("language",Locale.getDefault().getLanguage()).equals("en"))
                 {
                     Paper.book().write("language","en");
-                    LocalManager.updateResources(HomeActivity.this,"en");
+                    LocalManager.setNewLocale(HomeActivity.this,"en");
+                    dialog.dismiss();
                     refreshLayout();
                 }
 
@@ -645,7 +675,8 @@ public class HomeActivity extends AppCompatActivity
 
     private void UpdateToken()
     {
-        FirebaseInstanceId.getInstance().getInstanceId()
+        FirebaseInstanceId.getInstance()
+                .getInstanceId()
                 .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
                     @Override
                     public void onComplete(@NonNull Task<InstanceIdResult> task) {
@@ -679,6 +710,7 @@ public class HomeActivity extends AppCompatActivity
                                 }
                             });
                         }
+
                     }
                 });
 
@@ -849,42 +881,15 @@ public class HomeActivity extends AppCompatActivity
     @Override
     public void onLocationChanged(Location location) {
         LocationModel locationModel = new LocationModel(location.getLatitude(),location.getLongitude());
-        if (user_type.equals(Tags.app_user))
-        {
-            Log.e("locationUpdate_Lat",locationModel.getLat()+"");
-            Log.e("locationUpdate_Lng",locationModel.getLng()+"");
-            UpdateLocation(locationModel.getLat(),locationModel.getLng());
-
-        }else
-        {
-            Log.e("locationUpdate_Lat2",locationModel.getLat()+"");
-            Log.e("locationUpdate_Lng2",locationModel.getLng()+"");
-            latLngSingleTone.setLatLng(locationModel.getLat(),locationModel.getLng());
-        }
-
+        LocationListener(locationModel);
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode==8)
-        {
 
-            if (resultCode==RESULT_OK)
-            {
-                if (ActivityCompat.checkSelfPermission(HomeActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(HomeActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                }
-                LocationServices.getFusedLocationProviderClient(HomeActivity.this).requestLocationUpdates(locationRequest,new LocationCallback()
-                {
-                    @Override
-                    public void onLocationResult(LocationResult locationResult) {
-                        onLocationChanged(locationResult.getLastLocation());
-                    }
-                }, Looper.myLooper());
 
-            }
-        }
-    }
+
+
+
+
 
     private void createCongDialog() {
           AlertDialog alertDialog = new AlertDialog.Builder(this)
@@ -909,5 +914,22 @@ public class HomeActivity extends AppCompatActivity
     public void UpdateCongratulation(Cong_Model cong_model)
     {
         createCongDialog();
+    }
+
+    public void LocationListener( LocationModel locationModel)
+    {
+        if (user_type.equals(Tags.app_user))
+        {
+            Log.e("locationUpdate_Lat",locationModel.getLat()+"");
+            Log.e("locationUpdate_Lng",locationModel.getLng()+"");
+            UpdateLocation(locationModel.getLat(),locationModel.getLng());
+
+        }else
+        {
+            Log.e("locationUpdate_Lat2",locationModel.getLat()+"");
+            Log.e("locationUpdate_Lng2",locationModel.getLng()+"");
+            latLngSingleTone.setLatLng(locationModel.getLat(),locationModel.getLng());
+        }
+
     }
 }

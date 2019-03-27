@@ -24,8 +24,10 @@
 
 
         tools:ignore="GoogleAppIndexingWarning">
-        <service android:name=".Services.UpdateLatLng" />
-        <service android:name=".Services.MyFirebaseMessaging">
+        <service android:name=".Services.UpdateLatLng"
+            tools:ignore="InnerclassSeparator" />
+        <service android:name=".Services.MyFirebaseMessaging"
+            tools:ignore="InnerclassSeparator">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
@@ -33,55 +35,103 @@
 
         <activity
             android:name=".Activities.LoginActivity"
-            android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
+            android:windowSoftInputMode="stateAlwaysHidden|adjustResize"
+            tools:ignore="InnerclassSeparator" />
         <activity
             android:name=".Activities.RegisterActivity"
-            android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
+            android:windowSoftInputMode="stateAlwaysHidden|adjustResize"
+            tools:ignore="InnerclassSeparator"
+            />
         <activity
             android:name=".Activities.ProfileActivity"
-            android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
-        <activity android:name=".Activities.SplashActivity" />
+            android:windowSoftInputMode="stateAlwaysHidden|adjustResize"
+            tools:ignore="InnerclassSeparator"
+            />
+        <activity android:name=".Activities.SplashActivity"
+            tools:ignore="InnerclassSeparator"
+            />
         <activity
             android:name=".Activities.TransferActivity"
-            android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
+            android:windowSoftInputMode="stateAlwaysHidden|adjustResize"
+            tools:ignore="InnerclassSeparator"
+            />
         <activity
             android:name=".Activities.AboutAppActivity"
-            android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
+            android:windowSoftInputMode="stateAlwaysHidden|adjustResize"
+            tools:ignore="InnerclassSeparator"
+            />
         <activity
             android:name=".Activities.ContactUsActivity"
-            android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
+            android:windowSoftInputMode="stateAlwaysHidden|adjustResize"
+            tools:ignore="InnerclassSeparator"
+            />
         <activity
             android:name=".Activities.Add_AdsActivity"
-            android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
+            android:windowSoftInputMode="stateAlwaysHidden|adjustResize"
+            tools:ignore="InnerclassSeparator"
+            />
         <activity
             android:name=".Activities.UpdateProfileActivity"
-            android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
+            android:windowSoftInputMode="stateAlwaysHidden|adjustResize"
+            tools:ignore="InnerclassSeparator"
+            />
         <activity
             android:name=".Activities.HomeActivity"
-            android:theme="@style/AppTheme" />
+            android:theme="@style/AppTheme"
+            tools:ignore="InnerclassSeparator"
+            />
         <activity
             android:name=".Activities.RulesActivity"
-            android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
-        <activity android:name=".Activities.MyAdsActivity" />
-        <activity android:name=".Activities.SearchActivity" />
-        <activity android:name=".Activities.ForgetPasswordActivity" />
-        <activity android:name=".Activities.AdsDetailsActivity" />
-        <activity android:name=".Activities.PromiseActivity" />
-        <activity android:name=".Activities.GpsActivity">
+            android:windowSoftInputMode="stateAlwaysHidden|adjustResize"
+            tools:ignore="InnerclassSeparator"
+            />
+        <activity android:name=".Activities.MyAdsActivity"
+            tools:ignore="InnerclassSeparator"
+            />
+        <activity android:name=".Activities.SearchActivity"
+            tools:ignore="InnerclassSeparator"
+            />
+        <activity android:name=".Activities.ForgetPasswordActivity"
+            tools:ignore="InnerclassSeparator"
+            />
+        <activity android:name=".Activities.AdsDetailsActivity"
+            tools:ignore="InnerclassSeparator"
+            />
+        <activity android:name=".Activities.PromiseActivity"
+            tools:ignore="InnerclassSeparator"
+            />
+        <activity android:name=".Activities.GpsActivity"
+            tools:ignore="InnerclassSeparator"
+            >
 
         </activity>
         <activity android:name=".Activities.UpdateAdsActivity"
             android:windowSoftInputMode="stateAlwaysHidden"
+            tools:ignore="InnerclassSeparator"
             />
-        <activity android:name=".Activities.SendMsgActivity" />
-        <activity android:name=".Activities.AllMessagesActivity" />
-        <activity android:name=".Activities.GeneralSearchActivity" />
-        <activity android:name=".Activities.SubDepartAdsActivity" />
-        <activity android:name=".Activities.ViewImagesActivity" />
-        <activity android:name=".Activities.WebActivity">
+        <activity android:name=".Activities.SendMsgActivity"
+            tools:ignore="InnerclassSeparator"
+            />
+        <activity android:name=".Activities.AllMessagesActivity"
+            tools:ignore="InnerclassSeparator"
+            />
+        <activity android:name=".Activities.GeneralSearchActivity"
+            tools:ignore="InnerclassSeparator"
+            />
+        <activity android:name=".Activities.SubDepartAdsActivity"
+            tools:ignore="InnerclassSeparator"
+            />
+        <activity android:name=".Activities.ViewImagesActivity"
+            tools:ignore="InnerclassSeparator"
+            />
+        <activity android:name=".Activities.WebActivity"
+            tools:ignore="InnerclassSeparator"
+            >
 
         </activity>
-        <activity android:name=".Activities.SelectLanguageActivity">
+        <activity android:name=".Activities.SelectLanguageActivity"
+            tools:ignore="InnerclassSeparator"
+            >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

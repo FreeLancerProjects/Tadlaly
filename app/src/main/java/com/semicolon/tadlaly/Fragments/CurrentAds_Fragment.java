@@ -16,7 +16,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.TextView;
@@ -24,7 +23,6 @@ import android.widget.Toast;
 
 import com.semicolon.tadlaly.Activities.AdsDetailsActivity;
 import com.semicolon.tadlaly.Activities.MyAdsActivity;
-import com.semicolon.tadlaly.Activities.UpdateAdsActivity;
 import com.semicolon.tadlaly.Adapters.MyCurrentAdsAdapter;
 import com.semicolon.tadlaly.Models.MyAdsModel;
 import com.semicolon.tadlaly.Models.ResponseModel;
@@ -34,6 +32,7 @@ import com.semicolon.tadlaly.Services.Api;
 import com.semicolon.tadlaly.Services.Services;
 import com.semicolon.tadlaly.Services.Tags;
 import com.semicolon.tadlaly.SingleTone.UserSingleTone;
+import com.semicolon.tadlaly.share.Common;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,22 +47,19 @@ public class CurrentAds_Fragment extends Fragment implements View.OnLongClickLis
     private MyCurrentAdsAdapter adapter;
     private RecyclerView.LayoutManager manager;
     private List<MyAdsModel> myAdsModelList;
-    private List<MyAdsModel> removed;
     private ProgressBar progBar;
     public boolean inNormalMode=true;
-    private MyCurrentAdsAdapter myCurrentAdsAdapter;
     private TextView item_count;
-    public int Counter=0;
     private MyAdsActivity adsActivity;
     private AlertDialog alertDialog;
     private ProgressDialog dialog;
     private UserSingleTone userSingleTone;
     private UserModel userModel;
     private TextView no_ads;
-    private String isSell="-1";
-    private RadioButton sellBtn,undoBtn;
     private List<String> ads_ids;
     private int page_index=1;
+    private int sell_type = -1;
+    private MyAdsActivity activity;
 
     @Nullable
     @Override
@@ -79,8 +75,8 @@ public class CurrentAds_Fragment extends Fragment implements View.OnLongClickLis
 
 
     private void initView(View view) {
+        activity = (MyAdsActivity) getActivity();
         ads_ids = new ArrayList<>();
-        removed = new ArrayList<>();
         myAdsModelList = new ArrayList<>();
         no_ads = view.findViewById(R.id.no_ads);
         item_count = view.findViewById(R.id.item_count);
@@ -124,39 +120,31 @@ public class CurrentAds_Fragment extends Fragment implements View.OnLongClickLis
         dialog.setCancelable(true);
         dialog.setIndeterminateDrawable(drawable);
     }
-    private void CreateAlertDialog()
+    private void CreateAlertDialog(int pos)
     {
         View view = LayoutInflater.from(getActivity()).inflate(R.layout.custom_delete_alert,null);
         TextView title = view.findViewById(R.id.title);
         TextView done = view.findViewById(R.id.done);
         TextView cancel = view.findViewById(R.id.cancel);
-        sellBtn = view.findViewById(R.id.sellBtn);
-        undoBtn =view.findViewById(R.id.undoBtn);
+        RadioButton sellBtn = view.findViewById(R.id.sellBtn);
+        RadioButton undoBtn =view.findViewById(R.id.undoBtn);
         sellBtn.setOnClickListener(view13 ->
                 {
                     sellBtn.setChecked(true);
-                    isSell = Tags.isSell;
+                    sell_type = Tags.isSell;
                 }
                 );
         undoBtn.setOnClickListener(view14 ->
         {
-            isSell = Tags.isdeleted;
+            sell_type = Tags.isdeleted;
             undoBtn.setChecked(true);
         } );
         done.setOnClickListener(view1 -> {
-            //Delete();
-            if (sellBtn.isChecked())
-            {
-                isSell = Tags.isSell;
+
+            if (sell_type != -1) {
+
                 alertDialog.dismiss();
-
-
-            }else if (undoBtn.isChecked())
-            {
-                isSell = Tags.isdeleted;
-                alertDialog.dismiss();
-
-
+                Delete(sell_type,pos);
             }else
                 {
                     Toast.makeText(adsActivity, R.string.sel_reason, Toast.LENGTH_SHORT).show();
@@ -171,6 +159,7 @@ public class CurrentAds_Fragment extends Fragment implements View.OnLongClickLis
                 .setCancelable(false)
                 .setView(view)
                 .create();
+        alertDialog.show();
     }
     public void getData(int page_index) {
 
@@ -331,77 +320,15 @@ public class CurrentAds_Fragment extends Fragment implements View.OnLongClickLis
         item_count.setVisibility(View.VISIBLE);
     }
 
-    private void UpdateUi(int count, String isSell) {
-        if (isSell.equals(Tags.isSell))
-        {
-            if (count==0)
-            {
-                item_count.setText(getString(R.string.isSell) +"("+0+")");
-                adsActivity.setVisibility(0);
-            }else if (count>0)
-            {
-                item_count.setText(getString(R.string.isSell) +"("+count+")");
-                adsActivity.setVisibility(1);
 
-            }
-            else if (count < 0)
-            {
-                adsActivity.setVisibility(0);
-
-                Counter=0;
-                count = Counter;
-                item_count.setText(getString(R.string.isSell) +"("+count+")");
-
-            }
-        }else if (isSell.equals(Tags.isdeleted))
-            {
-                if (count==0)
-                {
-                    item_count.setText(getString(R.string.numitem_delete) +"("+0+")");
-                    adsActivity.setVisibility(0);
-                }else if (count>0)
-                {
-                    item_count.setText(getString(R.string.numitem_delete) +"("+count+")");
-                    adsActivity.setVisibility(1);
-
-                }
-                else if (count < 0)
-                {
-                    adsActivity.setVisibility(0);
-
-                    Counter=0;
-                    count = Counter;
-                    item_count.setText(getString(R.string.numitem_delete) +"("+count+")");
-
-                }
-            }
-
-    }
-
-    public void setPosForDetails(int pos)
+    public void setPosForDetails(MyAdsModel myAdsModel)
     {
         try {
-           /* inNormalMode = false;
-            MyCurrentAdsAdapter myCurrentAdsAdapter = (MyCurrentAdsAdapter) recView.getAdapter();
-            myCurrentAdsAdapter.notifyDataSetChanged();
-            ClearUi();*/
-           if (pos<0)
-           {MyAdsModel myAdsModel = myAdsModelList.get(0);
-               Intent intent = new Intent(getActivity(), AdsDetailsActivity.class);
-               intent.putExtra("ad_details",myAdsModel);
-               intent.putExtra("whoVisit",Tags.me_visit);
-               intent.putExtra("user_id",userModel.getUser_id());
-               getActivity().startActivity(intent);
-
-           }else
-               {
-                   MyAdsModel myAdsModel = myAdsModelList.get(pos);
-                   Intent intent = new Intent(getActivity(), AdsDetailsActivity.class);
-                   intent.putExtra("ad_details",myAdsModel);
-                   intent.putExtra("whoVisit",Tags.me_visit);
-                   intent.putExtra("user_id",userModel.getUser_id());
-                   getActivity().startActivity(intent);
-               }
+            Intent intent = new Intent(getActivity(), AdsDetailsActivity.class);
+            intent.putExtra("ad_details",myAdsModel);
+            intent.putExtra("whoVisit",Tags.me_visit);
+            intent.putExtra("user_id",userModel.getUser_id());
+            getActivity().startActivity(intent);
 
         }catch (NullPointerException e)
         {
@@ -410,114 +337,7 @@ public class CurrentAds_Fragment extends Fragment implements View.OnLongClickLis
 
 
     }
-    public void setPos(View view,int pos,String type)
-    {
 
-        try {
-            if (pos<0)
-            {
-                MyAdsModel myAdsModel = myAdsModelList.get(0);
-                if (myCurrentAdsAdapter ==null)
-                {
-                    myCurrentAdsAdapter = (MyCurrentAdsAdapter) recView.getAdapter();
-
-                }
-
-                if (type.equals(Tags.del))
-                {
-                    if (isSell.equals("-1"))
-                    {
-                        CreateAlertDialog();
-                        alertDialog.show();
-                        return;
-                    }
-                    ImageView icon = (ImageView) view;
-
-                    if (removed.contains(myAdsModel))
-                    {
-                        icon.setImageResource(R.drawable.delete_icon);
-                        removed.remove(myAdsModel);
-                        Counter--;
-                        UpdateUi(Counter,isSell);
-
-                    }else
-                    {
-                        removed.add(myAdsModel);
-                        Counter++;
-                        UpdateUi(Counter,isSell);
-
-                        icon.setImageResource(R.drawable.clear_icon);
-
-                    }
-                    //myCurrentAdsAdapter.DeleteItems(removed);
-
-                }else if (type.equals(Tags.upd))
-                {
-                    ((MyAdsActivity)getActivity()).UpdateAds(myAdsModel);
-                    inNormalMode=true;
-                    myCurrentAdsAdapter.notifyDataSetChanged();
-                    ClearUi();
-
-
-                }
-
-            }else
-                {
-                    MyAdsModel myAdsModel = myAdsModelList.get(pos);
-                    if (myCurrentAdsAdapter ==null)
-                    {
-                        myCurrentAdsAdapter = (MyCurrentAdsAdapter) recView.getAdapter();
-
-                    }
-
-                    if (type.equals(Tags.del))
-                    {
-                        if (isSell.equals("-1"))
-                        {
-                            CreateAlertDialog();
-                            alertDialog.show();
-                            return;
-                        }
-                        ImageView icon = (ImageView) view;
-
-                        if (removed.contains(myAdsModel))
-                        {
-                            icon.setImageResource(R.drawable.delete_icon);
-                            removed.remove(myAdsModel);
-                            Counter--;
-                            UpdateUi(Counter,isSell);
-
-                        }else
-                        {
-                            removed.add(myAdsModel);
-                            Counter++;
-                            UpdateUi(Counter,isSell);
-
-                            icon.setImageResource(R.drawable.clear_icon);
-
-                        }
-                        //myCurrentAdsAdapter.DeleteItems(removed);
-
-                    }else if (type.equals(Tags.upd))
-                    {
-                        Intent intent = new Intent(getActivity(), UpdateAdsActivity.class);
-                        intent.putExtra("ad_details",myAdsModel);
-                        getActivity().startActivity(intent);
-                        inNormalMode=true;
-                        myCurrentAdsAdapter.notifyDataSetChanged();
-                        ClearUi();
-
-
-                    }
-
-                }
-
-
-        }catch (NullPointerException e){}
-        catch (Exception e){}
-
-
-    }
     public void setPosFavourit(int pos,boolean isFav)
     {
         MyAdsModel myAdsModel = myAdsModelList.get(pos);
@@ -533,25 +353,12 @@ public class CurrentAds_Fragment extends Fragment implements View.OnLongClickLis
     private void ClearUi()
     {
         inNormalMode=true;
-        if (myCurrentAdsAdapter==null)
-        {
-            myCurrentAdsAdapter = (MyCurrentAdsAdapter) recView.getAdapter();
 
-        }
-        myCurrentAdsAdapter.notifyDataSetChanged();
+        adapter.notifyDataSetChanged();
         item_count.setVisibility(View.GONE);
-        removed.clear();
         ads_ids.clear();
-        item_count.setText("");
-        Counter=0;
-        isSell="-1";
-        if (sellBtn!=null&&undoBtn!=null)
-        {
-            sellBtn.setChecked(false);
-            undoBtn.setChecked(false);
-        }
 
-        adsActivity.setVisibility(0);
+
 
     }
 
@@ -560,39 +367,35 @@ public class CurrentAds_Fragment extends Fragment implements View.OnLongClickLis
         if (!inNormalMode)
         {
             inNormalMode = true;
-            if (myCurrentAdsAdapter ==null)
-            {
-                myCurrentAdsAdapter = (MyCurrentAdsAdapter) recView.getAdapter();
 
-            }
             ClearUi();
-            myCurrentAdsAdapter.notifyDataSetChanged();
+            adapter.notifyDataSetChanged();
         }
     }
 
-    public void Delete()
+    public void Delete(int sell_type,int pos)
     {
-        for (MyAdsModel myAdsModel:removed)
-        {
-            ads_ids.add(myAdsModel.getId_advertisement());
-        }
-
-        Log.e("size",ads_ids.size()+"");
-        Log.e("issell",isSell+"");
+        ProgressDialog dialog = Common.createProgressDialog(activity,getString(R.string.wait));
+        dialog.show();
+        ads_ids.add(myAdsModelList.get(pos).getId_advertisement());
 
         Retrofit retrofit = Api.getRetrofit(Tags.Base_Url);
-        Call<ResponseModel> call = retrofit.create(Services.class).deleteAds(isSell, ads_ids);
+        Call<ResponseModel> call = retrofit.create(Services.class).deleteAds(sell_type, ads_ids);
         call.enqueue(new Callback<ResponseModel>() {
             @Override
             public void onResponse(Call<ResponseModel> call, Response<ResponseModel> response) {
                 if (response.isSuccessful())
                 {
+                    dialog.dismiss();
                     if (response.body().getSuccess()==1)
                     {
-                        myCurrentAdsAdapter.DeleteItems(removed);
+                        myAdsModelList.remove(pos);
+                        if (myAdsModelList.size()==0)
+                        {
+                            no_ads.setVisibility(View.VISIBLE);
+                        }
                         ClearUi();
-                        inNormalMode=true;
-                        myCurrentAdsAdapter.notifyDataSetChanged();
+                        adapter.notifyDataSetChanged();
                         dialog.dismiss();
                     }else
                         {
@@ -605,6 +408,7 @@ public class CurrentAds_Fragment extends Fragment implements View.OnLongClickLis
             @Override
             public void onFailure(Call<ResponseModel> call, Throwable t) {
                 Toast.makeText(getActivity(),R.string.error, Toast.LENGTH_SHORT).show();
+                dialog.dismiss();
                 Log.e("Error",t.getMessage());
             }
         });
@@ -619,5 +423,22 @@ public class CurrentAds_Fragment extends Fragment implements View.OnLongClickLis
     @Override
     public void onSuccess(UserModel userModel) {
         this.userModel= userModel;
+    }
+
+    public void setItemData(MyAdsModel myAdsModel, int pos, String action_type) {
+
+        if (action_type.equals(Tags.del))
+        {
+            CreateAlertDialog(pos);
+        }else if (action_type.equals(Tags.upd))
+        {
+            adapter.notifyDataSetChanged();
+            ClearUi();
+            activity.UpdateAds(myAdsModel);
+            /*Intent intent = new Intent(getActivity(), UpdateAdsActivity.class);
+            intent.putExtra("ad_details",myAdsModel);
+            getActivity().startActivity(intent);*/
+
+        }
     }
 }

@@ -79,19 +79,12 @@ public class MyCurrentAdsAdapter extends RecyclerView.Adapter <RecyclerView.View
             }
 
     }
-    /*private void setAnimation(View view)
-    {
-        ScaleAnimation animation = new ScaleAnimation(0f,1f,0f,1f);
-        animation.setDuration(2000);
-        view.startAnimation(animation);
 
-    }*/
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         if (holder instanceof myItemHolder)
         {
             myItemHolder itemHolder = (myItemHolder) holder;
-            //setAnimation(itemHolder.itemView);
             if (ads_fragment.inNormalMode)
             {
                 itemHolder.updContainer.setVisibility(View.GONE);
@@ -103,9 +96,20 @@ public class MyCurrentAdsAdapter extends RecyclerView.Adapter <RecyclerView.View
                 itemHolder.itemView.setEnabled(false);
 
             }
-            itemHolder.itemView.setOnClickListener(view -> ads_fragment.setPosForDetails(itemHolder.getAdapterPosition()));
-            itemHolder.delete.setOnClickListener(view -> ads_fragment.setPos(itemHolder.delete,itemHolder.getAdapterPosition(), Tags.del));
-            itemHolder.update.setOnClickListener(view -> ads_fragment.setPos(itemHolder.update,itemHolder.getAdapterPosition(), Tags.upd));
+            itemHolder.itemView.setOnClickListener(view ->{
+                MyAdsModel myAdsModel = myAdsModelList.get(holder.getAdapterPosition());
+
+                ads_fragment.setPosForDetails(myAdsModel);
+            });
+            itemHolder.delete.setOnClickListener(view -> {
+                MyAdsModel myAdsModel = myAdsModelList.get(holder.getAdapterPosition());
+
+                ads_fragment.setItemData(myAdsModel,holder.getAdapterPosition(), Tags.del);
+            });
+            itemHolder.update.setOnClickListener(view -> {
+                MyAdsModel myAdsModel = myAdsModelList.get(holder.getAdapterPosition());
+                ads_fragment.setItemData(myAdsModel,holder.getAdapterPosition(), Tags.upd);
+            });
             MyAdsModel myAdsModel = myAdsModelList.get(position);
             itemHolder.BindData(myAdsModel);
             itemHolder.tv_upd_del.setOnClickListener(new View.OnClickListener() {
@@ -136,7 +140,7 @@ public class MyCurrentAdsAdapter extends RecyclerView.Adapter <RecyclerView.View
 
     public class myItemHolder extends RecyclerView.ViewHolder {
         private LinearLayout updContainer;
-        private TextView date,state_new,state_old,name,cost,viewers,update,distance,tv_upd_del;
+        private TextView date,state_new,state_old,state_service,name,cost,viewers,update,distance,tv_upd_del;
         private ImageView delete;
         private RoundedImageView img;
         private LinearLayout distContainer;
@@ -154,6 +158,8 @@ public class MyCurrentAdsAdapter extends RecyclerView.Adapter <RecyclerView.View
             date = itemView.findViewById(R.id.date);
             state_new= itemView.findViewById(R.id.state_new);
             state_old= itemView.findViewById(R.id.state_old);
+            state_service= itemView.findViewById(R.id.state_service);
+
             name = itemView.findViewById(R.id.name);
             cost = itemView.findViewById(R.id.cost);
 
@@ -177,11 +183,20 @@ public class MyCurrentAdsAdapter extends RecyclerView.Adapter <RecyclerView.View
             {
                 state_new.setVisibility(View.VISIBLE);
                 state_old.setVisibility(View.GONE);
-            } else
-                {
-                    state_new.setVisibility(View.GONE);
-                    state_old.setVisibility(View.VISIBLE);
-                }
+                state_service.setVisibility(View.GONE);
+
+            } else if (myAdsModel.getAdvertisement_type().equals(Tags.ad_old))
+            {
+                state_new.setVisibility(View.GONE);
+                state_old.setVisibility(View.VISIBLE);
+                state_service.setVisibility(View.GONE);
+
+            }else if (myAdsModel.getAdvertisement_type().equals(Tags.service))
+            {
+                state_new.setVisibility(View.GONE);
+                state_old.setVisibility(View.GONE);
+                state_service.setVisibility(View.VISIBLE);
+            }
             //name.setTypeface(typeface);
             name.setText(myAdsModel.getAdvertisement_title());
             //cost.setTypeface(typeface);
@@ -197,11 +212,7 @@ public class MyCurrentAdsAdapter extends RecyclerView.Adapter <RecyclerView.View
         return myAdsModelList.get(position)==null?progress_row:item_row;
     }
 
-    public void DeleteItems(List<MyAdsModel> myAdsModels)
-    {
-        myAdsModelList.removeAll(myAdsModels);
-        notifyDataSetChanged();
-    }
+
 
     public interface onLoadMoreListener
     {

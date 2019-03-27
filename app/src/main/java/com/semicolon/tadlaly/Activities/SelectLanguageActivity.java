@@ -36,7 +36,7 @@ public class SelectLanguageActivity extends AppCompatActivity {
         preferences = new Preferences(this);
         if (preferences.isLanguageSelected())
         {
-            NavToGps();
+            NavToSplash();
         }else
             {
                 createAlertDialog();
@@ -60,6 +60,8 @@ public class SelectLanguageActivity extends AppCompatActivity {
                 alertDialog.dismiss();
                 preferences.setIsSelectedLang(true);
                 Paper.book().write("language","ar");
+                LocalManager.setNewLocale(SelectLanguageActivity.this,"ar");
+
                 refreshLayout();
 
             }
@@ -71,6 +73,8 @@ public class SelectLanguageActivity extends AppCompatActivity {
 
                 preferences.setIsSelectedLang(true);
                 Paper.book().write("language","en");
+                LocalManager.setNewLocale(SelectLanguageActivity.this,"en");
+
                 refreshLayout();
 
 
@@ -89,9 +93,9 @@ public class SelectLanguageActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    private void NavToGps()
+    private void NavToSplash()
     {
-        Intent intent = new Intent(this,GpsActivity.class);
+        Intent intent = new Intent(this,SplashActivity.class);
         startActivity(intent);
         finish();
     }

@@ -20,7 +20,6 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.lamudi.phonefield.PhoneInputLayout;
 import com.semicolon.tadlaly.Models.UserModel;
 import com.semicolon.tadlaly.R;
 import com.semicolon.tadlaly.Services.Api;
@@ -28,6 +27,7 @@ import com.semicolon.tadlaly.Services.Preferences;
 import com.semicolon.tadlaly.Services.Services;
 import com.semicolon.tadlaly.Services.Tags;
 import com.semicolon.tadlaly.SingleTone.UserSingleTone;
+import com.semicolon.tadlaly.share.Common;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -37,7 +37,7 @@ import retrofit2.Retrofit;
 public class UpdateProfileItems_Fragment extends Fragment implements UserSingleTone.OnCompleteListener{
     private LinearLayout name_container,email_container,phone_container,country_container,username_container;
     private EditText name,email,username,city;
-    private PhoneInputLayout phone;
+    private EditText edt_phone;
     private Button updateBtn,cancelBtn;
     private String type;
     private UserModel userModel;
@@ -68,7 +68,7 @@ public class UpdateProfileItems_Fragment extends Fragment implements UserSingleT
         cancelBtn = view.findViewById(R.id.cancelBtn);
         name = view.findViewById(R.id.name);
         email = view.findViewById(R.id.email);
-        phone = view.findViewById(R.id.phone);
+        edt_phone = view.findViewById(R.id.edt_phone);
         username = view.findViewById(R.id.username);
         city = view.findViewById(R.id.country);
         cancelBtn.setOnClickListener(view1 -> getActivity().finish());
@@ -120,6 +120,8 @@ public class UpdateProfileItems_Fragment extends Fragment implements UserSingleT
                     }else
                         {
                             name.setError(null);
+                            Common.CloseKeyBoard(getActivity(),name);
+
                             UpdateName(m_name);
 
                         }
@@ -138,22 +140,28 @@ public class UpdateProfileItems_Fragment extends Fragment implements UserSingleT
                     else
                     {
                         email.setError(null);
+                        Common.CloseKeyBoard(getActivity(),email);
+
                         UpdateEmail(m_email);
 
                     }
                 }
                 else if (type.equals(Tags.update_phone))
                 {
-                    String m_phone = phone.getPhoneNumber();
+                    String m_phone = edt_phone.getText().toString().trim();
                     if (TextUtils.isEmpty(m_phone))
                     {
-                        phone.getTextInputLayout().getEditText().setError(getString(R.string.enter_phone));
-                    }else
+                        edt_phone.setError(getString(R.string.field_req));
+                    }else if (!Patterns.PHONE.matcher(m_phone).matches()||m_phone.length()<6||m_phone.length()>=13)
                     {
-                        phone.getTextInputLayout().getEditText().setError(null);
-                        UpdatePhone(m_phone);
+                        edt_phone.setError(getString(R.string.inv_phone));
+                    }else
+                        {
+                            edt_phone.setError(null);
+                            Common.CloseKeyBoard(getActivity(),edt_phone);
+                            UpdatePhone(m_phone);
 
-                    }
+                        }
                 }
                 else if (type.equals(Tags.update_country))
                 {
@@ -164,6 +172,8 @@ public class UpdateProfileItems_Fragment extends Fragment implements UserSingleT
                     }else
                     {
                         city.setError(null);
+                        Common.CloseKeyBoard(getActivity(),city);
+
                         UpdateCountry(m_city);
 
                     }
@@ -177,6 +187,8 @@ public class UpdateProfileItems_Fragment extends Fragment implements UserSingleT
                     }else
                     {
                         username.setError(null);
+                        Common.CloseKeyBoard(getActivity(),username);
+
                         UpdateUsername(m_username);
 
                     }
@@ -260,6 +272,7 @@ public class UpdateProfileItems_Fragment extends Fragment implements UserSingleT
     }
     private void UpdatePhone(String phone)
     {
+
         CreateProgress_dialog(getString(R.string.upd_name));
         dialog.show();
         Retrofit retrofit = Api.getRetrofit(Tags.Base_Url);

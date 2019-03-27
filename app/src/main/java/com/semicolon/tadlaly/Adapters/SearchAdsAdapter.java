@@ -138,7 +138,7 @@ public class SearchAdsAdapter extends RecyclerView.Adapter <RecyclerView.ViewHol
     }
 
     public class myItemHolder extends RecyclerView.ViewHolder {
-        private TextView date,state_new,state_old,name,cost,city,distance;
+        private TextView date,state_new,state_old,state_service,name,cost,city,distance;
         private RoundedImageView img;
 
         public myItemHolder(View itemView) {
@@ -149,6 +149,8 @@ public class SearchAdsAdapter extends RecyclerView.Adapter <RecyclerView.ViewHol
             date = itemView.findViewById(R.id.date);
             state_new= itemView.findViewById(R.id.state_new);
             state_old= itemView.findViewById(R.id.state_old);
+            state_service= itemView.findViewById(R.id.state_service);
+
             name = itemView.findViewById(R.id.name);
             cost = itemView.findViewById(R.id.cost);
 
@@ -167,21 +169,27 @@ public class SearchAdsAdapter extends RecyclerView.Adapter <RecyclerView.ViewHol
                 Picasso.with(context).load(Uri.parse(Tags.Image_Url+myAdsModel.getAdvertisement_image().get(0).getPhoto_name())).into(img);
                 Log.e("size1",myAdsModel.getAdvertisement_image().size()+"");
             }
-            //date.setTypeface(typeface);
             date.setText("قبل "+myAdsModel.getAdvertisement_date());
 
             if (myAdsModel.getAdvertisement_type().equals(Tags.ad_new))
             {
                 state_new.setVisibility(View.VISIBLE);
                 state_old.setVisibility(View.GONE);
-            } else
-                {
-                    state_new.setVisibility(View.GONE);
-                    state_old.setVisibility(View.VISIBLE);
-                }
-           // name.setTypeface(typeface);
+                state_service.setVisibility(View.GONE);
+
+            } else if (myAdsModel.getAdvertisement_type().equals(Tags.ad_old))
+            {
+                state_new.setVisibility(View.GONE);
+                state_old.setVisibility(View.VISIBLE);
+                state_service.setVisibility(View.GONE);
+
+            }else if (myAdsModel.getAdvertisement_type().equals(Tags.service))
+            {
+                state_new.setVisibility(View.GONE);
+                state_old.setVisibility(View.GONE);
+                state_service.setVisibility(View.VISIBLE);
+            }
             name.setText(myAdsModel.getAdvertisement_title());
-            //cost.setTypeface(typeface);
             if (cost.equals(Tags.undefined_price))
             {
                 cost.setText(myAdsModel.getAdvertisement_price());

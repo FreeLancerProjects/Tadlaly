@@ -126,7 +126,7 @@ public class MyPreviousAdsAdapter extends RecyclerView.Adapter <RecyclerView.Vie
         }
     }
     public class myItemHolder extends RecyclerView.ViewHolder {
-        private TextView date,state_new,state_old,name,cost,viewers;
+        private TextView date,state_new,state_old,state_service,name,cost,viewers;
         private RoundedImageView img;
         public myItemHolder(View itemView) {
             super(itemView);
@@ -135,6 +135,8 @@ public class MyPreviousAdsAdapter extends RecyclerView.Adapter <RecyclerView.Vie
             date = itemView.findViewById(R.id.date);
             state_new= itemView.findViewById(R.id.state_new);
             state_old= itemView.findViewById(R.id.state_old);
+            state_service= itemView.findViewById(R.id.state_service);
+
             name = itemView.findViewById(R.id.name);
             cost = itemView.findViewById(R.id.cost);
 
@@ -158,11 +160,20 @@ public class MyPreviousAdsAdapter extends RecyclerView.Adapter <RecyclerView.Vie
             {
                 state_new.setVisibility(View.VISIBLE);
                 state_old.setVisibility(View.GONE);
-            } else
-                {
-                    state_new.setVisibility(View.GONE);
-                    state_old.setVisibility(View.VISIBLE);
-                }
+                state_service.setVisibility(View.GONE);
+
+            } else if (myAdsModel.getAdvertisement_type().equals(Tags.ad_old))
+            {
+                state_new.setVisibility(View.GONE);
+                state_old.setVisibility(View.VISIBLE);
+                state_service.setVisibility(View.GONE);
+
+            }else if (myAdsModel.getAdvertisement_type().equals(Tags.service))
+            {
+                state_new.setVisibility(View.GONE);
+                state_old.setVisibility(View.GONE);
+                state_service.setVisibility(View.VISIBLE);
+            }
            // name.setTypeface(typeface);
             name.setText(myAdsModel.getAdvertisement_title());
             //cost.setTypeface(typeface);

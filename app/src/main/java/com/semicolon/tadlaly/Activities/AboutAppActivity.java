@@ -19,6 +19,8 @@ import com.semicolon.tadlaly.Services.Services;
 import com.semicolon.tadlaly.Services.Tags;
 import com.semicolon.tadlaly.language.LocalManager;
 
+import java.util.Locale;
+
 import io.paperdb.Paper;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -29,6 +31,7 @@ public class AboutAppActivity extends AppCompatActivity {
     private TextView txt_aboutApp;
     private ProgressBar progBar;
     private ImageView back;
+    private String current_language;
 
 
     @Override
@@ -77,7 +80,14 @@ public class AboutAppActivity extends AppCompatActivity {
     }
 
     private void initView() {
+        current_language = Paper.book().read("language", Locale.getDefault().getLanguage());
         back = findViewById(R.id.back);
+
+        if (current_language.equals("ar"))
+        {
+            back.setRotation(180f);
+        }
+
         back.setOnClickListener(view -> finish());
         txt_aboutApp = findViewById(R.id.txt_aboutApp);
         progBar = findViewById(R.id.progBar);

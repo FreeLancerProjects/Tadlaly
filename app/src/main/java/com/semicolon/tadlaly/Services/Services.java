@@ -148,18 +148,18 @@ public interface Services {
 
     @FormUrlEncoded
     @POST("Api/DeleteAdvertisement")
-    Call<ResponseModel> deleteAds(@Field("reason") String reason,@Field("ids_advertisement[]") List<String> ads_ids);
+    Call<ResponseModel> deleteAds(@Field("reason") int reason,@Field("ids_advertisement[]") List<String> ads_ids);
 
-    @FormUrlEncoded
+    @Multipart
     @POST("Api/Payment/{user_id}")
     Call<ResponseModel> transMoney(@Path("user_id")String user_id,
-                                   @Field("user_name")String user_name,
-                                   @Field("amount")String amount,
-                                   @Field("bank")String bank,
-                                   @Field("date")String date,
-                                   @Field("transform_person")String transform_person,
-                                   @Field("transform_image")String transform_image,
-                                   @Field("advertisement_code")String advertisement_code);
+                                   @Part("user_name") RequestBody user_name,
+                                   @Part("amount")RequestBody amount,
+                                   @Part("bank")RequestBody bank,
+                                   @Part("date")RequestBody date,
+                                   @Part("transform_person")RequestBody transform_person,
+                                   @Part MultipartBody.Part transform_image,
+                                   @Part("advertisement_code")RequestBody advertisement_code);
     @GET("Api/LastMessage/{user_id}")
     Call<List<PeopleMsgModel>> getAllPeople_chat(@Path("user_id") String user_id);
 

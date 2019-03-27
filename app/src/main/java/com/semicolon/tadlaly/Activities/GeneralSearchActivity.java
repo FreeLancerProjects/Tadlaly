@@ -40,6 +40,7 @@ import com.semicolon.tadlaly.language.LocalManager;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import io.paperdb.Paper;
@@ -78,6 +79,7 @@ public class GeneralSearchActivity extends AppCompatActivity implements Departme
     private Call<List<MyAdsModel>> call;
     private LatLngSingleTone latLngSingleTone;
     public ImageView image_top;
+    private String current_language;
     @Override
     protected void attachBaseContext(Context newBase) {
         Paper.init(newBase);
@@ -130,7 +132,15 @@ public class GeneralSearchActivity extends AppCompatActivity implements Departme
        });
     }
 
+
     private void initView() {
+        current_language = Paper.book().read("language", Locale.getDefault().getLanguage());
+        back = findViewById(R.id.back);
+
+        if (current_language.equals("ar"))
+        {
+            back.setRotation(180f);
+        }
         distList = new ArrayList<>();
         map = new HashMap<>();
         idsList = new ArrayList<>();
@@ -139,7 +149,6 @@ public class GeneralSearchActivity extends AppCompatActivity implements Departme
         spinner_branchModelList = new ArrayList<>();
         finalmyAdsModelList = new ArrayList<>();
         myAdsModelList1 = new ArrayList<>();
-        back = findViewById(R.id.back);
         image_top = findViewById(R.id.image_top);
         spinner_dept = findViewById(R.id.spinner_dept);
         spinner_branch = findViewById(R.id.spinner_branch);

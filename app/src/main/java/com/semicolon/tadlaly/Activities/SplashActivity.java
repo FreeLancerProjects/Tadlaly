@@ -29,8 +29,6 @@ public class SplashActivity extends AppCompatActivity implements SurfaceHolder.C
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
-        /*Calligrapher calligrapher=new Calligrapher(this);
-        calligrapher.setFont(this,"Amble-Regular.ttf",true);*/
 
         surfaceView = findViewById(R.id.surfaceView);
         surfaceHolder = surfaceView.getHolder();

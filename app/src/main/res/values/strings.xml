@@ -206,6 +206,12 @@
     <string name="nearme">Near me</string>
     <string name="newest">Newest</string>
     <string name="mobile_number">Mobile Number</string>
+    <string name="allow">Allow</string>
+    <string name="deny">Deny</string>
+    <string name="allow_tdlly_to_access_gps">Allow TDLLY to Access Gps</string>
+    <string name="fetching_your_location">Fetching your location...</string>
+    <string name="ch_trans_img">Choose Transfer image</string>
+    <string name="service">Service</string>
     <string-array name="ad_state">
         <item>Ad type</item>
         <item>New</item>

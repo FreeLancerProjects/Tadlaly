@@ -28,7 +28,6 @@
                     android:id="@+id/back"
                     android:layout_width="56dp"
                     android:layout_height="match_parent"
-                    android:layout_alignParentLeft="true"
                     android:src="@drawable/white_back_arrow"
                     android:padding="18dp"
                     />
@@ -44,7 +43,7 @@
             </RelativeLayout>
         </android.support.v7.widget.Toolbar>
     </android.support.design.widget.AppBarLayout>
-    <ScrollView
+    <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fillViewport="true"
@@ -171,25 +170,15 @@
                 >
 
             </Spinner>
-            <com.lamudi.phonefield.PhoneInputLayout
-                android:id="@+id/phone"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp"
-                android:background="@drawable/et_bg_trans"
-                android:paddingLeft="5dp"
-                android:paddingRight="5dp"
-                >
 
-            </com.lamudi.phonefield.PhoneInputLayout>
-           <!-- <EditText
-                android:id="@+id/phone"
+             <EditText
+                android:id="@+id/edt_phone"
                 android:layout_width="match_parent"
                 android:layout_height="45dp"
                 android:paddingLeft="5dp"
                 android:drawablePadding="5dp"
                 android:textColor="@color/black"
-                android:hint="@string/phone"
+                android:hint="@string/mobile_number"
                 android:paddingRight="5dp"
                 android:textColorHint="@color/black"
                 android:layout_marginBottom="10dp"
@@ -197,12 +186,13 @@
                 android:scrollHorizontally="true"
                 android:textSize="13sp"
                 android:textStyle="bold"
+                 android:inputType="phone"
                 android:background="@drawable/et_bg_trans"
                 android:gravity="center_vertical"
 
 
 
-                />-->
+                />
             <CheckBox
                 android:id="@+id/checkbox_phone_state"
                 android:layout_width="match_parent"
@@ -215,27 +205,36 @@
 
 
                 />
-            <EditText
-                android:id="@+id/ad_content"
+            <android.support.v4.widget.NestedScrollView
                 android:layout_width="match_parent"
                 android:layout_height="120dp"
-                android:paddingLeft="5dp"
-                android:paddingRight="5dp"
-                android:drawablePadding="5dp"
-                android:textColor="@color/black"
-                android:hint="@string/ads_content"
-                android:textColorHint="@color/black"
-                android:layout_marginBottom="10dp"
-                android:singleLine="true"
-                android:textSize="16sp"
-                android:textStyle="bold"
+                android:fillViewport="true"
+                android:fitsSystemWindows="true"
                 android:background="@drawable/et_bg_trans"
-                android:inputType="textMultiLine"
-                android:gravity="top"
-                android:padding="8dp"
+
+                >
+                <EditText
+                    android:id="@+id/ad_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:paddingLeft="5dp"
+                    android:paddingRight="5dp"
+                    android:drawablePadding="5dp"
+                    android:textColor="@color/black"
+                    android:hint="@string/ads_content"
+                    android:textColorHint="@color/black"
+                    android:singleLine="true"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:inputType="textMultiLine"
+                    android:gravity="top"
+                    android:padding="8dp"
+                    android:background="@android:color/transparent"
 
 
-                />
+                    />
+
+            </android.support.v4.widget.NestedScrollView>
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -517,5 +516,5 @@
                 />
 
         </LinearLayout>
-    </ScrollView>
+    </android.support.v4.widget.NestedScrollView>
 </LinearLayout>

@@ -4,7 +4,10 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_marginBottom="8dp"
+    android:layout_marginLeft="8dp"
+    android:layout_marginRight="8dp"
+    android:layout_marginTop="3dp"
+    android:layout_marginBottom="2dp"
     >
     <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
@@ -47,22 +50,38 @@
                     android:layout_gravity="left"
                     android:layout_marginTop="8dp"
                     >
+
                     <TextView
                         android:id="@+id/state_new"
                         android:layout_width="100dp"
                         android:layout_height="25dp"
                         android:background="@drawable/ads_item_etbg"
+                        android:gravity="center"
+                        android:singleLine="true"
                         android:text="@string/new_ads"
                         android:textColor="@color/white"
-                        android:gravity="center"
                         android:textStyle="bold"
-                        android:singleLine="true"
                         android:visibility="visible"
 
 
                         />
                     <TextView
                         android:id="@+id/state_old"
+
+                        android:layout_width="100dp"
+                        android:layout_height="25dp"
+                        android:background="@drawable/ads_mosta3mal_bg"
+                        android:text="@string/used"
+                        android:textColor="@color/white"
+                        android:gravity="center"
+                        android:textStyle="bold"
+                        android:singleLine="true"
+                        android:visibility="gone"
+
+
+                        />
+                    <TextView
+                        android:id="@+id/state_service"
 
                         android:layout_width="100dp"
                         android:layout_height="25dp"

@@ -47,6 +47,7 @@ import com.semicolon.tadlaly.share.Common;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import io.paperdb.Paper;
 import retrofit2.Call;
@@ -75,6 +76,7 @@ public class SearchActivity extends AppCompatActivity implements GoogleApiClient
     private MaterialSearchView search_view;
     private Preferences preferences;
     private String [] suggestions;
+    private String current_language;
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -90,13 +92,20 @@ public class SearchActivity extends AppCompatActivity implements GoogleApiClient
     }
 
     private void initView() {
+        current_language = Paper.book().read("language", Locale.getDefault().getLanguage());
+        back = findViewById(R.id.back);
+
+        if (current_language.equals("ar"))
+        {
+            back.setRotation(180f);
+        }
+
         preferences = new Preferences(this);
         toolbar = findViewById(R.id.toolBar);
         setSupportActionBar(toolbar);
         progBar = findViewById(R.id.progBar);
         progBar.getIndeterminateDrawable().setColorFilter(ContextCompat.getColor(this,R.color.colorPrimary), PorterDuff.Mode.SRC_IN);
         myAdsModelList = new ArrayList<>();
-        back = findViewById(R.id.back);
         search_view = findViewById(R.id.msv);
         no_result_container = findViewById(R.id.no_result_container);
         no_search_result = findViewById(R.id.no_search_result);
@@ -308,6 +317,15 @@ public class SearchActivity extends AppCompatActivity implements GoogleApiClient
             Intent intent = new Intent(this,AdsDetailsActivity.class);
             intent.putExtra("ad_details",myAdsModel);
             intent.putExtra("whoVisit",Tags.visitor);
+            if (user_id.equals("all"))
+            {
+                intent.putExtra("user_id","0");
+
+            }else
+                {
+                    intent.putExtra("user_id",user_id);
+
+                }
             startActivity(intent);
         }catch (NullPointerException e)
         {

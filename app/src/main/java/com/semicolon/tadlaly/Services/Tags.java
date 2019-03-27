@@ -19,7 +19,7 @@ public class Tags {
     public static final String sendType_normal="2";
     public static final String ad_new="1";
     public static final String ad_old="2";
-    public static final String ad_without="3";
+    public static final String service="3";
 
     public static final String show_phone="1";
     public static final String disApearPhone="2";
@@ -27,8 +27,8 @@ public class Tags {
     public static final String visitor="0";
     public static final String share="2";
     public static final String view="1";
-    public static final String isSell="1";
-    public static final String isdeleted="2";
+    public static final int isSell=1;
+    public static final int isdeleted=2;
     public static final String app_user="1";
     public static final String app_visitor="0";
     public static final String reg_from_login="1";

@@ -1,145 +1,154 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    tools:context=".Activities.RegisterActivity"
+    android:background="@color/white"
     android:orientation="vertical"
-    android:background="@color/white">
+    tools:context=".Activities.RegisterActivity">
+
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+
         <android.support.v7.widget.Toolbar
             android:layout_width="match_parent"
             android:layout_height="?actionBarSize"
-            app:contentInsetStart="0dp"
-            app:contentInsetRight="0dp"
-            app:contentInsetLeft="0dp"
             app:contentInsetEnd="0dp"
-            >
+            app:contentInsetLeft="0dp"
+            app:contentInsetRight="0dp"
+            app:contentInsetStart="0dp">
+
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                >
+                android:layout_height="match_parent">
+
                 <ImageView
                     android:id="@+id/back"
                     android:layout_width="56dp"
                     android:layout_height="match_parent"
-                    android:layout_alignParentLeft="true"
-                    android:src="@drawable/white_back_arrow"
                     android:padding="18dp"
+                    android:src="@drawable/white_back_arrow"
+
                     />
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerInParent="true"
-                    android:textColor="@color/white"
-                    android:textStyle="bold"
-                    android:textSize="15sp"
                     android:text="@string/new_account"
-                    />
+                    android:textColor="@color/white"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
             </RelativeLayout>
         </android.support.v7.widget.Toolbar>
     </android.support.design.widget.AppBarLayout>
 
-    <ScrollView android:layout_width="match_parent"
+    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fitsSystemWindows="true"
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:scrollbars="none"
-        >
+        android:scrollbars="none">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            >
+            android:orientation="vertical">
+
             <FrameLayout
                 android:id="@+id/fl_add_image"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="5dp"
-                >
+                android:layout_marginTop="5dp">
+
                 <de.hdodenhof.circleimageview.CircleImageView
                     android:id="@+id/image"
                     android:layout_width="90dp"
                     android:layout_height="90dp"
                     android:layout_gravity="center_horizontal"
-                    android:src="@drawable/user_profile"
                     android:clickable="false"
                     android:longClickable="false"
-                    app:civ_border_width="2dp"
+                    android:src="@drawable/user_profile"
                     app:civ_border_color="@color/colorPrimary"
-                    />
+                    app:civ_border_width="2dp" />
+
                 <ImageView
                     android:layout_width="30dp"
                     android:layout_height="30dp"
                     android:layout_gravity="bottom"
-                    android:src="@drawable/add_image"
                     android:clickable="false"
                     android:longClickable="false"
-                    />
+                    android:src="@drawable/add_image" />
             </FrameLayout>
 
             <EditText
                 android:id="@+id/tv_name"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:drawableStart="@drawable/user_icon"
-                android:background="@drawable/ed_login"
+                android:layout_marginLeft="10dp"
                 android:layout_marginTop="15dp"
                 android:layout_marginRight="10dp"
-                android:layout_marginLeft="10dp"
                 android:layout_marginBottom="10dp"
+                android:background="@drawable/ed_login"
+                android:drawableStart="@drawable/user_icon"
+                android:drawablePadding="5dp"
+                android:gravity="center_vertical"
                 android:hint="@string/name"
                 android:paddingStart="8dp"
-                android:textColorHint="@color/white"
-                android:drawablePadding="5dp"
-                android:textColor="@color/white"
-                android:gravity="center_vertical"
-                android:textSize="14sp"
+                android:paddingEnd="8dp"
                 android:singleLine="true"
+                android:textColor="@color/white"
+                android:textColorHint="@color/white"
+                android:textSize="14sp"
 
 
                 tools:ignore="RtlCompat" />
-            <com.lamudi.phonefield.PhoneInputLayout
-                android:id="@+id/phone"
+
+            <EditText
+                android:id="@+id/edt_phone"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="10dp"
+                android:layout_height="50dp"
                 android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
                 android:layout_marginBottom="10dp"
-                android:gravity="center_vertical"
-                android:paddingRight="5dp"
-                android:paddingLeft="5dp"
                 android:background="@drawable/ed_login"
-                android:layoutDirection="rtl"
+                android:drawableStart="@drawable/ic_phone"
+                android:drawableTint="@color/gray1"
+                android:drawablePadding="5dp"
+                android:gravity="center_vertical"
+                android:hint="@string/mobile_number"
+                android:inputType="phone"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:singleLine="true"
+                android:textColor="@color/white"
+                android:textColorHint="@color/white"
+                android:textSize="14sp"
 
 
-
-                >
-            </com.lamudi.phonefield.PhoneInputLayout>
+                tools:ignore="RtlCompat,UnusedAttribute" />
             <EditText
                 android:id="@+id/email"
 
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:drawableStart="@drawable/email_icon"
-                android:background="@drawable/ed_login"
-                android:layout_marginRight="10dp"
                 android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
                 android:layout_marginBottom="10dp"
-                android:hint="@string/email"
-                android:textColorHint="@color/white"
+                android:background="@drawable/ed_login"
+                android:drawableStart="@drawable/email_icon"
                 android:drawablePadding="5dp"
-                android:textColor="@color/white"
-                android:inputType="textEmailAddress"
                 android:gravity="center_vertical"
+                android:hint="@string/email"
+                android:inputType="textEmailAddress"
                 android:paddingStart="8dp"
-                android:textSize="14sp"
+                android:paddingEnd="8dp"
                 android:singleLine="true"
+                android:textColor="@color/white"
+                android:textColorHint="@color/white"
+                android:textSize="14sp"
 
 
                 tools:ignore="RtlCompat" />
@@ -148,20 +157,21 @@
                 android:id="@+id/city"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:drawableStart="@drawable/map_icon"
-                android:background="@drawable/ed_login"
-                android:layout_marginRight="10dp"
-                android:layout_marginLeft="10dp"
-                android:layout_marginBottom="10dp"
-                android:hint="@string/city"
-                android:textColorHint="@color/white"
-                android:drawablePadding="5dp"
-                android:textColor="@color/white"
-                android:gravity="center_vertical"
-                android:paddingStart="8dp"
-                android:textSize="14sp"
                 android:layout_gravity="center_vertical"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginBottom="10dp"
+                android:background="@drawable/ed_login"
+                android:drawableStart="@drawable/map_icon"
+                android:drawablePadding="5dp"
+                android:gravity="center_vertical"
+                android:hint="@string/city"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
                 android:singleLine="true"
+                android:textColor="@color/white"
+                android:textColorHint="@color/white"
+                android:textSize="14sp"
 
 
                 tools:ignore="RtlCompat" />
@@ -171,51 +181,55 @@
 
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:drawableStart="@drawable/user_icon"
-                android:background="@drawable/ed_login"
-                android:layout_marginRight="10dp"
                 android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
                 android:layout_marginBottom="10dp"
-                android:hint="@string/username"
-                android:textColorHint="@color/white"
+                android:background="@drawable/ed_login"
+                android:drawableStart="@drawable/user_icon"
                 android:drawablePadding="5dp"
-                android:textColor="@color/white"
                 android:gravity="center_vertical"
+                android:hint="@string/username"
                 android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:singleLine="true"
+                android:textColor="@color/white"
+                android:textColorHint="@color/white"
+
                 android:textSize="14sp"
 
-                android:singleLine="true"
-
                 tools:ignore="RtlCompat" />
+
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:layout_marginRight="10dp"
                 android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
                 android:layout_marginBottom="10dp"
                 android:background="@drawable/ed_login"
-                app:passwordToggleTint="@color/white"
-                app:passwordToggleEnabled="true"
                 app:hintEnabled="false"
+                app:passwordToggleEnabled="true"
+                app:passwordToggleTint="@color/white"
 
 
                 >
+
                 <EditText
                     android:id="@+id/password"
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
-                    android:drawableStart="@drawable/pass_icon"
                     android:background="@drawable/ed_login"
+                    android:drawableStart="@drawable/pass_icon"
 
-                    android:hint="@string/password"
-                    android:textColorHint="@color/white"
                     android:drawablePadding="5dp"
-                    android:textColor="@color/white"
+                    android:hint="@string/password"
                     android:inputType="textPassword"
                     android:paddingStart="8dp"
-                    android:textSize="14sp"
-
+                    android:paddingEnd="8dp"
                     android:singleLine="true"
+                    android:textColor="@color/white"
+                    android:textColorHint="@color/white"
+
+                    android:textSize="14sp"
 
                     tools:ignore="RtlCompat" />
             </android.support.design.widget.TextInputLayout>
@@ -224,56 +238,61 @@
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:layout_marginRight="10dp"
                 android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
                 android:layout_marginBottom="10dp"
                 android:background="@drawable/ed_login"
-                app:passwordToggleTint="@color/white"
-                app:passwordToggleEnabled="true"
                 app:hintEnabled="false"
+                app:passwordToggleEnabled="true"
+                app:passwordToggleTint="@color/white"
 
 
                 >
+
                 <EditText
                     android:id="@+id/re_password"
 
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
-                    android:drawableStart="@drawable/pass_icon"
                     android:background="@drawable/ed_login"
-                    android:hint="@string/re_password"
-                    android:textColorHint="@color/white"
+                    android:drawableStart="@drawable/pass_icon"
                     android:drawablePadding="5dp"
-                    android:textColor="@color/white"
-                    android:inputType="textPassword"
                     android:gravity="center_vertical"
+                    android:hint="@string/re_password"
+                    android:inputType="textPassword"
                     android:paddingStart="8dp"
-                    android:textSize="14sp"
+                    android:paddingEnd="8dp"
                     android:singleLine="true"
+                    android:textColor="@color/white"
+                    android:textColorHint="@color/white"
+                    android:textSize="14sp"
 
                     tools:ignore="RtlCompat" />
             </android.support.design.widget.TextInputLayout>
 
+<!--
             <TextView
                 android:id="@+id/location"
-
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:drawableStart="@drawable/map_icon"
-                android:background="@drawable/ed_login"
-                android:layout_marginRight="10dp"
                 android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
                 android:layout_marginBottom="10dp"
-                android:hint="@string/location"
-                android:textColorHint="@color/white"
+                android:background="@drawable/ed_login"
+                android:drawableStart="@drawable/map_icon"
                 android:drawablePadding="5dp"
-                android:textColor="@color/white"
                 android:gravity="center_vertical"
+                android:hint="@string/location"
                 android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:textColor="@color/white"
+                android:textColorHint="@color/white"
                 android:textSize="14sp"
 
 
                 tools:ignore="RtlCompat" />
+-->
+
             <CheckBox
                 android:id="@+id/agree"
                 android:layout_width="wrap_content"
@@ -282,22 +301,23 @@
                 android:layout_marginRight="5dp"
                 android:layoutDirection="rtl"
                 android:text="@string/accept_rule"
-                app:buttonTint="@color/colorPrimary"
                 android:textColor="@color/black"
                 android:textSize="12sp"
+                app:buttonTint="@color/colorPrimary"
 
                 />
+
             <Button
                 android:id="@+id/signBtn"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:layout_marginRight="8dp"
                 android:layout_marginLeft="8dp"
-                android:background="@drawable/login_btn"
-                android:textColor="@color/white"
-                android:text="@string/create_account"
-                android:layout_marginBottom="15dp"
                 android:layout_marginTop="10dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginBottom="15dp"
+                android:background="@drawable/login_btn"
+                android:text="@string/create_account"
+                android:textColor="@color/white"
                 android:textSize="14sp"
 
                 />

@@ -28,6 +28,7 @@ import com.semicolon.tadlaly.language.LocalManager;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import io.paperdb.Paper;
 import me.leolin.shortcutbadger.ShortcutBadger;
@@ -47,6 +48,7 @@ public class AllMessagesActivity extends Activity implements UserSingleTone.OnCo
     private UserSingleTone userSingleTone;
     private TextView no_msg;
     private NotificationManager notificationManager;
+    private String current_language;
     @Override
     protected void attachBaseContext(Context newBase) {
         Paper.init(newBase);
@@ -64,8 +66,14 @@ public class AllMessagesActivity extends Activity implements UserSingleTone.OnCo
     }
 
     private void initView() {
-        peopleMsgModelList = new ArrayList<>();
+        current_language = Paper.book().read("language", Locale.getDefault().getLanguage());
         back = findViewById(R.id.back);
+
+        if (current_language.equals("ar"))
+        {
+            back.setRotation(180f);
+        }
+        peopleMsgModelList = new ArrayList<>();
         no_msg = findViewById(R.id.no_msg);
         progressBar = findViewById(R.id.progBar);
         progressBar.getIndeterminateDrawable().setColorFilter(ContextCompat.getColor(this,R.color.colorPrimary), PorterDuff.Mode.SRC_IN);

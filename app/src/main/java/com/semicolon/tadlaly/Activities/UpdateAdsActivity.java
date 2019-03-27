@@ -21,6 +21,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
+import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
@@ -35,7 +36,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.github.siyamed.shapeimageview.RoundedImageView;
-import com.lamudi.phonefield.PhoneInputLayout;
 import com.semicolon.tadlaly.Adapters.SpinnerBranchAdapter;
 import com.semicolon.tadlaly.Adapters.SpinnerDeptAdapter;
 import com.semicolon.tadlaly.Models.DepartmentsModel;
@@ -58,6 +58,7 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import io.paperdb.Paper;
@@ -73,8 +74,7 @@ public class UpdateAdsActivity extends AppCompatActivity implements DepartmentSi
     private Button updateBtn;
     private TextView location;
     private Spinner depart_spinner,branch_spinner,ad_type;
-    private EditText ad_title,ad_address,ad_cost,ad_content;
-    private PhoneInputLayout phone;
+    private EditText ad_title,edt_phone,ad_address,ad_cost,ad_content;
     private CheckBox checkbox_phone_state;
     private RoundedImageView img1,img2,img3,img4,img5,img6;
     private List<RoundedImageView> roundedImageViewList;
@@ -113,6 +113,7 @@ public class UpdateAdsActivity extends AppCompatActivity implements DepartmentSi
     private boolean canAddImg5=true;
     private boolean canAddImg6=true;
     private Map<Integer,Uri > map;
+    private String current_language;
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -139,12 +140,22 @@ public class UpdateAdsActivity extends AppCompatActivity implements DepartmentSi
 
     private void
     initView() {
+
+        current_language = Paper.book().read("language", Locale.getDefault().getLanguage());
+
+        back = findViewById(R.id.back);
+
+        if (current_language.equals("ar"))
+        {
+            back.setRotation(180f);
+        }
+
+
         map = new HashMap<>();
         deptList = new ArrayList<>();
         roundedImageViewList = new ArrayList<>();
         imageDeleteList = new ArrayList<>();
         spinner_branchModelList = new ArrayList<>();
-        back = findViewById(R.id.back);
         updateBtn = findViewById(R.id.update_btn);
         depart_spinner = findViewById(R.id.depart_spinner);
         branch_spinner = findViewById(R.id.branch_spinner);
@@ -154,7 +165,7 @@ public class UpdateAdsActivity extends AppCompatActivity implements DepartmentSi
         ad_address = findViewById(R.id.ad_address);
         ad_cost = findViewById(R.id.ad_cost);
         ad_content = findViewById(R.id.ad_content);
-        phone = findViewById(R.id.phone);
+        edt_phone = findViewById(R.id.edt_phone);
         checkbox_phone_state = findViewById(R.id.checkbox_phone_state);
         img1 = findViewById(R.id.img1);
         img2 = findViewById(R.id.img2);
@@ -238,7 +249,6 @@ public class UpdateAdsActivity extends AppCompatActivity implements DepartmentSi
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 String id = spinner_branchModelList.get(i).getId();
-                Log.e("branchid",id);
                 if (i==0&&id.equals(getString(R.string.branch)))
                 {
                     m_branch_id = "";
@@ -383,8 +393,7 @@ public class UpdateAdsActivity extends AppCompatActivity implements DepartmentSi
         ad_address.setText(myAdsModel.getCity());
         ad_content.setText(myAdsModel.getAdvertisement_content());
         ad_cost.setText(myAdsModel.getAdvertisement_price()+" ريال");
-        Log.e("phone",myAdsModel.getPhone());
-        phone.getTextInputLayout().getEditText().setText(myAdsModel.getPhone());
+        edt_phone.setText(myAdsModel.getPhone());
         if (myAdsModel.getShow_phone().equals(Tags.show_phone))
         {
             checkbox_phone_state.setChecked(true);
@@ -896,86 +905,98 @@ public class UpdateAdsActivity extends AppCompatActivity implements DepartmentSi
     }
     private void UpdateAds() {
 
-        String m_name = ad_title.getText().toString();
-        String m_address= ad_address.getText().toString();
-        String m_price = ad_cost.getText().toString();
-        String m_phone = phone.getPhoneNumber();
-        String m_content = ad_content.getText().toString();
+        String m_name = ad_title.getText().toString().trim();
+        String m_address= ad_address.getText().toString().trim();
+        String m_price = ad_cost.getText().toString().trim();
+        String m_phone = edt_phone.getText().toString().trim();
+        String m_content = ad_content.getText().toString().trim();
 
 
-        if (TextUtils.isEmpty(m_name))
+        if (!TextUtils.isEmpty(m_name)&&
+                !TextUtils.isEmpty(m_address)&&!TextUtils.isEmpty(m_price) &&
+                !TextUtils.isEmpty(m_phone)&&
+                Patterns.PHONE.matcher(m_phone).matches()&&
+                m_phone.length()>=6&&m_phone.length()<13&&
+                !TextUtils.isEmpty(m_content)&&
+                !TextUtils.isEmpty(m_dept_id)&&
+                !TextUtils.isEmpty(m_branch_id)&&!m_branch_id.equals("0")&&
+                !TextUtils.isEmpty(m_price)&&
+                !TextUtils.isEmpty(mType)
+        )
         {
-            ad_title.setError(getString(R.string.enter_ad_name));
-        }
-        else if (TextUtils.isEmpty(m_address))
-        {
-            ad_title.setError(null);
-            ad_address.setError(getString(R.string.enter_address));
-        }else if (TextUtils.isEmpty(m_dept_id))
-        {
-            ad_address.setError(null);
-            ad_title.setError(null);
-            Toast.makeText(this, R.string.ch_dept, Toast.LENGTH_SHORT).show();
-        }else if (TextUtils.isEmpty(m_branch_id))
-        {
-            ad_address.setError(null);
-            ad_title.setError(null);
-            Toast.makeText(this, R.string.ch_branch, Toast.LENGTH_SHORT).show();
+            dialog.show();
 
-        }else if (m_branch_id.equals("0"))
-        {
-            ad_address.setError(null);
-            ad_title.setError(null);
-            Toast.makeText(this, R.string.nobranch_to_dept, Toast.LENGTH_SHORT).show();
-
-        }
-        else if (TextUtils.isEmpty(m_price))
-        {
-            ad_cost.setError(getString(R.string.enter_price));
-            ad_address.setError(null);
-            ad_title.setError(null);
-
-        }
-        else if (TextUtils.isEmpty(mType))
-        {
-            ad_cost.setError(null);
-            ad_address.setError(null);
-            ad_title.setError(null);
-            Toast.makeText(this, R.string.ch_ad_type, Toast.LENGTH_SHORT).show();
-        }
-        else if (TextUtils.isEmpty(m_phone))
-        {
-            phone.getTextInputLayout().getEditText().setError(getString(R.string.enter_phone));
-            ad_cost.setError(null);
-            ad_address.setError(null);
-            ad_title.setError(null);
-        }else if (!phone.isValid())
-        {
-            phone.getTextInputLayout().getEditText().setError(getString(R.string.inv_phone));
-            ad_cost.setError(null);
-            ad_address.setError(null);
-            ad_title.setError(null);
-        }else if (TextUtils.isEmpty(m_content))
-        {
-            phone.getTextInputLayout().getEditText().setError(null);
-            ad_cost.setError(null);
-            ad_address.setError(null);
-            ad_title.setError(null);
-            ad_content.setError(getString(R.string.enter_ad_content));
+            if (map.size()==0)
+            {
+                Toast.makeText(this, R.string.ch_ad_imgs, Toast.LENGTH_SHORT).show();
+            }else if (map.size()>0)
+            {
+                UpdateAdsWithImage(m_price,m_name,m_content,m_address,m_phone);
+            }
         }else
             {
-                dialog.show();
+                if (TextUtils.isEmpty(m_name))
+                {
+                    ad_title.setError(getString(R.string.field_req));
+                }else
+                    {
+                        ad_title.setError(null);
+                    }
 
-                if (map.size()==0)
+                if (TextUtils.isEmpty(m_address))
                 {
-                    Toast.makeText(this, R.string.ch_ad_imgs, Toast.LENGTH_SHORT).show();
-                }else if (map.size()>0)
+                    ad_address.setError(getString(R.string.field_req));
+                }else
+                    {
+                        ad_address.setError(null);
+                    }
+
+
+                if (TextUtils.isEmpty(m_price))
                 {
-                    UpdateAdsWithImage(m_price,m_name,m_content,m_address,m_phone);
+                    ad_cost.setError(getString(R.string.field_req));
+
+
                 }
 
+                if (TextUtils.isEmpty(m_phone))
+                {
+                    edt_phone.setError(getString(R.string.field_req));
 
+                }else if (!Patterns.PHONE.matcher(m_phone).matches()||m_phone.length()<6||m_phone.length()>=13)
+                {
+                    edt_phone.setError(getString(R.string.inv_phone));
+                }else
+                    {
+                        edt_phone.setError(null);
+                    }
+
+                if (TextUtils.isEmpty(mType))
+                {
+
+                    Toast.makeText(this, R.string.ch_ad_type, Toast.LENGTH_SHORT).show();
+                }
+
+                if (TextUtils.isEmpty(m_dept_id))
+                {
+                    Toast.makeText(this, R.string.ch_dept, Toast.LENGTH_SHORT).show();
+                }
+
+                if (TextUtils.isEmpty(m_branch_id))
+                {
+
+                    Toast.makeText(this, R.string.ch_branch, Toast.LENGTH_SHORT).show();
+
+                }
+
+                if (m_branch_id.equals("0"))
+                {
+
+                    Toast.makeText(this, R.string.nobranch_to_dept, Toast.LENGTH_SHORT).show();
+
+                }
             }
+
 
     }
 

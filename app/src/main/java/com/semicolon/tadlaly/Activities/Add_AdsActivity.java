@@ -15,7 +15,6 @@ import android.graphics.drawable.Drawable;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
-import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -125,10 +124,10 @@ public class Add_AdsActivity extends AppCompatActivity implements UserSingleTone
     private ImageView delete_img1,delete_img2,delete_img3,delete_img4,delete_img5,delete_img6;
     private GoogleApiClient googleApiClient;
     private LocationRequest locationRequest;
-    private LocationManager manager;
     private final String read_perm = Manifest.permission.READ_EXTERNAL_STORAGE;
     private final int read_req =  588;
     private List<Uri> uriList;
+    private String current_language;
     @Override
     protected void attachBaseContext(Context newBase) {
         Paper.init(newBase);
@@ -140,7 +139,6 @@ public class Add_AdsActivity extends AppCompatActivity implements UserSingleTone
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add__ads);
         uriList = new ArrayList<>();
-        manager = (LocationManager) getSystemService(LOCATION_SERVICE);
         CreateProgressDialog2();
         CreateProgressDialog();
         getDataFromIntent();
@@ -159,13 +157,19 @@ public class Add_AdsActivity extends AppCompatActivity implements UserSingleTone
 
     private void initView()
     {
+        current_language = Paper.book().read("language", Locale.getDefault().getLanguage());
+        back = findViewById(R.id.back);
+
+        if (current_language.equals("ar"))
+        {
+            back.setRotation(180f);
+        }
         //branchList = new ArrayList<>();
         branchList = new ArrayList<>();
         subdepartObjectList = new ArrayList<>();
         departmentsModelList = new ArrayList<>();
         deptList = new ArrayList<>();
         //deptName = new ArrayList<>();
-        back = findViewById(R.id.back);
         send_btn = findViewById(R.id.send_btn);
         uploadImages = findViewById(R.id.uploadImages);
         img1 = findViewById(R.id.img1);
@@ -285,7 +289,7 @@ public class Add_AdsActivity extends AppCompatActivity implements UserSingleTone
                     ad_state=Tags.ad_old;
                 }else if (i==3)
                 {
-                    ad_state = Tags.ad_without;
+                    ad_state = Tags.service;
                 }
             }
 
@@ -530,6 +534,7 @@ public class Add_AdsActivity extends AppCompatActivity implements UserSingleTone
             }
         }
     }
+
     private void CheckReadPermission()
     {
         if (ContextCompat.checkSelfPermission(this,read_perm)!=PackageManager.PERMISSION_GRANTED)
@@ -925,7 +930,6 @@ public class Add_AdsActivity extends AppCompatActivity implements UserSingleTone
             String m_address = address.getText().toString();
             String m_adsContent = ads_content.getText().toString();
             String m_loc = location.getText().toString();
-            //String m_cost = cost.getText().toString();
             String m_phone = phone.getText().toString();
             String m_price = cost.getText().toString();
             Log.e("1",m_title);

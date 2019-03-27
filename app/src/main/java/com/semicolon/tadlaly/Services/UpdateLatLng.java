@@ -1,16 +1,15 @@
 package com.semicolon.tadlaly.Services;
 
-import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Service;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -20,18 +19,19 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.semicolon.tadlaly.Models.AccuracyModel;
 import com.semicolon.tadlaly.Models.LocationModel;
 
 import org.greenrobot.eventbus.EventBus;
 
 public class UpdateLatLng extends Service implements GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks, LocationListener {
+
     private GoogleApiClient googleApiClient;
     private LocationRequest locationRequest;
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        BuildGoogleApiClient();
-    }
+    private Handler handler;
+    private Runnable runnable;
+    private int accuracy;
+
 
     protected synchronized void BuildGoogleApiClient() {
         googleApiClient = new GoogleApiClient.Builder(this)
@@ -61,26 +61,38 @@ public class UpdateLatLng extends Service implements GoogleApiClient.OnConnectio
         StartLocationUpdate();
     }
 
+    @SuppressLint("MissingPermission")
     private void StartLocationUpdate() {
 
-        initLocationRequest();
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-        }
-        LocationServices.getFusedLocationProviderClient(this).requestLocationUpdates(locationRequest,new LocationCallback()
-        {
-            @Override
-            public void onLocationResult(LocationResult locationResult) {
-                onLocationChanged(locationResult.getLastLocation());
-            }
-        }, Looper.myLooper());
+        initLocationRequest(accuracy);
+
+        LocationServices.getFusedLocationProviderClient(this)
+                .requestLocationUpdates(locationRequest,new LocationCallback()
+                {
+                    @Override
+                    public void onLocationResult(LocationResult locationResult) {
+                        onLocationChanged(locationResult.getLastLocation());
+                    }
+                }, Looper.myLooper());
     }
 
-    private void initLocationRequest()
+    private void initLocationRequest(int accuracy)
     {
-        locationRequest = new LocationRequest();
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        locationRequest.setInterval(1000*60*5);
-        locationRequest.setFastestInterval(1000*60*5);
+        Log.e("aaccc",accuracy+"_");
+        locationRequest = LocationRequest.create();
+        locationRequest.setPriority(accuracy);
+        locationRequest.setNumUpdates(1);
+
+        handler = new Handler();
+
+        runnable = new Runnable() {
+            @Override
+            public void run() {
+                EventBus.getDefault().post(new AccuracyModel(accuracy));
+                handler.removeCallbacks(runnable);
+            }
+        };
+        handler.postDelayed(runnable,5000);
     }
 
 
@@ -114,5 +126,13 @@ public class UpdateLatLng extends Service implements GoogleApiClient.OnConnectio
             LocationServices.getFusedLocationProviderClient(this).removeLocationUpdates(new LocationCallback());
             googleApiClient.disconnect();
         }
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        accuracy = intent.getIntExtra("accuracy",LocationRequest.PRIORITY_HIGH_ACCURACY);
+        BuildGoogleApiClient();
+
+        return START_STICKY;
     }
 }

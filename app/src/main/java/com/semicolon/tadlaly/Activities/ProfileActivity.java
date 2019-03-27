@@ -245,7 +245,7 @@ public class ProfileActivity extends AppCompatActivity implements UserSingleTone
 
     private void UploadImage(Uri uri) {
 
-        MultipartBody.Part image_part = Common.getMultiPartBody(uri,this);
+        MultipartBody.Part image_part = Common.getMultiPartBody(uri,this,"user_photo");
         dialog.show();
         Retrofit retrofit = Api.getRetrofit(Tags.Base_Url);
         Call<UserModel> call = retrofit.create(Services.class).updatePhoto(userModel.getUser_id(), image_part);

@@ -16,6 +16,8 @@ import android.widget.Toast;
 import com.semicolon.tadlaly.R;
 import com.semicolon.tadlaly.language.LocalManager;
 
+import java.util.Locale;
+
 import io.paperdb.Paper;
 
 public class PromiseActivity extends AppCompatActivity implements View.OnClickListener{
@@ -26,6 +28,7 @@ public class PromiseActivity extends AppCompatActivity implements View.OnClickLi
     private boolean brand3=false;
     private TextView txt_quran;
     private LinearLayout ll_charity;
+    private String current_language;
     /*private View root;
     private TextView tv_title,tv_content;
     private ProgressBar progBar;
@@ -51,7 +54,15 @@ public class PromiseActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     private void initView() {
+        current_language = Paper.book().read("language", Locale.getDefault().getLanguage());
+
         back = findViewById(R.id.back);
+
+        if (current_language.equals("ar"))
+        {
+            back.setRotation(180f);
+        }
+
         img_ekhaa = findViewById(R.id.img_ekhaa);
         back.setOnClickListener(view -> finish());
         txt_quran    = findViewById(R.id.txt_quran);

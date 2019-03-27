@@ -28,7 +28,6 @@
                     android:id="@+id/back"
                     android:layout_width="56dp"
                     android:layout_height="match_parent"
-                    android:layout_alignParentLeft="true"
                     android:src="@drawable/white_back_arrow"
                     android:padding="20dp"
                     />
@@ -44,7 +43,7 @@
             </RelativeLayout>
         </android.support.v7.widget.Toolbar>
     </android.support.design.widget.AppBarLayout>
-    <ScrollView
+    <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fillViewport="true"
@@ -219,7 +218,7 @@
 
 
                 />
-            <ScrollView
+            <android.support.v4.widget.NestedScrollView
                 android:layout_width="match_parent"
                 android:layout_height="150dp"
                 android:fitsSystemWindows="true"
@@ -247,7 +246,7 @@
                     android:layout_margin="5dp"
                     />
 
-            </ScrollView>
+            </android.support.v4.widget.NestedScrollView>
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -481,5 +480,5 @@
                 />
 
         </LinearLayout>
-    </ScrollView>
+    </android.support.v4.widget.NestedScrollView>
 </LinearLayout>
