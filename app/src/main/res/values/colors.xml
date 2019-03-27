@@ -14,5 +14,6 @@
     <color name="gray4">#fafafa</color>
     <color name="gray0">#212121</color>
     <color name="gray6">#bababa</color>
+    <color name="yellow">#FDD835</color>
 
 </resources>

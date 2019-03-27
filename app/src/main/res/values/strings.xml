@@ -212,6 +212,7 @@
     <string name="fetching_your_location">Fetching your location...</string>
     <string name="ch_trans_img">Choose Transfer image</string>
     <string name="service">Service</string>
+    <string name="my_follow">My Follow</string>
     <string-array name="ad_state">
         <item>Ad type</item>
         <item>New</item>

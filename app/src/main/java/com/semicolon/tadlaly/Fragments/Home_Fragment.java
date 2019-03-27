@@ -248,7 +248,6 @@ public class Home_Fragment extends Fragment {
 
 
         departmentSlider.addOnItemChangedListener((viewHolder, adapterPosition) -> {
-            Log.e("adapos",adapterPosition+"");
 
             subdepartObjectList.clear();
              DepartmentsModel departmentsModel = departmentsModelList.get(adapterPosition);

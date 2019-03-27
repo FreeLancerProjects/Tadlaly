@@ -212,6 +212,7 @@
     <string name="fetching_your_location">جار تحديد موقعك...</string>
     <string name="ch_trans_img">إختر صورة التحويل</string>
     <string name="service">خدمة</string>
+    <string name="my_follow">متابعاتي</string>
 
 
     <string-array name="ad_state">

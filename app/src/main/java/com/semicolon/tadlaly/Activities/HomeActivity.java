@@ -115,6 +115,7 @@ public class HomeActivity extends AppCompatActivity
 
     private final String fineLoc = Manifest.permission.ACCESS_FINE_LOCATION;
     private final int loc_req = 1;
+    private TextView tv_follow_counter;
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -144,6 +145,9 @@ public class HomeActivity extends AppCompatActivity
         toggle.syncState();
         navigationView =  findViewById(R.id.nav_view);
         View view = navigationView.getHeaderView(0);
+        View actionView =  navigationView.getMenu().findItem(R.id.follow).getActionView();
+        tv_follow_counter = actionView.findViewById(R.id.tv_follow_counter);
+        tv_follow_counter.setVisibility(View.GONE);
         user_image = view.findViewById(R.id.user_image);
         user_name = view.findViewById(R.id.user_name);
         profileContainer = view.findViewById(R.id.profileContainer);
@@ -229,6 +233,11 @@ public class HomeActivity extends AppCompatActivity
 
 
         }
+
+
+       /* follow_counter = fl_root.findViewById(R.id.tv_follow_counter);
+        follow_counter.setText("13");*/
+
 
     }
     private void getDataFromIntent()
@@ -465,10 +474,7 @@ public class HomeActivity extends AppCompatActivity
                 finish();
 
                 break;
-            /*case R.id.suggestion:
-                *//*Intent suggestion = new Intent(this,ContactUsActivity.class);
-                startActivity(suggestion);*//*
-                break;*/
+
             case R.id.aboutApp:
                 Intent aboutApp = new Intent(this,AboutAppActivity.class);
                 startActivity(aboutApp);
@@ -477,16 +483,19 @@ public class HomeActivity extends AppCompatActivity
                 Intent rules = new Intent(this,RulesActivity.class);
                 startActivity(rules);
                 break;
+            case R.id.bank_account:
+                Intent bank = new Intent(this,BanksActivity.class);
+                startActivity(bank);
+                break;
+
             case R.id.logout:
 
                 if (user_type.equals(Tags.app_user))
                 {
-                    Log.e("dsdsd","Logout"+user_type);
                     LogOut();
 
                 }else if (user_type.equals(Tags.app_visitor))
                 {
-                    Log.e("dsdsd","finish"+user_type);
 
                     finish();
                 }

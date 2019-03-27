@@ -3,6 +3,7 @@ package com.semicolon.tadlaly.Activities;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
@@ -157,11 +158,18 @@ public class MyAdsActivity extends AppCompatActivity {
             if (resultCode==RESULT_OK)
             {
                 adapter = (MyAdsPagerAdapter) pager.getAdapter();
-                CurrentAds_Fragment currentAds_fragment = (CurrentAds_Fragment) adapter.getItem(0);
-                OldAds_Fragment oldAds_fragment = (OldAds_Fragment) adapter.getItem(1);
+                new Handler()
+                        .postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                CurrentAds_Fragment currentAds_fragment = (CurrentAds_Fragment) adapter.getItem(0);
+                                OldAds_Fragment oldAds_fragment = (OldAds_Fragment) adapter.getItem(1);
 
-                currentAds_fragment.getData(1);
-                oldAds_fragment.getData(1);
+                                currentAds_fragment.getData(1);
+                                oldAds_fragment.getData(1);
+                            }
+                        },1);
+
             }
         }
     }

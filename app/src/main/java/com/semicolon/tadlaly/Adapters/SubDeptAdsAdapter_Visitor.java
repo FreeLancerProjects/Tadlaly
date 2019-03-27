@@ -1,8 +1,10 @@
 package com.semicolon.tadlaly.Adapters;
 
 import android.content.Context;
+import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -218,6 +220,8 @@ public class SubDeptAdsAdapter_Visitor extends RecyclerView.Adapter <RecyclerVie
         public myProgressHolder(View itemView) {
             super(itemView);
             progressBar = itemView.findViewById(R.id.progBar);
+            progressBar.getIndeterminateDrawable().setColorFilter(ContextCompat.getColor(context,R.color.colorPrimary), PorterDuff.Mode.SRC_IN);
+
         }
     }
 

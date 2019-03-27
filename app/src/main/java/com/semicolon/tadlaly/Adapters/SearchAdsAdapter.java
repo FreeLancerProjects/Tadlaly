@@ -1,8 +1,10 @@
 package com.semicolon.tadlaly.Adapters;
 
 import android.content.Context;
+import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -169,7 +171,7 @@ public class SearchAdsAdapter extends RecyclerView.Adapter <RecyclerView.ViewHol
                 Picasso.with(context).load(Uri.parse(Tags.Image_Url+myAdsModel.getAdvertisement_image().get(0).getPhoto_name())).into(img);
                 Log.e("size1",myAdsModel.getAdvertisement_image().size()+"");
             }
-            date.setText("قبل "+myAdsModel.getAdvertisement_date());
+            date.setText(myAdsModel.getAdvertisement_date());
 
             if (myAdsModel.getAdvertisement_type().equals(Tags.ad_new))
             {
@@ -208,6 +210,8 @@ public class SearchAdsAdapter extends RecyclerView.Adapter <RecyclerView.ViewHol
         public myProgressHolder(View itemView) {
             super(itemView);
             progressBar = itemView.findViewById(R.id.progBar);
+            progressBar.getIndeterminateDrawable().setColorFilter(ContextCompat.getColor(context,R.color.colorPrimary), PorterDuff.Mode.SRC_IN);
+
         }
     }
 

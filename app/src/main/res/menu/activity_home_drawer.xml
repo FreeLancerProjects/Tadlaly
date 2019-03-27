@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:showIn="navigation_view">
 
 
@@ -44,7 +45,15 @@
     <item
         android:id="@+id/change_language"
         android:title="@string/change_language" />
+    <item
+        android:id="@+id/bank_account"
+        android:title="@string/bank_accounts" />
 
+    <item
+        android:id="@+id/follow"
+        android:title="@string/my_follow"
+        app:actionLayout="@layout/nav_menu_counter"
+        />
     <item
         android:id="@+id/logout"
         android:title="@string/logout" />
