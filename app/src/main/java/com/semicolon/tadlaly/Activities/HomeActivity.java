@@ -117,7 +117,7 @@ public class HomeActivity extends AppCompatActivity
     private LocationRequest locationRequest;
 
     private final String fineLoc = Manifest.permission.ACCESS_FINE_LOCATION;
-    private final int loc_req = 1;
+    private final int loc_req = 1,follow_req = 2;
     private TextView tv_follow_counter;
 
     @Override
@@ -176,6 +176,9 @@ public class HomeActivity extends AppCompatActivity
             profileContainer.setEnabled(true);
             userSingleTone = UserSingleTone.getInstance();
             userSingleTone.getUser(this);
+            getFollowCount();
+            UpdateToken();
+
         }
 
         if (user_type.equals(Tags.app_user))
@@ -250,6 +253,41 @@ public class HomeActivity extends AppCompatActivity
         }
 
 
+    }
+
+    private void getFollowCount() {
+        Api.getRetrofit(Tags.Base_Url)
+                .create(Services.class)
+                .getFollowCount("1",userModel.getUser_id(),"countfollow")
+                .enqueue(new Callback<ResponseModel>() {
+                    @Override
+                    public void onResponse(Call<ResponseModel> call, Response<ResponseModel> response) {
+                        if (response.isSuccessful()&&response.body()!=null)
+                        {
+                            updateFollowCounter(response.body().getCount_follow());
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<ResponseModel> call, Throwable t) {
+                        try
+                        {
+                            Log.e("Error",t.getMessage());
+                        }catch (Exception e){}
+                    }
+                });
+    }
+
+    private void updateFollowCounter(int count_follow) {
+        if (count_follow>0)
+        {
+            tv_follow_counter.setText(String.valueOf(count_follow));
+            tv_follow_counter.setVisibility(View.VISIBLE);
+        }else
+            {
+                tv_follow_counter.setText("");
+                tv_follow_counter.setVisibility(View.GONE);
+            }
     }
 
     private void increaseVisit(String now) {
@@ -328,19 +366,6 @@ public class HomeActivity extends AppCompatActivity
 
 
     @Override
-    protected void onStart()
-    {
-        super.onStart();
-        if (user_type.equals(Tags.app_user)){
-            //userSingleTone.getUser(this);
-            Log.e("token",user_type);
-            UpdateToken();
-        }
-
-    }
-
-
-    @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         List<Fragment> fragmentList = getSupportFragmentManager().getFragments();
@@ -359,6 +384,11 @@ public class HomeActivity extends AppCompatActivity
         List<Fragment> fragmentList = getSupportFragmentManager().getFragments();
         for (Fragment fragment : fragmentList) {
             fragment.onActivityResult(requestCode, resultCode, data);
+        }
+
+        if (requestCode == follow_req&&resultCode==RESULT_OK&&data!=null)
+        {
+            getFollowCount();
         }
 
 
@@ -522,6 +552,11 @@ public class HomeActivity extends AppCompatActivity
             case R.id.bank_account:
                 Intent bank = new Intent(this,BanksActivity.class);
                 startActivity(bank);
+                break;
+
+            case R.id.follow:
+                Intent follow = new Intent(this,MyFollowActivity.class);
+                startActivityForResult(follow,follow_req);
                 break;
 
             case R.id.logout:

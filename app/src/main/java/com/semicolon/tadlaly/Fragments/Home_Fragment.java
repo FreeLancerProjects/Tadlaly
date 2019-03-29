@@ -339,6 +339,7 @@ public class Home_Fragment extends Fragment {
            SubDeptDataFragment subDeptDataFragment = new SubDeptDataFragment();
            Bundle bundle = new Bundle();
            bundle.putString("user_id",user_id);
+           bundle.putString("dept_id",departmentsModel.getMain_department_id());
            bundle.putSerializable("subDept_data", (Serializable) departmentsModel.getSubdepartObjectList());
            subDeptDataFragment.setArguments(bundle);
            getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.home_fragments_container,subDeptDataFragment).commit();

@@ -251,16 +251,9 @@ public class AdsDetailsActivity extends AppCompatActivity implements UserSingleT
 
     }
     private void Share() {
-        String text ;
-        if (myAdsModel.getAdvertisement_image().size()>0)
-        {
-             text = "Code #"+myAdsModel.getAdvertisement_code()+"\n"+myAdsModel.getAdvertisement_content()+" "+myAdsModel.getAdvertisement_price()+" "+getString(R.string.sar)+"\n"+"Ads link \n"+Tags.Image_Url+myAdsModel.getAdvertisement_image().get(0).getPhoto_name();
 
-        }else
-            {
-                 text = "Code #"+myAdsModel.getAdvertisement_code()+"\n"+myAdsModel.getAdvertisement_content()+" "+myAdsModel.getAdvertisement_price()+" "+getString(R.string.sar);
+        String text = "Code #"+myAdsModel.getAdvertisement_code()+"\n"+"Ads link \n"+myAdsModel.getShare_link();
 
-            }
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("text/plain");
         intent.putExtra(Intent.EXTRA_TEXT,text);

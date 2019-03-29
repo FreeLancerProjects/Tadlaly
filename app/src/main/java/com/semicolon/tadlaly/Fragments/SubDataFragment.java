@@ -49,11 +49,14 @@ public class SubDataFragment extends Fragment implements UserSingleTone.OnComple
     private TextView no_ads;
     private Button order_onNewBtn,order_onNearbyBtn,btn_follow;
     private List<MyAdsModel> myAdsModelList,myAdsModelList1,finalmyAdsModelList;
+    private String sub_depId;
     private String depId;
     private UserSingleTone userSingleTone;
     private UserModel userModel;
-    private static final String dept_id_="dept_id";
-    private static final String USER_ID="user_id";
+    private static final String TAG1 ="sub_dept_id";
+    private static final String TAG2="dept_id";
+    private static final String TAG3="user_id";
+
     private double mylat=0.0,myLng=0.0;
     private List<Double> distList;
     private Map<String,Double> map;
@@ -86,13 +89,13 @@ public class SubDataFragment extends Fragment implements UserSingleTone.OnComple
                     myAdsModelList.add(null);
                     adapter.notifyItemInserted(myAdsModelList.size()-1);
                     int index = page_index;
-                    onLoadgetData(depId,index);
+                    onLoadgetData(sub_depId,index);
                 }else
                 {
                     myAdsModelList.add(null);
                     adapter.notifyItemInserted(myAdsModelList.size()-1);
                     int index = page_index;
-                    onLoadgetOrderedData(depId,index);
+                    onLoadgetOrderedData(sub_depId,index);
                 }
             }
         });
@@ -130,8 +133,11 @@ public class SubDataFragment extends Fragment implements UserSingleTone.OnComple
         Bundle bundle = getArguments();
         if (bundle!=null)
         {
-            depId = bundle.getString(dept_id_);
-            user_id = bundle.getString("user_id");
+            sub_depId = bundle.getString(TAG1);
+            Log.e("sub_id",sub_depId);
+
+            depId = bundle.getString(TAG2);
+            user_id = bundle.getString(TAG3);
             if (!user_id.equals("0"))
             {
                 userSingleTone = UserSingleTone.getInstance();
@@ -163,7 +169,7 @@ public class SubDataFragment extends Fragment implements UserSingleTone.OnComple
             order_onNearbyBtn.setBackgroundResource(R.drawable.btn_unselected);
             order_onNearbyBtn.setTextColor(ContextCompat.getColor(getActivity(),R.color.colorPrimary));
 
-            getOrderedData(depId,1);
+            getOrderedData(sub_depId,1);
         });
 
         order_onNearbyBtn.setOnClickListener(view1 -> {
@@ -180,8 +186,8 @@ public class SubDataFragment extends Fragment implements UserSingleTone.OnComple
             order_onNearbyBtn.setTextColor(ContextCompat.getColor(getActivity(),R.color.white));
 
 
-            getData(depId,1);
-            Log.e("id",depId);
+            getData(sub_depId,1);
+            Log.e("id", sub_depId);
         });
 
         btn_follow.setOnClickListener(new View.OnClickListener() {
@@ -210,7 +216,7 @@ public class SubDataFragment extends Fragment implements UserSingleTone.OnComple
                 image_top.setVisibility(View.GONE);
             }
         });
-        getData(depId, 1);
+        getData(sub_depId, 1);
         initLoadMore();
     }
 
@@ -228,10 +234,10 @@ public class SubDataFragment extends Fragment implements UserSingleTone.OnComple
                         {
                             if (state.equals("follow"))
                             {
-                                updateFollowButton(false);
+                                updateFollowButton(true);
                             }else
                                 {
-                                    updateFollowButton(true);
+                                    updateFollowButton(false);
 
                                 }
 
@@ -301,12 +307,14 @@ public class SubDataFragment extends Fragment implements UserSingleTone.OnComple
             }
     }
 
-    public static SubDataFragment newInstance(String dept_id,String user_id)
+    public static SubDataFragment newInstance(String deptId, String sub_dept_id, String user_id)
     {
         SubDataFragment dataFragment = new SubDataFragment();
         Bundle bundle = new Bundle();
-        bundle.putString(dept_id_,dept_id);
-        bundle.putString(USER_ID,user_id);
+        bundle.putString(TAG1,sub_dept_id);
+        bundle.putString(TAG2,deptId);
+        bundle.putString(TAG3,user_id);
+
         dataFragment.setArguments(bundle);
         return dataFragment;
     }
@@ -584,7 +592,7 @@ public class SubDataFragment extends Fragment implements UserSingleTone.OnComple
                     }
                 });
         /*Retrofit retrofit = Api.getRetrofit2(Tags.Base_Url);
-        Observable<List<MyAdsModel>> observable = retrofit.create(Services.class).getSubDept_Ads(Tags.display_new,user_id, depId, page_index);
+        Observable<List<MyAdsModel>> observable = retrofit.create(Services.class).getSubDept_Ads(Tags.display_new,user_id, sub_depId, page_index);
         observable.flatMap(ads->Observable.fromIterable(ads))
                 .flatMap(dis -> retrofit.create(Services.class).getDistance("https://maps.googleapis.com/maps/api/distancematrix/json?origins=" + mylat + "," + myLng + "&destinations=" + dis.getGoogle_lat() + "," + dis.getGoogle_long() + "&key=" + getString(R.string.Api_key)), new BiFunction<MyAdsModel, PlacesDistanceModel, MyAdsModel>() {
                     @Override

@@ -4,10 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Activities.RulesActivity"
-    android:background="@color/bg"
+    tools:context=".Activities.MyFollowActivity"
     android:orientation="vertical"
+    android:background="@color/gray7"
     >
+
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -36,39 +37,41 @@
                     android:textStyle="bold"
                     android:textSize="15sp"
                     android:textColor="@color/white"
-                    android:text="@string/terms_and_conditions"
+                    android:text="@string/my_follow"
                     />
             </RelativeLayout>
         </android.support.v7.widget.Toolbar>
     </android.support.design.widget.AppBarLayout>
 
-    <ScrollView
+    <FrameLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fitsSystemWindows="true"
-        android:fillViewport="true"
-
-        >
-        <FrameLayout
+        android:layout_height="match_parent">
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recView"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            >
-            <TextView
-                android:id="@+id/content"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="5dp"
-                android:textColor="@color/black"
-                android:textSize="13sp"
-                />
-            <ProgressBar
-                android:id="@+id/progBar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                />
-        </FrameLayout>
-    </ScrollView>
+            android:layout_height="match_parent"
 
+            >
+
+        </android.support.v7.widget.RecyclerView>
+        <ProgressBar
+            android:id="@+id/progBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            />
+        <TextView
+            android:id="@+id/tv_no_ads"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:textStyle="bold"
+            android:textSize="17sp"
+            android:text="@string/no_ads"
+            android:textColor="@color/black"
+            android:visibility="gone"
+            />
+    </FrameLayout>
 
 </LinearLayout>

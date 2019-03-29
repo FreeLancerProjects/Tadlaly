@@ -47,6 +47,7 @@ import com.semicolon.tadlaly.share.Common;
 import org.greenrobot.eventbus.EventBus;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -151,7 +152,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
 
     private void initView() {
 
-        current_language = Paper.book().read("language");
+        current_language = Paper.book().read("language", Locale.getDefault().getLanguage());
         back = findViewById(R.id.back);
         if (current_language.equals("ar"))
         {

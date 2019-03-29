@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_marginLeft="8dp"
+    android:layout_marginRight="8dp"
+    android:layout_marginTop="3dp"
+    android:layout_marginBottom="2dp"
+    >
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:cardCornerRadius="5dp"
+    app:cardElevation="3dp"
+    app:cardBackgroundColor="@color/white"
+
+
+    >
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:weightSum="3"
+    >
+    <FrameLayout
+        android:layout_width="0dp"
+        android:layout_weight="1.1"
+        android:layout_height="150dp"
+        >
+        <com.github.siyamed.shapeimageview.RoundedImageView
+            android:id="@+id/img"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:siRadius="5dp"
+            app:siBorderColor="@color/white"
+            app:siBorderType="stroke"
+            app:siBorderWidth="1dp"
+            />
+    </FrameLayout>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_weight="1.9"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingRight="5dp"
+        android:paddingLeft="5dp"
+
+        >
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="10dp"
+            >
+
+            <TextView
+                android:id="@+id/tv_date"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.35"
+                android:paddingRight="5dp"
+                android:paddingLeft="5dp"
+                android:textStyle="bold"
+                android:textColor="@color/colorPrimary"
+                android:textSize="13sp"
+                android:singleLine="true"
+                />
+            <FrameLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight=".65"
+                >
+
+                <TextView
+                    android:id="@+id/tv_state_new"
+                    android:layout_width="match_parent"
+                    android:layout_height="25dp"
+                    android:background="@drawable/ads_item_etbg"
+                    android:gravity="center"
+                    android:singleLine="true"
+                    android:text="@string/new_ads"
+                    android:textColor="@color/white"
+                    android:textStyle="bold"
+                    android:visibility="visible"
+
+
+                    />
+                <TextView
+                    android:id="@+id/tv_state_old"
+
+                    android:layout_width="match_parent"
+                    android:layout_height="25dp"
+                    android:background="@drawable/ads_mosta3mal_bg"
+                    android:text="@string/used"
+                    android:textColor="@color/white"
+                    android:gravity="center"
+                    android:textStyle="bold"
+                    android:singleLine="true"
+                    android:visibility="gone"
+
+
+                    />
+                <TextView
+                    android:id="@+id/tv_state_service"
+
+                    android:layout_width="match_parent"
+                    android:layout_height="25dp"
+                    android:background="@drawable/ads_mosta3mal_bg"
+                    android:text="@string/service"
+                    android:textColor="@color/white"
+                    android:gravity="center"
+                    android:textStyle="bold"
+                    android:singleLine="true"
+                    android:visibility="gone"
+
+
+                    />
+
+            </FrameLayout>
+
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tv_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorPrimary"
+            android:textStyle="bold"
+            android:textSize="17sp"
+            android:paddingRight="10dp"
+            android:paddingLeft="10dp"
+            android:layout_marginTop="5dp"
+            android:text="ssss"
+            android:maxLines="2"
+            android:ellipsize="end"
+
+            />
+
+        <TextView
+            android:id="@+id/tv_dept_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:textSize="14sp"
+            android:singleLine="true"
+            android:paddingRight="10dp"
+            android:paddingLeft="10dp"
+            android:layout_marginTop="5dp"
+            android:maxLines="2"
+            android:text="ssss"
+            />
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="7dp"
+            android:orientation="horizontal"
+            >
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+
+                >
+
+                <ImageView
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:src="@drawable/map"
+                    android:layout_gravity="center_vertical"
+
+                    />
+                <TextView
+                    android:id="@+id/tv_distance"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:textSize="13sp"
+                    android:textColor="@color/black"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="5dp"
+
+
+                    android:singleLine="true"
+                    />
+            </LinearLayout>
+        </LinearLayout>
+
+
+        <TextView
+            android:id="@+id/tv_read_state"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="5dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:textColor="@color/colorPrimary"
+            android:textSize="13sp"
+            android:text="@string/unread"
+            android:visibility="gone"
+            />
+
+
+
+    </LinearLayout>
+
+
+</LinearLayout>
+</android.support.v7.widget.CardView>
+
+</LinearLayout>

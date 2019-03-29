@@ -216,7 +216,7 @@
     <string name="follow">متابعة</string>
     <string name="unfollow">إلغاء المتابعة</string>
     <string name="copied">تم النسخ</string>
-    <string name="unread">غير مقروءة</string>
+    <string name="unread">غير مقروء</string>
 
 
     <string-array name="ad_state">

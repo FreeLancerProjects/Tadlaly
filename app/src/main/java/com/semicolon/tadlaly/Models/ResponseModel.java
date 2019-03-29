@@ -9,6 +9,7 @@ public class ResponseModel implements Serializable{
     private int success_doread;
     private  boolean status_follow;
     private int success_follow;
+    private int count_follow;
 
     public int getSuccess() {
         return success;
@@ -32,5 +33,9 @@ public class ResponseModel implements Serializable{
 
     public int getSuccess_follow() {
         return success_follow;
+    }
+
+    public int getCount_follow() {
+        return count_follow;
     }
 }

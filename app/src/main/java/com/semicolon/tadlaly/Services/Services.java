@@ -4,6 +4,7 @@ import com.semicolon.tadlaly.Models.AboutAppModel;
 import com.semicolon.tadlaly.Models.BankModel;
 import com.semicolon.tadlaly.Models.ContactsModel;
 import com.semicolon.tadlaly.Models.DepartmentsModel;
+import com.semicolon.tadlaly.Models.FollowDataModel;
 import com.semicolon.tadlaly.Models.MyAdsModel;
 import com.semicolon.tadlaly.Models.MyLocation;
 import com.semicolon.tadlaly.Models.PeopleMsgModel;
@@ -27,6 +28,7 @@ import retrofit2.http.POST;
 import retrofit2.http.Part;
 import retrofit2.http.PartMap;
 import retrofit2.http.Path;
+import retrofit2.http.Query;
 import retrofit2.http.Url;
 
 public interface Services {
@@ -230,5 +232,20 @@ public interface Services {
     Call<ResponseModel> follow_unFollow(@Field("department_id_fk") String department_id_fk,
                                         @Field("user_id_fk") String user_id_fk,
                                         @Field("type") String type);
+
+    @FormUrlEncoded
+    @POST("Api/follow")
+    Call<ResponseModel> getFollowCount(@Field("department_id_fk") String department_id_fk,
+                                        @Field("user_id_fk") String user_id_fk,
+                                        @Field("type") String type);
+
+    @FormUrlEncoded
+    @POST("Api/showFollow")
+    Call<FollowDataModel> getMyFollowAds(@Query("user_id") String user_id,
+                                         @Query("page") int  page,
+                                         @Field("user_google_lat") String user_google_lat,
+                                         @Field("user_google_long") String user_google_long
+
+                                         );
 }
 

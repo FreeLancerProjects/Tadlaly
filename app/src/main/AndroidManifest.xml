@@ -22,7 +22,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".Activities.BanksActivity"></activity>
+        <activity android:name=".Activities.MyFollowActivity"></activity>
+        <activity android:name=".Activities.BanksActivity" />
 
         <service
             android:name=".Services.UpdateLatLng"
@@ -95,7 +96,7 @@
             tools:ignore="InnerclassSeparator" />
         <activity
             android:name=".Activities.GpsActivity"
-            tools:ignore="InnerclassSeparator"></activity>
+            tools:ignore="InnerclassSeparator" />
         <activity
             android:name=".Activities.UpdateAdsActivity"
             android:windowSoftInputMode="stateAlwaysHidden"
@@ -117,7 +118,7 @@
             tools:ignore="InnerclassSeparator" />
         <activity
             android:name=".Activities.WebActivity"
-            tools:ignore="InnerclassSeparator"></activity>
+            tools:ignore="InnerclassSeparator" />
         <activity
             android:name=".Activities.SelectLanguageActivity"
             tools:ignore="InnerclassSeparator">

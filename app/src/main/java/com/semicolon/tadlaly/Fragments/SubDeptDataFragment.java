@@ -26,6 +26,7 @@ public class SubDeptDataFragment extends Fragment implements UserSingleTone.OnCo
     private SubDeptMixAdapter subDeptMixAdapter;
     private UserSingleTone userSingleTone;
     private UserModel userModel;
+    private String deptId;
     private List<Fragment> fragmentList;
     private List<DepartmentsModel.SubdepartObject> subdepartObjectList2;
     private String user_id="";
@@ -54,10 +55,11 @@ public class SubDeptDataFragment extends Fragment implements UserSingleTone.OnCo
         {
             subdepartObjectList2 = (List<DepartmentsModel.SubdepartObject>) bundle.getSerializable("subDept_data");
             user_id = bundle.getString("user_id");
+            deptId = bundle.getString("dept_id");
             Log.e("SDDF_id",user_id);
             for (DepartmentsModel.SubdepartObject object:subdepartObjectList2)
             {
-                fragmentList.add(SubDataFragment.newInstance(object.getSub_department_id(),user_id));
+                fragmentList.add(SubDataFragment.newInstance(deptId,object.getSub_department_id(),user_id));
 
             }
 

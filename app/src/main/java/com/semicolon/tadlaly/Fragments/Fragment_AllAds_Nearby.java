@@ -38,8 +38,8 @@ import retrofit2.Response;
 
 public class Fragment_AllAds_Nearby extends Fragment implements UserSingleTone.OnCompleteListener,LatLngSingleTone.onLatLngSuccess{
     private static final String TAG="user_type";
-    private RecyclerView recView;
     private FragmentAllAds_NearbyAdapter adapter;
+    private RecyclerView recView;
     private RecyclerView.LayoutManager manager;
     private ProgressBar progBar;
     private TextView tv_no_ad;

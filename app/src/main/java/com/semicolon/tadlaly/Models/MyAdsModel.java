@@ -31,6 +31,7 @@ public class MyAdsModel implements Serializable {
 
     private String department_name;
     private String department_image;
+    private String share_link;
     private boolean read_status;
 
     private boolean readed = false;
@@ -52,6 +53,7 @@ public class MyAdsModel implements Serializable {
             return id_photo;
         }
     }
+
 
 
     public String getId_advertisement() {
@@ -169,5 +171,9 @@ public class MyAdsModel implements Serializable {
 
     public void setReaded(boolean readed) {
         this.readed = readed;
+    }
+
+    public String getShare_link() {
+        return share_link;
     }
 }

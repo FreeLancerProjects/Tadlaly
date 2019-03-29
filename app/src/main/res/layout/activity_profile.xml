@@ -151,7 +151,7 @@
                         android:layout_marginTop="20dp"
                         android:drawableLeft="@drawable/dark_edit_icon"
                         android:gravity="right|center_vertical"
-                        android:text="@string/phone"
+                        android:text="@string/mobile_number"
                         android:textColor="@color/black"
                         android:textSize="12sp"
                         android:textStyle="bold"
