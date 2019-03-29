@@ -123,6 +123,7 @@
                     android:layout_gravity="center"
                     android:text="ساعة يد ماركة"
                     android:textStyle="bold"
+                    android:textIsSelectable="true"
 
                     />
                 <TextView
@@ -136,6 +137,7 @@
                     android:paddingRight="5dp"
                     android:paddingLeft="5dp"
                     android:text=" سوار الساعة الجلد اكثر رسمية"
+                    android:textIsSelectable="true"
 
                     />
             </LinearLayout>

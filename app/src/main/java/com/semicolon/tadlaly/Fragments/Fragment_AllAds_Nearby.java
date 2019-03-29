@@ -79,8 +79,6 @@ public class Fragment_AllAds_Nearby extends Fragment implements UserSingleTone.O
         progBar = view.findViewById(R.id.progBar);
         progBar.getIndeterminateDrawable().setColorFilter(ContextCompat.getColor(getActivity(),R.color.colorPrimary), PorterDuff.Mode.SRC_IN);
         tv_no_ad = view.findViewById(R.id.tv_no_ads);
-        adapter = new FragmentAllAds_NearbyAdapter(recView,getActivity(),myAdsModelList,this);
-        recView.setAdapter(adapter);
 
         Bundle bundle = getArguments();
         if (bundle!=null)
@@ -93,16 +91,27 @@ public class Fragment_AllAds_Nearby extends Fragment implements UserSingleTone.O
                 this.myLat = Double.parseDouble(userModel.getUser_google_lat());
                 this.myLng = Double.parseDouble(userModel.getUser_google_long());
                 user_id = userModel.getUser_id();
+                adapter = new FragmentAllAds_NearbyAdapter(recView,getActivity(),myAdsModelList,this,true);
+                recView.setAdapter(adapter);
+
                 UpdateUI(user_id);
+
 
             }else if (user_type.equals(Tags.app_visitor))
             {
                 latLngSingleTone = LatLngSingleTone.getInstance();
                 latLngSingleTone.getLatLng(this);
+                adapter = new FragmentAllAds_NearbyAdapter(recView,getActivity(),myAdsModelList,this,false);
+                recView.setAdapter(adapter);
+
                 user_id = "all";
                 UpdateUI(user_id);
 
+
             }
+
+
+
 
 
         }
@@ -222,9 +231,15 @@ public class Fragment_AllAds_Nearby extends Fragment implements UserSingleTone.O
         this.myLng = lng;
     }
 
-    public void setItemData(MyAdsModel myAdsModel) {
+    public void setItemData(MyAdsModel myAdsModel, int adapterPosition) {
         if (user_type.equals(Tags.app_user))
         {
+            if (!myAdsModel.isRead_status()) {
+                myAdsModel.setRead_status(true);
+                myAdsModel.setReaded(false);
+                myAdsModelList.set(adapterPosition, myAdsModel);
+                adapter.notifyItemChanged(adapterPosition, myAdsModel);
+            }
             Intent intent = new Intent(getActivity(), AdsDetailsActivity.class);
             intent.putExtra("ad_details",myAdsModel);
             intent.putExtra("whoVisit",Tags.visitor);

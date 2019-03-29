@@ -1,6 +1,7 @@
 package com.semicolon.tadlaly.Activities;
 
 import android.app.AlertDialog;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -20,6 +21,7 @@ import android.widget.Toast;
 
 import com.semicolon.tadlaly.Adapters.AdsDetailsPagerAdapter;
 import com.semicolon.tadlaly.Models.MyAdsModel;
+import com.semicolon.tadlaly.Models.ResponseModel;
 import com.semicolon.tadlaly.Models.UserModel;
 import com.semicolon.tadlaly.R;
 import com.semicolon.tadlaly.Services.Api;
@@ -208,6 +210,25 @@ public class AdsDetailsActivity extends AppCompatActivity implements UserSingleT
                 Share();
             }
         });
+
+        ad_title.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ClipboardManager clipboardManager = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                clipboardManager.setText(ad_title.getText().toString());
+                Toast.makeText(AdsDetailsActivity.this, R.string.copied, Toast.LENGTH_SHORT).show();
+
+            }
+        });
+
+        ad_details.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ClipboardManager clipboardManager = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                clipboardManager.setText(ad_title.getText().toString());
+                Toast.makeText(AdsDetailsActivity.this, R.string.copied, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void CreateAlertDialog() {
@@ -230,9 +251,19 @@ public class AdsDetailsActivity extends AppCompatActivity implements UserSingleT
 
     }
     private void Share() {
+        String text ;
+        if (myAdsModel.getAdvertisement_image().size()>0)
+        {
+             text = "Code #"+myAdsModel.getAdvertisement_code()+"\n"+myAdsModel.getAdvertisement_content()+" "+myAdsModel.getAdvertisement_price()+" "+getString(R.string.sar)+"\n"+"Ads link \n"+Tags.Image_Url+myAdsModel.getAdvertisement_image().get(0).getPhoto_name();
+
+        }else
+            {
+                 text = "Code #"+myAdsModel.getAdvertisement_code()+"\n"+myAdsModel.getAdvertisement_content()+" "+myAdsModel.getAdvertisement_price()+" "+getString(R.string.sar);
+
+            }
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("text/plain");
-        intent.putExtra(Intent.EXTRA_TEXT,"تطبيق تدللي");
+        intent.putExtra(Intent.EXTRA_TEXT,text);
         startActivityForResult(intent,share_req);
 
     }
@@ -290,7 +321,6 @@ public class AdsDetailsActivity extends AppCompatActivity implements UserSingleT
     }
     private void  UpdateUi(MyAdsModel myAdsModel ,String whoVisit)
     {
-        //Typeface typeface = Typeface.createFromAsset(getAssets(),"OYA-Regular.ttf");
 
 
         if (whoVisit.equals(Tags.me_visit))
@@ -311,13 +341,16 @@ public class AdsDetailsActivity extends AppCompatActivity implements UserSingleT
                     userSingleTone.getUser(this);
                     contactContainer.setVisibility(View.VISIBLE);
 
+                    if (!myAdsModel.isReaded())
+                    {
+                        ReadAds();
+                    }
+
+
+
                 }else if (user_id.equals("0"))
                     {
 
-                        contactContainer.setVisibility(View.GONE);
-
-                    }else if (user_id.equals("all"))
-                    {
                         contactContainer.setVisibility(View.GONE);
 
                     }
@@ -327,7 +360,6 @@ public class AdsDetailsActivity extends AppCompatActivity implements UserSingleT
                 city.setVisibility(View.GONE);
                 city2.setVisibility(View.VISIBLE);
                 city2.setText(myAdsModel.getCity());
-                //city2.setTypeface(typeface);
                 ad_distance.setText(myAdsModel.getDistance()+" "+getString(R.string.km));
                 city.setVisibility(View.VISIBLE);
 
@@ -342,21 +374,13 @@ public class AdsDetailsActivity extends AppCompatActivity implements UserSingleT
                     no_ads.setVisibility(View.VISIBLE);
 
                 }
-       /* ad_shares.setTypeface(typeface);
-        ad_viewers.setTypeface(typeface);
-        city.setTypeface(typeface);
-        ad_number.setTypeface(typeface);
-        ad_cost.setTypeface(typeface);
-        ad_date.setTypeface(typeface);
-        ad_title.setTypeface(typeface);
-        ad_details.setTypeface(typeface);
-        ad_name.setTypeface(typeface);*/
+
         images.addAll(myAdsModel.getAdvertisement_image());
         adapter.notifyDataSetChanged();
         ad_name.setText(myAdsModel.getAdvertisement_title());
         timer.scheduleAtFixedRate(new TimerClass(),4000,5000);
         ad_number.setText("#"+myAdsModel.getAdvertisement_code());
-        ad_cost.setText(myAdsModel.getAdvertisement_price()+" ريال");
+        ad_cost.setText(myAdsModel.getAdvertisement_price()+" "+getString(R.string.sar));
         ad_date.setText(myAdsModel.getAdvertisement_date());
         ad_viewers.setText(myAdsModel.getView_count());
         ad_shares.setText(myAdsModel.getShare_count());
@@ -372,6 +396,31 @@ public class AdsDetailsActivity extends AppCompatActivity implements UserSingleT
                 ad_state_old.setVisibility(View.VISIBLE);
             }
 
+    }
+
+    private void ReadAds() {
+
+        Api.getRetrofit(Tags.Base_Url)
+                .create(Services.class)
+                .readAds(myAdsModel.getId_advertisement(),userModel.getUser_id(),"read")
+                .enqueue(new Callback<ResponseModel>() {
+                    @Override
+                    public void onResponse(Call<ResponseModel> call, Response<ResponseModel> response) {
+                        Log.e("eeeeeeee",response.body().getSuccess_doread()+"_");
+                        if (response.isSuccessful()&&response.body().getSuccess_doread() ==1)
+                        {
+                            Log.e("success","readed");
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<ResponseModel> call, Throwable t) {
+                        try
+                        {
+                            Log.e("ErrorRead",t.getMessage());
+                        }catch (Exception e){}
+                    }
+                });
     }
 
     @Override

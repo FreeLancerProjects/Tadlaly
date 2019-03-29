@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layoutDirection="ltr"
-    android:background="@color/gray1"
+    android:background="@color/gray7"
     >
     <FrameLayout
         android:layout_width="match_parent"
@@ -58,11 +58,38 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:weightSum="2"
+        android:weightSum="3"
         android:layout_marginLeft="5dp"
         android:layout_marginRight="5dp"
         android:layout_marginBottom="5dp"
         >
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="3dp"
+            android:layout_marginEnd="3dp"
+            >
+            <Button
+                android:id="@+id/btn_follow"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:textColor="@color/white"
+                android:textSize="15sp"
+                android:background="@drawable/btn_follow_bg"
+
+                />
+
+            <ProgressBar
+                android:id="@+id/progBarFollow"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_gravity="center"
+                android:visibility="gone"
+                />
+        </FrameLayout>
+
+
         <Button
             android:id="@+id/order_onNearbyBtn"
 
@@ -72,7 +99,8 @@
             android:textColor="@color/colorPrimary"
             android:textSize="15sp"
             android:text="@string/nearme"
-            android:layout_marginLeft="2dp"
+            android:layout_marginStart="3dp"
+            android:layout_marginEnd="3dp"
             android:background="@drawable/btn_unselected"
 
             />
@@ -83,13 +111,16 @@
             android:layout_height="40dp"
             android:textColor="@color/white"
             android:textSize="15sp"
-            android:layout_marginRight="2dp"
+            android:layout_marginStart="3dp"
+            android:layout_marginEnd="3dp"
             android:text="@string/newest"
             android:background="@drawable/btn_selected"
 
 
 
             />
+
+
 
     </LinearLayout>
 </RelativeLayout>

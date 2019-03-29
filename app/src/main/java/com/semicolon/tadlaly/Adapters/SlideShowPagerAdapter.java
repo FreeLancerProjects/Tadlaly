@@ -13,6 +13,7 @@ import com.github.siyamed.shapeimageview.RoundedImageView;
 import com.semicolon.tadlaly.Models.SlideShowModel;
 import com.semicolon.tadlaly.R;
 import com.semicolon.tadlaly.Services.Tags;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -42,16 +43,23 @@ public class SlideShowPagerAdapter extends android.support.v4.view.PagerAdapter 
         View view = LayoutInflater.from(context).inflate(R.layout.pager_item,container,false);
         SlideShowModel model = slideShow_modelList.get(position);
         RoundedImageView ads_img = view.findViewById(R.id.ads_img);
-       // Typeface typeface = Typeface.createFromAsset(context.getAssets(),"OYA-Regular.ttf");
         TextView title = view.findViewById(R.id.ads_title);
         TextView content = view.findViewById(R.id.ads_content);
-        //title.setTypeface(typeface);
-        //content.setTypeface(typeface);
 
-        Picasso.with(context).load(Uri.parse(Tags.Image_Url+model.getImage())).into(ads_img);
+        Picasso.with(context).load(Uri.parse(Tags.Image_Url+model.getImage())).into(ads_img, new Callback() {
+            @Override
+            public void onSuccess() {
+                title.setText(model.getImage_title());
+                content.setText(model.getImage_content());
+            }
 
-        title.setText(model.getImage_title());
-        content.setText(model.getImage_content());
+            @Override
+            public void onError() {
+
+            }
+        });
+
+
         ViewPager viewPager = (ViewPager) container;
         viewPager.addView(view,0);
 

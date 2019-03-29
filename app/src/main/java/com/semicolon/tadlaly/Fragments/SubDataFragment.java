@@ -1,5 +1,6 @@
 package com.semicolon.tadlaly.Fragments;
 
+import android.app.AlertDialog;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -18,8 +19,10 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.semicolon.tadlaly.Activities.HomeActivity;
 import com.semicolon.tadlaly.Adapters.SubDeptAdsAdapter_Visitor;
 import com.semicolon.tadlaly.Models.MyAdsModel;
+import com.semicolon.tadlaly.Models.ResponseModel;
 import com.semicolon.tadlaly.Models.UserModel;
 import com.semicolon.tadlaly.R;
 import com.semicolon.tadlaly.Services.Api;
@@ -39,12 +42,12 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 
 public class SubDataFragment extends Fragment implements UserSingleTone.OnCompleteListener,LatLngSingleTone.onLatLngSuccess{
-    private ProgressBar progressBar;
+    private ProgressBar progressBar,progBarFollow;
     private RecyclerView recyclerView;
     private SubDeptAdsAdapter_Visitor adapter;
     private RecyclerView.LayoutManager manager;
     private TextView no_ads;
-    private Button order_onNewBtn,order_onNearbyBtn;
+    private Button order_onNewBtn,order_onNearbyBtn,btn_follow;
     private List<MyAdsModel> myAdsModelList,myAdsModelList1,finalmyAdsModelList;
     private String depId;
     private UserSingleTone userSingleTone;
@@ -62,6 +65,9 @@ public class SubDataFragment extends Fragment implements UserSingleTone.OnComple
     private LatLngSingleTone latLngSingleTone;
     private String user_type;
     public ImageView image_top;
+    private HomeActivity  activity;
+    private boolean isFollow = false;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -95,46 +101,53 @@ public class SubDataFragment extends Fragment implements UserSingleTone.OnComple
 
     }
 
-
-
-
-
     private void initView(View view) {
 
-        Bundle bundle = getArguments();
-        if (bundle!=null)
-        {
-            depId = bundle.getString(dept_id_);
-            user_id = bundle.getString("user_id");
-            Log.e("IDDDDDDD_SDF",user_id);
-            if (!user_id.equals("0"))
-            {
-                userSingleTone = UserSingleTone.getInstance();
-                userSingleTone.getUser(this);
-            }else if (user_id.equals("0"))
-            {
-                latLngSingleTone = LatLngSingleTone.getInstance();
-                latLngSingleTone.getLatLng(this);
-            }
-        }
-
+        activity = (HomeActivity) getActivity();
         myAdsModelList = new ArrayList<>();
         finalmyAdsModelList = new ArrayList<>();
         myAdsModelList1 = new ArrayList<>();
         distList = new ArrayList<>();
         order_onNewBtn = view.findViewById(R.id.order_onNewBtn);
         order_onNearbyBtn = view.findViewById(R.id.order_onNearbyBtn);
+        btn_follow = view.findViewById(R.id.btn_follow);
+
         map = new HashMap<>();
         idsList = new ArrayList<>();
         image_top = view.findViewById(R.id.image_top);
         no_ads = view.findViewById(R.id.no_ads);
         progressBar =view.findViewById(R.id.progBar);
         progressBar.getIndeterminateDrawable().setColorFilter(ContextCompat.getColor(getActivity(),R.color.colorPrimary), PorterDuff.Mode.SRC_IN);
+        progBarFollow =view.findViewById(R.id.progBarFollow);
+        progBarFollow.getIndeterminateDrawable().setColorFilter(ContextCompat.getColor(getActivity(),R.color.colorPrimary), PorterDuff.Mode.SRC_IN);
+
+
         recyclerView = view.findViewById(R.id.recView);
         manager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(manager);
-        adapter = new SubDeptAdsAdapter_Visitor(recyclerView,getActivity(),myAdsModelList,this);
-        recyclerView.setAdapter(adapter);
+
+
+        Bundle bundle = getArguments();
+        if (bundle!=null)
+        {
+            depId = bundle.getString(dept_id_);
+            user_id = bundle.getString("user_id");
+            if (!user_id.equals("0"))
+            {
+                userSingleTone = UserSingleTone.getInstance();
+                userSingleTone.getUser(this);
+                adapter = new SubDeptAdsAdapter_Visitor(recyclerView,getActivity(),myAdsModelList,this,true);
+                recyclerView.setAdapter(adapter);
+                getFollowDepartment();
+
+            }else if (user_id.equals("0"))
+            {
+                latLngSingleTone = LatLngSingleTone.getInstance();
+                latLngSingleTone.getLatLng(this);
+                adapter = new SubDeptAdsAdapter_Visitor(recyclerView,getActivity(),myAdsModelList,this,false);
+                recyclerView.setAdapter(adapter);
+            }
+        }
 
         order_onNewBtn.setOnClickListener(view1 -> {
             button_type="ordered";
@@ -171,6 +184,24 @@ public class SubDataFragment extends Fragment implements UserSingleTone.OnComple
             Log.e("id",depId);
         });
 
+        btn_follow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (user_id.equals("0"))
+                {
+                    CreateServiceDialog();
+                }else
+                    {
+                        if (isFollow)
+                        {
+                            follow_unFollow("unfollow");
+                        }else
+                            {
+                                follow_unFollow("follow");
+                            }
+                    }
+            }
+        });
 
         image_top.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -181,6 +212,93 @@ public class SubDataFragment extends Fragment implements UserSingleTone.OnComple
         });
         getData(depId, 1);
         initLoadMore();
+    }
+
+    private void follow_unFollow(String state) {
+
+        progBarFollow.setVisibility(View.VISIBLE);
+        btn_follow.setEnabled(false);
+        Api.getRetrofit(Tags.Base_Url)
+                .create(Services.class)
+                .follow_unFollow(depId,userModel.getUser_id(),state)
+                .enqueue(new Callback<ResponseModel>() {
+                    @Override
+                    public void onResponse(Call<ResponseModel> call, Response<ResponseModel> response) {
+                        if (response.isSuccessful()&&response.body()!=null&&response.body().getSuccess_follow() ==1)
+                        {
+                            if (state.equals("follow"))
+                            {
+                                updateFollowButton(false);
+                            }else
+                                {
+                                    updateFollowButton(true);
+
+                                }
+
+                        }else
+                        {
+                            progBarFollow.setVisibility(View.GONE);
+                            btn_follow.setEnabled(true);
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<ResponseModel> call, Throwable t) {
+                        try
+                        {
+                            progBarFollow.setVisibility(View.GONE);
+                            btn_follow.setEnabled(true);
+                            Log.e("Error",t.getMessage());
+                        }catch (Exception e){}
+                    }
+                });
+    }
+
+
+    private void getFollowDepartment() {
+        progBarFollow.setVisibility(View.VISIBLE);
+        btn_follow.setEnabled(false);
+        Api.getRetrofit(Tags.Base_Url)
+                .create(Services.class)
+                .isFollowDepartment(depId,userModel.getUser_id(),"checkfollow")
+                .enqueue(new Callback<ResponseModel>() {
+                    @Override
+                    public void onResponse(Call<ResponseModel> call, Response<ResponseModel> response) {
+                        if (response.isSuccessful()&&response.body()!=null)
+                        {
+                            updateFollowButton(response.body().isStatus_follow());
+                        }else
+                            {
+                                progBarFollow.setVisibility(View.GONE);
+                                btn_follow.setEnabled(true);
+                            }
+                    }
+
+                    @Override
+                    public void onFailure(Call<ResponseModel> call, Throwable t) {
+                        try
+                        {
+                            progBarFollow.setVisibility(View.GONE);
+                            btn_follow.setEnabled(true);
+                            Log.e("Error",t.getMessage());
+                        }catch (Exception e){}
+                    }
+                });
+    }
+
+    private void updateFollowButton(boolean status_follow) {
+        progBarFollow.setVisibility(View.GONE);
+        btn_follow.setEnabled(true);
+        isFollow = status_follow;
+
+        if (status_follow)
+        {
+            btn_follow.setText(getString(R.string.unfollow));
+        }else
+            {
+                btn_follow.setText(getString(R.string.follow));
+
+            }
     }
 
     public static SubDataFragment newInstance(String dept_id,String user_id)
@@ -572,6 +690,22 @@ public class SubDataFragment extends Fragment implements UserSingleTone.OnComple
 
 
     }
+
+    private void CreateServiceDialog() {
+        AlertDialog.Builder serviceBuilder = new AlertDialog.Builder(getActivity());
+        serviceBuilder.setMessage(R.string.ser_not_ava);
+        serviceBuilder.setPositiveButton(R.string.ok, (dialogInterface, i) -> {
+            dialogInterface.dismiss();
+        });
+
+        AlertDialog alertDialog = serviceBuilder.create();
+        alertDialog.setCancelable(true);
+        alertDialog.setCanceledOnTouchOutside(false);
+        alertDialog.show();
+
+    }
+
+
     @Override
     public void onSuccess(UserModel userModel) {
         this.userModel =userModel;
@@ -588,5 +722,21 @@ public class SubDataFragment extends Fragment implements UserSingleTone.OnComple
     public void onSuccess(double lat, double lng) {
         mylat = lat;
         myLng = lng;
+    }
+
+    public void ItemData(MyAdsModel myAdsModel, int adapterPosition) {
+        if (!user_id.equals("0")) {
+            if (!myAdsModel.isRead_status()) {
+
+                myAdsModel.setRead_status(true);
+                myAdsModel.setReaded(false);
+                myAdsModelList.set(adapterPosition, myAdsModel);
+                adapter.notifyItemChanged(adapterPosition, myAdsModel);
+            }
+        }
+
+        activity.SetMyadsData(myAdsModel);
+
+
     }
 }

@@ -194,6 +194,7 @@ public class ContactUsActivity extends AppCompatActivity implements UserSingleTo
 
     private void CheckData(String type) {
 
+        String phone_regex = "^[+]?[0-9]{6,}$";
         String m_name = edt_name.getText().toString().trim();
         String m_email = edt_email.getText().toString().trim();
         String m_subject = edt_subject.getText().toString().trim();
@@ -203,7 +204,8 @@ public class ContactUsActivity extends AppCompatActivity implements UserSingleTo
         if (!TextUtils.isEmpty(m_name) &&
                 !TextUtils.isEmpty(m_email)&&
                 Patterns.EMAIL_ADDRESS.matcher(m_email).matches()&&
-                Patterns.PHONE.matcher(m_phone).matches()&&!TextUtils.isEmpty(m_phone)&&m_phone.length()>=6&&m_phone.length()<13&&
+                !TextUtils.isEmpty(m_phone)&&
+                m_phone.matches(phone_regex)&&
                 !TextUtils.isEmpty(m_subject)&&
                 !TextUtils.isEmpty(m_message)
 
@@ -241,7 +243,7 @@ public class ContactUsActivity extends AppCompatActivity implements UserSingleTo
                 if (TextUtils.isEmpty(m_phone)) {
 
                     edt_phone.setError(getString(R.string.field_req));
-                }else if (!Patterns.PHONE.matcher(m_phone).matches()&&m_phone.length()<6 ||m_phone.length()>=13)
+                }else if (!m_phone.matches(phone_regex))
                 {
                     edt_phone.setError(getString(R.string.inv_phone));
                 }else

@@ -13,8 +13,11 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    app:cardCornerRadius="10dp"
+    app:cardCornerRadius="5dp"
     android:layoutDirection="rtl"
+    app:cardElevation="3dp"
+    app:cardBackgroundColor="@color/white"
+
 
     >
 <LinearLayout
@@ -32,7 +35,10 @@
             android:id="@+id/img"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:siRadius="10dp"
+            app:siRadius="5dp"
+            app:siBorderColor="@color/white"
+            app:siBorderType="stroke"
+            app:siBorderWidth="1dp"
             />
     </FrameLayout>
 
@@ -208,6 +214,21 @@
                 android:layout_marginLeft="10dp"
                 />
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/tv_read_state"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:textColor="@color/colorPrimary"
+            android:textSize="13sp"
+            android:text="@string/unread"
+            android:visibility="gone"
+            />
+
         <TextView
             android:id="@+id/tv_upd_del"
             android:layout_width="match_parent"
@@ -220,49 +241,7 @@
             android:padding="5dp"
 
             />
-       <!-- <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
 
-            >
-            <FrameLayout
-                android:id="@+id/chat"
-
-                android:layout_width="50dp"
-                android:layout_height="25dp"
-                android:layout_marginTop="5dp"
-                android:background="@drawable/ads_item_etbg"
-                android:layout_gravity="center_vertical"
-                android:layout_marginBottom="5dp"
-                >
-                <ImageView
-                    android:layout_width="25dp"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="center"
-                    android:src="@drawable/sms"
-                    android:padding="2dp"
-                    />
-            </FrameLayout>
-            <com.github.ivbaranov.mfb.MaterialFavoriteButton
-                android:id="@+id/favBtn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:mfb_animate_favorite="true"
-                app:mfb_animate_unfavorite="false"
-                app:mfb_size="48"
-                app:mfb_type="heart"
-                app:mfb_color="black"
-                app:mfb_rotation_angle="360"
-                app:mfb_rotation_duration="300"
-                app:mfb_padding="12"
-                app:mfb_bounce_duration="400"
-                app:mfb_favorite_image="@drawable/heart_colored_icon"
-                app:mfb_not_favorite_image="@drawable/heart_icon"
-                android:layout_marginRight="5dp"
-                />
-
-        </LinearLayout>-->
 
     </LinearLayout>
 

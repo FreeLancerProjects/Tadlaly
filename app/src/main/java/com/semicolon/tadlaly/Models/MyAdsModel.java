@@ -29,6 +29,12 @@ public class MyAdsModel implements Serializable {
     private String share_count;
     private double distance;
 
+    private String department_name;
+    private String department_image;
+    private boolean read_status;
+
+    private boolean readed = false;
+
 
     private List<Images> advertisement_image;
     private int success;
@@ -139,5 +145,29 @@ public class MyAdsModel implements Serializable {
 
     public String getAdvertisement_owner_image() {
         return advertisement_owner_image;
+    }
+
+    public String getDepartment_name() {
+        return department_name;
+    }
+
+    public String getDepartment_image() {
+        return department_image;
+    }
+
+    public boolean isRead_status() {
+        return read_status;
+    }
+
+    public void setRead_status(boolean read_status) {
+        this.read_status = read_status;
+    }
+
+    public boolean isReaded() {
+        return readed;
+    }
+
+    public void setReaded(boolean readed) {
+        this.readed = readed;
     }
 }

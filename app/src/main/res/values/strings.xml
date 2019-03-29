@@ -213,6 +213,10 @@
     <string name="ch_trans_img">Choose Transfer image</string>
     <string name="service">Service</string>
     <string name="my_follow">My Follow</string>
+    <string name="follow">Follow</string>
+    <string name="unfollow">Unfollow</string>
+    <string name="copied">Copied</string>
+    <string name="unread">UnRead</string>
     <string-array name="ad_state">
         <item>Ad type</item>
         <item>New</item>

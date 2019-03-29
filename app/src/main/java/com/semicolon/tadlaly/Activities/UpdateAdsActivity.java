@@ -21,7 +21,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
-import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
@@ -905,6 +904,8 @@ public class UpdateAdsActivity extends AppCompatActivity implements DepartmentSi
     }
     private void UpdateAds() {
 
+        String phone_regex = "^[+]?[0-9]{6,}$";
+
         String m_name = ad_title.getText().toString().trim();
         String m_address= ad_address.getText().toString().trim();
         String m_price = ad_cost.getText().toString().trim();
@@ -915,8 +916,7 @@ public class UpdateAdsActivity extends AppCompatActivity implements DepartmentSi
         if (!TextUtils.isEmpty(m_name)&&
                 !TextUtils.isEmpty(m_address)&&!TextUtils.isEmpty(m_price) &&
                 !TextUtils.isEmpty(m_phone)&&
-                Patterns.PHONE.matcher(m_phone).matches()&&
-                m_phone.length()>=6&&m_phone.length()<13&&
+                m_phone.matches(phone_regex)&&
                 !TextUtils.isEmpty(m_content)&&
                 !TextUtils.isEmpty(m_dept_id)&&
                 !TextUtils.isEmpty(m_branch_id)&&!m_branch_id.equals("0")&&
@@ -963,7 +963,7 @@ public class UpdateAdsActivity extends AppCompatActivity implements DepartmentSi
                 {
                     edt_phone.setError(getString(R.string.field_req));
 
-                }else if (!Patterns.PHONE.matcher(m_phone).matches()||m_phone.length()<6||m_phone.length()>=13)
+                }else if (!m_phone.matches(phone_regex))
                 {
                     edt_phone.setError(getString(R.string.inv_phone));
                 }else

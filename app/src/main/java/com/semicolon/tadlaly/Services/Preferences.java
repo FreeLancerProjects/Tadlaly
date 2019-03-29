@@ -166,7 +166,6 @@ public class Preferences {
         String s = preferences.getString("suggestion_list","");
         Gson gson = new Gson();
 
-        Log.e("data",s+"_____________");
         String [] sug;
 
         if (!TextUtils.isEmpty(s))
@@ -192,4 +191,18 @@ public class Preferences {
 
     }
 
+
+    public void saveLastDate(String date)
+    {
+        SharedPreferences preferences = context.getSharedPreferences("date",Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString("last_date",date);
+        editor.apply();
+    }
+
+    public String getLastDate()
+    {
+        SharedPreferences preferences = context.getSharedPreferences("date",Context.MODE_PRIVATE);
+        return preferences.getString("last_date","");
+    }
 }

@@ -37,15 +37,16 @@ public class FragmentAllAds_RecentAdapter extends RecyclerView.Adapter <Recycler
     private OnLoadListener onLoadListener;
     private boolean loading;
     private LinearLayoutManager mLinearLayoutManager;
-    int pos;
     private Fragment_AllAds_Recent fragment_allAds_recent;
+    private boolean isSignUp;
 
 
-    public FragmentAllAds_RecentAdapter(RecyclerView recView, Context context, List<MyAdsModel> myAdsModelList, Fragment fragment) {
+
+    public FragmentAllAds_RecentAdapter(RecyclerView recView, Context context, List<MyAdsModel> myAdsModelList, Fragment fragment,boolean isSignUp) {
         this.context = context;
         this.myAdsModelList = myAdsModelList;
         this.fragment_allAds_recent = (Fragment_AllAds_Recent) fragment;
-
+        this.isSignUp = isSignUp;
         if (recView.getLayoutManager() instanceof LinearLayoutManager)
         {
             mLinearLayoutManager = (LinearLayoutManager) recView.getLayoutManager();
@@ -58,7 +59,6 @@ public class FragmentAllAds_RecentAdapter extends RecyclerView.Adapter <Recycler
                         totalItemCount = mLinearLayoutManager.getItemCount();
                         lastVisibleItem = mLinearLayoutManager.findLastVisibleItemPosition();
 
-                        Log.e("fc",mLinearLayoutManager.findFirstCompletelyVisibleItemPosition()+"___");
                         fragment_allAds_recent.image_top.setVisibility(View.VISIBLE);
 
                         if (!loading&&totalItemCount<=(lastVisibleItem+Threshold))
@@ -105,13 +105,11 @@ public class FragmentAllAds_RecentAdapter extends RecyclerView.Adapter <Recycler
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
 
-        pos = position;
         if (holder instanceof myItemHolder)
         {
             myItemHolder itemHolder = (myItemHolder) holder;
             MyAdsModel myAdsModel =myAdsModelList.get(position);
             itemHolder.BindData(myAdsModel);
-            //setAnimation(holder.itemView);
 
 
             Animation animation = AnimationUtils.loadAnimation(context,R.anim.right_to_left);
@@ -121,7 +119,7 @@ public class FragmentAllAds_RecentAdapter extends RecyclerView.Adapter <Recycler
                 @Override
                 public void onClick(View v) {
                     MyAdsModel myAdsModel =myAdsModelList.get(holder.getAdapterPosition());
-                    fragment_allAds_recent.setItemData(myAdsModel);
+                    fragment_allAds_recent.setItemData(myAdsModel,holder.getAdapterPosition());
 
 
 
@@ -148,7 +146,7 @@ public class FragmentAllAds_RecentAdapter extends RecyclerView.Adapter <Recycler
     }
 
     public class myItemHolder extends RecyclerView.ViewHolder {
-        private TextView date,state_new,state_old,state_service,name,cost,city;
+        private TextView date,state_new,state_old,state_service,name,cost,city,distance,tv_read_state;
         private RoundedImageView img;
 
         public myItemHolder(View itemView) {
@@ -162,6 +160,8 @@ public class FragmentAllAds_RecentAdapter extends RecyclerView.Adapter <Recycler
             name = itemView.findViewById(R.id.name);
             cost = itemView.findViewById(R.id.cost);
             city = itemView.findViewById(R.id.city);
+            distance = itemView.findViewById(R.id.distance);
+            tv_read_state = itemView.findViewById(R.id.tv_read_state);
 
 
 
@@ -171,14 +171,29 @@ public class FragmentAllAds_RecentAdapter extends RecyclerView.Adapter <Recycler
         public void BindData(MyAdsModel myAdsModel)
         {
 
+            if (isSignUp)
+            {
+                Log.e("reeed",myAdsModel.isRead_status()+"");
 
-            //Typeface typeface =Typeface.createFromAsset(context.getAssets(),"OYA-Regular.ttf");
+                if (myAdsModel.isRead_status())
+                {
+                    tv_read_state.setVisibility(View.GONE);
+
+                }else
+                {
+                    tv_read_state.setVisibility(View.VISIBLE);
+
+                }
+
+            }else
+            {
+                tv_read_state.setVisibility(View.GONE);
+            }
             if (myAdsModel.getAdvertisement_image().size()>0)
             {
                 Picasso.with(context).load(Uri.parse(Tags.Image_Url+myAdsModel.getAdvertisement_image().get(0).getPhoto_name())).into(img);
-                Log.e("size1",myAdsModel.getAdvertisement_image().size()+"");
+
             }
-            //date.setTypeface(typeface);
             date.setText(myAdsModel.getAdvertisement_date());
 
             if (myAdsModel.getAdvertisement_type().equals(Tags.ad_new))
@@ -199,18 +214,11 @@ public class FragmentAllAds_RecentAdapter extends RecyclerView.Adapter <Recycler
                 state_old.setVisibility(View.GONE);
                 state_service.setVisibility(View.VISIBLE);
             }
-            //name.setTypeface(typeface);
             name.setText(myAdsModel.getAdvertisement_title());
-            //cost.setTypeface(typeface);
-            if (cost.equals(Tags.undefined_price))
-            {
-                cost.setText(myAdsModel.getAdvertisement_price());
+            distance.setText(String.format("%.2f",myAdsModel.getDistance()));
 
-            }else
-            {
-                cost.setText(myAdsModel.getAdvertisement_price()+" "+context.getString(R.string.sar));
+            cost.setText(myAdsModel.getAdvertisement_price()+" "+context.getString(R.string.sar));
 
-            }
             city.setText(myAdsModel.getCity());
         }
     }

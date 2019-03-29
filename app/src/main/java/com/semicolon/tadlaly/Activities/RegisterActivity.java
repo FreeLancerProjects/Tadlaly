@@ -288,6 +288,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private void Signup() {
+        String phone_regex = "^[+]?[0-9]{6,}$";
         String m_name = user_tv_Name.getText().toString().trim();
         String m_username = user_username.getText().toString().trim();
         String m_phone = edt_phone.getText().toString().trim();
@@ -298,7 +299,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
 
 
         if (!TextUtils.isEmpty(m_name) &&
-                Patterns.PHONE.matcher(m_phone).matches()&&!TextUtils.isEmpty(m_phone) && m_phone.length() >= 6 && m_phone.length() < 13 &&
+                TextUtils.isEmpty(m_phone) &&m_phone.matches(phone_regex)&&
                 !TextUtils.isEmpty(m_username) &&
                 !TextUtils.isEmpty(m_email) &&
                 Patterns.EMAIL_ADDRESS.matcher(m_email).matches() &&
@@ -335,7 +336,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
             if (TextUtils.isEmpty(m_phone)) {
 
                 edt_phone.setError(getString(R.string.field_req));
-            } else if (!Patterns.PHONE.matcher(m_phone).matches()||m_phone.length() < 6 || m_phone.length() >= 13) {
+            } else if (!m_phone.matches(phone_regex)) {
                 edt_phone.setError(getString(R.string.inv_phone));
             } else {
                 edt_phone.setError(null);

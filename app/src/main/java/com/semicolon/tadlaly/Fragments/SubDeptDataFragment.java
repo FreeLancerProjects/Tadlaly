@@ -83,6 +83,13 @@ public class SubDeptDataFragment extends Fragment implements UserSingleTone.OnCo
         pager.setAdapter(subDeptMixAdapter);
         tab.setupWithViewPager(pager);
 
+        for (int i=0;i<tab.getTabCount()-1;i++)
+        {
+            View viewTab = ((ViewGroup)tab.getChildAt(0)).getChildAt(i);
+            ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) viewTab.getLayoutParams();
+            params.setMargins(8,0,8,0);
+            tab.requestLayout();
+        }
 
 
 

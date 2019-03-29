@@ -19,9 +19,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.util.Base64;
 import android.util.Log;
-import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -46,7 +44,6 @@ import com.semicolon.tadlaly.share.Common;
 import com.squareup.picasso.Picasso;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 
-import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -224,6 +221,8 @@ public class TransferActivity extends AppCompatActivity implements UserSingleTon
     }
 
     private void CheckData() {
+        String phone_regex = "^[+]?[0-9]{6,}$";
+
         String m_name = user_name.getText().toString().trim();
         String m_phone = user_phone.getText().toString().trim();
         String m_money = money.getText().toString().trim();
@@ -232,8 +231,7 @@ public class TransferActivity extends AppCompatActivity implements UserSingleTon
 
         if (!TextUtils.isEmpty(m_name)&&
                 !TextUtils.isEmpty(m_phone)&&
-                m_phone.length()>=6&&
-                m_phone.length()<13&& Patterns.PHONE.matcher(m_phone).matches()&&
+                m_phone.matches(phone_regex)&&
                 !TextUtils.isEmpty(m_money)&&
                 !TextUtils.isEmpty(m_ads_id)&&
                 !TextUtils.isEmpty(m_date)&&
@@ -282,7 +280,7 @@ public class TransferActivity extends AppCompatActivity implements UserSingleTon
                 if (TextUtils.isEmpty(m_phone))
                 {
                     user_phone.setError(getString(R.string.field_req));
-                }else if (!Patterns.PHONE.matcher(m_phone).matches()||m_phone.length()<6||m_phone.length()>=13)
+                }else if (!m_phone.matches(phone_regex))
                     {
                         user_phone.setError(getString(R.string.inv_phone));
                     }else
@@ -311,9 +309,6 @@ public class TransferActivity extends AppCompatActivity implements UserSingleTon
 
     private void Send(String m_name, String m_phone, String m_money, String m_ads_id, String m_date, String  bank) {
         dialog.show();
-        encodedImage = EncodeImage(bitmap);
-
-        //transform_image
         RequestBody name_part = Common.getRequestBody(m_name);
         RequestBody phone_part = Common.getRequestBody(m_phone);
         RequestBody money_part = Common.getRequestBody(m_money);
@@ -400,12 +395,7 @@ public class TransferActivity extends AppCompatActivity implements UserSingleTon
         }
     }
 
-    private String EncodeImage(Bitmap bitmap) {
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 90, outputStream);
-        byte[] bytes = outputStream.toByteArray();
-        return Base64.encodeToString(bytes, Base64.DEFAULT);
-    }
+
 
     @Override
     public void onSuccess(UserModel userModel) {

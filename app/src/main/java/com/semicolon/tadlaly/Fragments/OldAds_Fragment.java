@@ -306,7 +306,7 @@ public class OldAds_Fragment extends Fragment implements UserSingleTone.OnComple
         }
     }*/
 
-   /* public void setPos(View view,int pos,String type)
+   /* public void setItemData(View view,int pos,String type)
     {
         MyAdsModel myAdsModel = myAdsModelList.get(pos);
         if (myPreviousAdsAdapter ==null)
@@ -353,7 +353,7 @@ public class OldAds_Fragment extends Fragment implements UserSingleTone.OnComple
         intent.putExtra("whoVisit", Tags.me_visit);
         getActivity().startActivity(intent);
     }
-   /* public void setPos(View view,int pos,String type)
+   /* public void setItemData(View view,int pos,String type)
     {
         MyAdsModel myAdsModel = myAdsModelList.get(pos);
         if (myPreviousAdsAdapter ==null)

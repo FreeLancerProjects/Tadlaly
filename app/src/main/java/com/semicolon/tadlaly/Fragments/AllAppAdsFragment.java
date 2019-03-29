@@ -6,7 +6,6 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -77,6 +76,13 @@ public class AllAppAdsFragment extends Fragment implements UserSingleTone.OnComp
 
         pager.setAdapter(adapter);
 
+        for (int i = 0 ; i<tab.getTabCount()-1 ; i++)
+        {
+            View view = ((ViewGroup)tab.getChildAt(0)).getChildAt(i);
+            ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
+            params.setMargins(8,0,8,0);
+            tab.requestLayout();
+        }
 
     }
 
@@ -102,8 +108,6 @@ public class AllAppAdsFragment extends Fragment implements UserSingleTone.OnComp
     public void onSuccess(double lat, double lng) {
         mylat = lat;
         myLng = lng;
-        Log.e("latttt",lat+"");
-        Log.e("lngggg",lng+"");
 
     }
 }

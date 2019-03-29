@@ -75,6 +75,9 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -234,12 +237,45 @@ public class HomeActivity extends AppCompatActivity
 
         }
 
+        preferences = new Preferences(this);
+        String date = preferences.getLastDate();
+        Calendar calendar = Calendar.getInstance();
+        long time = calendar.getTimeInMillis();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy",Locale.ENGLISH);
+        String now = dateFormat.format(new Date(time));
 
-       /* follow_counter = fl_root.findViewById(R.id.tv_follow_counter);
-        follow_counter.setText("13");*/
+        if (!date.equals(now))
+        {
+            increaseVisit(now);
+        }
 
 
     }
+
+    private void increaseVisit(String now) {
+        Api.getRetrofit(Tags.Base_Url)
+                .create(Services.class)
+                .increaseVisit(now)
+                .enqueue(new Callback<ResponseModel>() {
+                    @Override
+                    public void onResponse(Call<ResponseModel> call, Response<ResponseModel> response) {
+                        if (response.isSuccessful()&&response.body().getSuccess_visit() ==1)
+                        {
+                            preferences.saveLastDate(now);
+
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<ResponseModel> call, Throwable t) {
+                        try
+                        {
+                            Log.e("Error",t.getMessage());
+                        }catch (Exception e){}
+                    }
+                });
+    }
+
     private void getDataFromIntent()
     {
         Intent intent = getIntent();

@@ -213,6 +213,10 @@
     <string name="ch_trans_img">إختر صورة التحويل</string>
     <string name="service">خدمة</string>
     <string name="my_follow">متابعاتي</string>
+    <string name="follow">متابعة</string>
+    <string name="unfollow">إلغاء المتابعة</string>
+    <string name="copied">تم النسخ</string>
+    <string name="unread">غير مقروءة</string>
 
 
     <string-array name="ad_state">

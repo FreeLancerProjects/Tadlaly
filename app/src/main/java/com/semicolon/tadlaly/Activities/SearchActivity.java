@@ -112,8 +112,7 @@ public class SearchActivity extends AppCompatActivity implements GoogleApiClient
         recView = findViewById(R.id.recView);
         manager = new LinearLayoutManager(this);
         recView.setLayoutManager(manager);
-        searchAdsAdapter = new SearchAdsAdapter(recView,this,myAdsModelList);
-        recView.setAdapter(searchAdsAdapter);
+
         back.setOnClickListener(view -> finish());
         search_view.showSuggestions();
         suggestions = preferences.getSuggestionList();
@@ -181,11 +180,14 @@ public class SearchActivity extends AppCompatActivity implements GoogleApiClient
             {
                 userSingleTone = UserSingleTone.getInstance();
                 userSingleTone.getUser(this);
+                searchAdsAdapter = new SearchAdsAdapter(recView,this,myAdsModelList,true);
+                recView.setAdapter(searchAdsAdapter);
             }else if (user_type.equals(Tags.app_visitor))
             {
+                searchAdsAdapter = new SearchAdsAdapter(recView,this,myAdsModelList,false);
+                recView.setAdapter(searchAdsAdapter);
                 user_id ="all";
             }
-            Log.e("type", user_type);
         }
     }
 
@@ -311,21 +313,31 @@ public class SearchActivity extends AppCompatActivity implements GoogleApiClient
     {
         Common.CloseKeyBoard(this,search_view);
     }
-    public void SetMyadsData(MyAdsModel myAdsModel)
+    public void SetMyadsData(MyAdsModel myAdsModel, int pos)
     {
+
         try {
             Intent intent = new Intent(this,AdsDetailsActivity.class);
             intent.putExtra("ad_details",myAdsModel);
             intent.putExtra("whoVisit",Tags.visitor);
             if (user_id.equals("all"))
             {
+
                 intent.putExtra("user_id","0");
 
             }else
                 {
+                    if (!myAdsModel.isRead_status()) {
+
+                        myAdsModel.setRead_status(true);
+                        myAdsModel.setReaded(false);
+                        myAdsModelList.set(pos, myAdsModel);
+                        searchAdsAdapter.notifyItemChanged(pos);
+                    }
                     intent.putExtra("user_id",user_id);
 
                 }
+
             startActivity(intent);
         }catch (NullPointerException e)
         {

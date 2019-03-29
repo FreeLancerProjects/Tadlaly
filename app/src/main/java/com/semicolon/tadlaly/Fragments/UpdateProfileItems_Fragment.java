@@ -148,11 +148,13 @@ public class UpdateProfileItems_Fragment extends Fragment implements UserSingleT
                 }
                 else if (type.equals(Tags.update_phone))
                 {
+                    String phone_regex = "^[+]?[0-9]{6,}$";
+
                     String m_phone = edt_phone.getText().toString().trim();
                     if (TextUtils.isEmpty(m_phone))
                     {
                         edt_phone.setError(getString(R.string.field_req));
-                    }else if (!Patterns.PHONE.matcher(m_phone).matches()||m_phone.length()<6||m_phone.length()>=13)
+                    }else if (!m_phone.matches(phone_regex))
                     {
                         edt_phone.setError(getString(R.string.inv_phone));
                     }else

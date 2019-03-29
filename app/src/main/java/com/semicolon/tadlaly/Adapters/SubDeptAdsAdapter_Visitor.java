@@ -39,12 +39,13 @@ public class SubDeptAdsAdapter_Visitor extends RecyclerView.Adapter <RecyclerVie
     private boolean loading;
     private LinearLayoutManager mLinearLayoutManager;
     private SubDataFragment fragment;
-    public SubDeptAdsAdapter_Visitor(RecyclerView recView, Context context, List<MyAdsModel> myAdsModelList,SubDataFragment fragment) {
+    private boolean isSignUp;
+    public SubDeptAdsAdapter_Visitor(RecyclerView recView, Context context, List<MyAdsModel> myAdsModelList,SubDataFragment fragment,boolean isSignUp) {
         this.context = context;
         this.myAdsModelList = myAdsModelList;
         this.homeActivity = (HomeActivity) context;
         this.fragment =  fragment;
-
+        this.isSignUp = isSignUp;
 
         if (recView.getLayoutManager() instanceof LinearLayoutManager)
         {
@@ -116,9 +117,16 @@ public class SubDeptAdsAdapter_Visitor extends RecyclerView.Adapter <RecyclerVie
             myItemHolder itemHolder = (myItemHolder) holder;
             MyAdsModel myAdsModel =myAdsModelList.get(position);
             itemHolder.BindData(myAdsModel);
-            //setAnimation(holder.itemView);
 
-            itemHolder.itemView.setOnClickListener(view -> homeActivity.SetMyadsData(myAdsModel));
+            //itemHolder.itemView.setOnClickListener(view -> homeActivity.SetMyadsData(myAdsModel));
+            itemHolder.itemView.setOnClickListener(view ->
+                    {
+                        MyAdsModel myAdsModel2 =myAdsModelList.get(holder.getAdapterPosition());
+                        fragment.ItemData(myAdsModel2,holder.getAdapterPosition());
+                    }
+                    );
+
+
             Animation animation = AnimationUtils.loadAnimation(context,R.anim.right_to_left);
             itemHolder.itemView.startAnimation(animation);
 
@@ -148,7 +156,7 @@ public class SubDeptAdsAdapter_Visitor extends RecyclerView.Adapter <RecyclerVie
     }
 
     public class myItemHolder extends RecyclerView.ViewHolder {
-        private TextView date,state_new,state_old,state_service,name,cost,city,distance;
+        private TextView date,state_new,state_old,state_service,name,cost,city,distance,tv_read_state;
         private RoundedImageView img;
 
         public myItemHolder(View itemView) {
@@ -160,6 +168,7 @@ public class SubDeptAdsAdapter_Visitor extends RecyclerView.Adapter <RecyclerVie
             state_new= itemView.findViewById(R.id.state_new);
             state_old= itemView.findViewById(R.id.state_old);
             state_service= itemView.findViewById(R.id.state_service);
+            tv_read_state= itemView.findViewById(R.id.tv_read_state);
 
             name = itemView.findViewById(R.id.name);
             cost = itemView.findViewById(R.id.cost);
@@ -170,16 +179,30 @@ public class SubDeptAdsAdapter_Visitor extends RecyclerView.Adapter <RecyclerVie
 
         public void BindData(MyAdsModel myAdsModel)
         {
+
+            if (isSignUp) {
+
+                Log.e("reeed",myAdsModel.isRead_status()+"");
+
+                if (myAdsModel.isRead_status()) {
+                    tv_read_state.setVisibility(View.GONE);
+
+                } else {
+                    tv_read_state.setVisibility(View.VISIBLE);
+
+                }
+
+            } else {
+                tv_read_state.setVisibility(View.GONE);
+            }
+
             double dist = myAdsModel.getDistance();
-            distance.setText(Math.round(dist)+context.getString(R.string.km));
-            //Typeface typeface =Typeface.createFromAsset(context.getAssets(),"OYA-Regular.ttf");
+            distance.setText(String.format("%.2f",dist)+" "+ context.getString(R.string.km));
             if (myAdsModel.getAdvertisement_image().size()>0)
             {
                 Picasso.with(context).load(Uri.parse(Tags.Image_Url+myAdsModel.getAdvertisement_image().get(0).getPhoto_name())).into(img);
-                Log.e("size1",myAdsModel.getAdvertisement_image().size()+"");
             }
-            //date.setTypeface(typeface);
-            date.setText("قبل "+myAdsModel.getAdvertisement_date());
+            date.setText(myAdsModel.getAdvertisement_date());
 
             if (myAdsModel.getAdvertisement_type().equals(Tags.ad_new))
             {
@@ -199,18 +222,9 @@ public class SubDeptAdsAdapter_Visitor extends RecyclerView.Adapter <RecyclerVie
                 state_old.setVisibility(View.GONE);
                 state_service.setVisibility(View.VISIBLE);
             }
-           // name.setTypeface(typeface);
             name.setText(myAdsModel.getAdvertisement_title());
-            //cost.setTypeface(typeface);
-            if (cost.equals(Tags.undefined_price))
-            {
-                cost.setText(myAdsModel.getAdvertisement_price());
+            cost.setText(myAdsModel.getAdvertisement_price()+" "+context.getString(R.string.sar));
 
-            }else
-            {
-                cost.setText(myAdsModel.getAdvertisement_price()+" ريال");
-
-            }
             city.setText(myAdsModel.getCity());
         }
     }

@@ -13,8 +13,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         xmlns:app="http://schemas.android.com/apk/res-auto"
-        app:cardCornerRadius="10dp"
+        app:cardCornerRadius="5dp"
         android:layoutDirection="rtl"
+        app:cardBackgroundColor="@color/white"
+        app:cardElevation="3dp"
         >
         <LinearLayout
             android:layout_width="match_parent"
@@ -31,8 +33,10 @@
                     android:id="@+id/img"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    app:siRadius="10dp"
-                    />
+                    app:siRadius="5dp"
+                    app:siBorderColor="@color/white"
+                    app:siBorderType="stroke"
+                    app:siBorderWidth="1dp"                    />
             </FrameLayout>
 
             <LinearLayout
@@ -160,7 +164,6 @@
                             android:textColor="@color/black"
                             android:gravity="center|left"
                             android:layout_marginLeft="10dp"
-                            android:text="sdasd"
                             android:singleLine="true"
                             />
                     </LinearLayout>
@@ -212,7 +215,19 @@
                 </LinearLayout>
 
 
-
+                <TextView
+                    android:id="@+id/tv_read_state"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginBottom="5dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="13sp"
+                    android:text="@string/unread"
+                    android:visibility="gone"
+                    />
             </LinearLayout>
 
 

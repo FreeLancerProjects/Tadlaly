@@ -98,10 +98,14 @@ public class GeneralSearchActivity extends AppCompatActivity implements Departme
         {
             userSingleTone = UserSingleTone.getInstance();
             userSingleTone.getUser(this);
+            adapter = new SubDeptAdsAdapter(recView,this,myAdsModelList,"2",true);
+            recView.setAdapter(adapter);
         }else if (user_type.equals(Tags.app_visitor))
             {
                 latLngSingleTone = LatLngSingleTone.getInstance();
                 latLngSingleTone.getLatLng(this);
+                adapter = new SubDeptAdsAdapter(recView,this,myAdsModelList,"2",false);
+                recView.setAdapter(adapter);
             }
 
         initLoadMore();
@@ -159,8 +163,7 @@ public class GeneralSearchActivity extends AppCompatActivity implements Departme
         recView = findViewById(R.id.recView);
         manager = new LinearLayoutManager(this);
         recView.setLayoutManager(manager);
-        adapter = new SubDeptAdsAdapter(recView,this,myAdsModelList,"2",null);
-        recView.setAdapter(adapter);
+
         back.setOnClickListener(view -> finish());
         spinnerDeptAdapter = new SpinnerDeptAdapter(this,R.layout.spinner_item,spinner_deptModelList);
         spinnerBranchAdapter = new SpinnerBranchAdapter(this,R.layout.spinner_item,spinner_branchModelList);
@@ -582,23 +585,17 @@ public class GeneralSearchActivity extends AppCompatActivity implements Departme
     }
 */
 
-    public void setPos(int pos)
+    public void setItemData(MyAdsModel myAdsModel, int pos)
     {
-        if (pos<0)
-        {
-            MyAdsModel myAdsModel = myAdsModelList.get(0);
-            Intent intent = new Intent(this,AdsDetailsActivity.class);
-            intent.putExtra("ad_details",myAdsModel);
-            intent.putExtra("whoVisit",Tags.visitor);
-            startActivity(intent);
-        }else
-            {
-                MyAdsModel myAdsModel = myAdsModelList.get(pos);
-                Intent intent = new Intent(this,AdsDetailsActivity.class);
-                intent.putExtra("ad_details",myAdsModel);
-                intent.putExtra("whoVisit",Tags.visitor);
-                startActivity(intent);
-            }
+        myAdsModel.setRead_status(true);
+        myAdsModelList.set(pos,myAdsModel);
+
+        Intent intent = new Intent(this,AdsDetailsActivity.class);
+        intent.putExtra("ad_details",myAdsModel);
+        intent.putExtra("whoVisit",Tags.visitor);
+        //intent.putExtra("user_id",user_id);
+
+        startActivity(intent);
 
     }
     private void UpdateBranchAdapter(String id)

@@ -56,7 +56,6 @@ public class SubDepartAdsActivity extends AppCompatActivity implements UserSingl
     private double mylat=0.0,myLng=0.0;
     private int cont=0;
     private int size=0;
-    private  List<MyAdsModel> myAdsModelList1,finalmyAdsModelList;
     private int page_index=2;
     private String user_id="";
     private String user_type="";
@@ -80,8 +79,7 @@ public class SubDepartAdsActivity extends AppCompatActivity implements UserSingl
     }
     private void initView()
     {
-        myAdsModelList1= new ArrayList<>();
-        finalmyAdsModelList= new ArrayList<>();
+
 
         map = new HashMap<>();
         distList = new ArrayList<>();
@@ -95,20 +93,9 @@ public class SubDepartAdsActivity extends AppCompatActivity implements UserSingl
         recView = findViewById(R.id.recView);
         manager = new LinearLayoutManager(this);
         recView.setLayoutManager(manager);
-        adapter = new SubDeptAdsAdapter(recView,this,myAdsModelList,"1",null);
-        recView.setAdapter(adapter);
         back.setOnClickListener(view -> finish());
         progressBar.getIndeterminateDrawable().setColorFilter(ContextCompat.getColor(this,R.color.colorPrimary), PorterDuff.Mode.SRC_IN);
 
-        adapter.setLoadListener(new SubDeptAdsAdapter.OnLoadListener() {
-            @Override
-            public void onLoadMore() {
-                myAdsModelList.add(null);
-                adapter.notifyItemInserted(myAdsModelList.size()-1);
-                int index = page_index;
-                onLoadgetData(supDept_id,user_id,index);
-            }
-        });
 
         image_top.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -129,24 +116,36 @@ public class SubDepartAdsActivity extends AppCompatActivity implements UserSingl
             subdepartObject = (DepartmentsModel.SubdepartObject) intent.getSerializableExtra("subDeptData");
             supDept_id = subdepartObject.getSub_department_id();
 
-            Log.e("User_id_sda_act",user_id);
-            Log.e("User_type_sda_act",user_type);
-
             if (user_id.equals("0"))
             {
                 latLngSingleTone = LatLngSingleTone.getInstance();
                 latLngSingleTone.getLatLng(this);
+                adapter = new SubDeptAdsAdapter(recView,this,myAdsModelList,"1",false);
+                recView.setAdapter(adapter);
+
             }else if (!user_id.equals("0"))
             {
                 userSingleTone =UserSingleTone.getInstance();
                 userSingleTone.getUser(this);
+                adapter = new SubDeptAdsAdapter(recView,this,myAdsModelList,"1",true);
+                recView.setAdapter(adapter);
             }
             String sd=subdepartObject.getSub_department_name().replaceAll("\n","").replaceAll("\t","");
             subDept_name.setText(sd);
-            Log.e("p1",page_index+"");
             myAdsModelList.clear();
             getData(supDept_id,user_id,1);
         }
+
+        adapter.setLoadListener(new SubDeptAdsAdapter.OnLoadListener() {
+            @Override
+            public void onLoadMore() {
+                myAdsModelList.add(null);
+                adapter.notifyItemInserted(myAdsModelList.size()-1);
+                int index = page_index;
+                onLoadgetData(supDept_id,user_id,index);
+            }
+        });
+
     }
 
     private void getData(String supDept_id,String user_id, int page_index)
@@ -321,28 +320,20 @@ public class SubDepartAdsActivity extends AppCompatActivity implements UserSingl
 
 
 
-    public void setPos(int pos)
+    public void setItemData(MyAdsModel myAdsModel, int pos)
     {
-        Log.e("size",myAdsModelList.size()+"");
-        Log.e("pos",pos+"");
+        if (!myAdsModel.isRead_status()) {
 
-        if (pos<0)
-        {
-            MyAdsModel myAdsModel = myAdsModelList.get(0);
-            Intent intent = new Intent(this,AdsDetailsActivity.class);
-            intent.putExtra("ad_details",myAdsModel);
-            intent.putExtra("whoVisit",Tags.visitor);
-            intent.putExtra("user_id",user_id);
-            startActivity(intent);
-        }else
-            {
-                MyAdsModel myAdsModel = myAdsModelList.get(pos);
-                Intent intent = new Intent(this,AdsDetailsActivity.class);
-                intent.putExtra("ad_details",myAdsModel);
-                intent.putExtra("whoVisit",Tags.visitor);
-                intent.putExtra("user_id",user_id);
-                startActivity(intent);
-            }
+            myAdsModel.setRead_status(true);
+            myAdsModel.setReaded(false);
+            myAdsModelList.set(pos, myAdsModel);
+            adapter.notifyItemChanged(pos);
+        }
+        Intent intent = new Intent(this,AdsDetailsActivity.class);
+        intent.putExtra("ad_details",myAdsModel);
+        intent.putExtra("whoVisit",Tags.visitor);
+        intent.putExtra("user_id",user_id);
+        startActivity(intent);
 
     }
 

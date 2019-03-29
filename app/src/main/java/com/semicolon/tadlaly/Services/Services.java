@@ -206,5 +206,29 @@ public interface Services {
                                                  @Field("user_google_long") String user_google_long
 
     );
+
+
+    @FormUrlEncoded
+    @POST("Api/visitors")
+    Call<ResponseModel> increaseVisit(@Field("day_date") String day_date);
+
+    @FormUrlEncoded
+    @POST("Api/doRead")
+    Call<ResponseModel> readAds(@Field("advertisement_id") String advertisement_id,
+                                @Field("user_id_fk") String user_id_fk,
+                                @Field("status") String status
+                                );
+
+    @FormUrlEncoded
+    @POST("Api/follow")
+    Call<ResponseModel> isFollowDepartment(@Field("department_id_fk") String department_id_fk,
+                                           @Field("user_id_fk") String user_id_fk,
+                                           @Field("type") String type);
+
+    @FormUrlEncoded
+    @POST("Api/follow")
+    Call<ResponseModel> follow_unFollow(@Field("department_id_fk") String department_id_fk,
+                                        @Field("user_id_fk") String user_id_fk,
+                                        @Field("type") String type);
 }
 
